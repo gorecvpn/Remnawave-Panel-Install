@@ -10,7 +10,7 @@ Comprehensive bash scripts for **Remnawave Panel**, **Remnawave Node**, and **Re
 - 🎯 **Reality masking** with 11 AI-generated website templates
 
 
-📦 Full info, updates, and examples: [**/remnawave-scripts**](https://github.com/DigneZzZ/remnawave-scripts)
+📦 Full info, updates, and examples: [**/remnawave-scripts**](https://github.com/gorecvpn/Remnawave-Panel-Install)
 
 Author: [DigneZzZ](https://github.com/DigneZzZ)
 
@@ -21,17 +21,17 @@ Author: [DigneZzZ](https://github.com/DigneZzZ)
 
 **Remnawave Panel (v3.5.5+):**
 ```bash
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/remnawave.sh) @ install
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/remnawave.sh) @ install
 ```
 
 **Remnawave Node (v3.1.2+):**
 ```bash
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/remnanode.sh) @ install
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/remnanode.sh) @ install
 ```
 
 **Reality Selfsteal (v2.1.3+):**
 ```bash
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/selfsteal.sh) @ install
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/selfsteal.sh) @ install
 ```
 
 **Options:**
@@ -41,7 +41,7 @@ bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/selfsteal
 **For existing installations:**
 Use `install-script` to add CLI wrapper only:
 ```bash
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/remnawave.sh) @ install-script
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/remnawave.sh) @ install-script
 ```
 
 </details>
@@ -127,13 +127,13 @@ remnawave restore         # Intelligent restore with version checks
 
 Still available for users who prefer separate backup/restore tools:
 
-- [remnawave-backup.sh](https://github.com/DigneZzZ/remnawave-scripts/raw/main/remnawave-backup.sh) - Standalone backup script
-- [restore.sh](https://github.com/DigneZzZ/remnawave-scripts/raw/main/restore.sh) - Standalone restore script
+- [remnawave-backup.sh](https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/remnawave-backup.sh) - Standalone backup script
+- [restore.sh](https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/restore.sh) - Standalone restore script
 
 </details>
 
 <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
-  <Button label="Github repository" link="https://github.com/DigneZzZ/remnawave-scripts" variant="secondary" size="md" outline />
+  <Button label="Github repository" link="https://github.com/gorecvpn/Remnawave-Panel-Install" variant="secondary" size="md" outline />
 </div>
 <br />
 <div style={{ display: 'flex', justifyContent: 'center' }}>

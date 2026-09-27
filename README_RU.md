@@ -28,13 +28,13 @@
 
 ```bash
 # Панель Remnawave
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/remnawave.sh) @ install
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/remnawave.sh) @ install
 
 # Нода RemnaNode
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/remnanode.sh) @ install
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/remnanode.sh) @ install
 
 # Caddy Selfsteal — маскировка Reality
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/selfsteal.sh) @ install
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/selfsteal.sh) @ install
 ```
 
 Нужен только CLI, без установки всего остального? Замените `install` на **`install-script`** — он
@@ -42,12 +42,12 @@ bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/selfsteal
 прямо сейчас получить свежий CLI):
 
 ```bash
-sudo bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/remnawave.sh) @ install-script
+sudo bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/remnawave.sh) @ install-script
 ```
 
 > **GitHub заблокирован на сервере?** Каждый скрипт зеркалируется через jsDelivr — используйте вместо
 > `github.com/.../raw/main/` любой из адресов вида:
-> `https://cdn.jsdelivr.net/gh/DigneZzZ/remnawave-scripts@main/<скрипт>.sh`
+> `https://cdn.jsdelivr.net/gh/gorecvpn/Remnawave-Panel-Install@main/<скрипт>.sh`
 > После установки скрипты сами переключаются на эти зеркала — в том числе при самообновлении.
 
 После установки скрипт доступен как глобальная команда: `remnawave`, `remnanode`, `selfsteal` — без аргументов открывается интерактивное меню.
@@ -111,9 +111,9 @@ remnawave backup       # бэкап вручную (или `schedule` — по �
 > Все загрузки идут сначала через GitHub, потом через зеркала jsDelivr.
 
 ```bash
-sudo bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/remnawave.sh) @ install-script
+sudo bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/remnawave.sh) @ install-script
 # GitHub заблокирован? то же самое через зеркало:
-sudo bash <(curl -Ls https://cdn.jsdelivr.net/gh/DigneZzZ/remnawave-scripts@main/remnawave.sh) @ install-script
+sudo bash <(curl -Ls https://cdn.jsdelivr.net/gh/gorecvpn/Remnawave-Panel-Install@main/remnawave.sh) @ install-script
 ```
 
 </details>
@@ -184,9 +184,9 @@ remnanode xray_log_err    # ошибки Xray в реальном времени
 > редко.
 
 ```bash
-sudo bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/remnanode.sh) @ install-script
+sudo bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/remnanode.sh) @ install-script
 # GitHub заблокирован? то же самое через зеркало:
-sudo bash <(curl -Ls https://cdn.jsdelivr.net/gh/DigneZzZ/remnawave-scripts@main/remnanode.sh) @ install-script
+sudo bash <(curl -Ls https://cdn.jsdelivr.net/gh/gorecvpn/Remnawave-Panel-Install@main/remnanode.sh) @ install-script
 ```
 
 ```text
@@ -231,7 +231,7 @@ selfsteal template install converter    # установить шаблон
 - Тесты соединений, watchdog, готовые фрагменты конфигов Xray
 
 ```bash
-sudo bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/wtm.sh) @ install-script
+sudo bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/wtm.sh) @ install-script
 sudo wtm    # меню; или: wtm install-all / warp-plus / status
 ```
 
@@ -244,7 +244,7 @@ sudo wtm    # меню; или: wtm install-all / warp-plus / status
 Установщик [NetBird](https://netbird.io/) mesh-VPN: CLI, cloud-init, интерактивное меню, Ansible-режим.
 
 ```bash
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/netbird.sh) install --key ВАШ-SETUP-KEY
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/netbird.sh) install --key ВАШ-SETUP-KEY
 ```
 
 Полная документация: **[README-netbird.md](./README-netbird.md)**
@@ -269,7 +269,7 @@ remnawave restore --file backup.tar.gz
 remnawave backup
 # 2. Перенесите архив (scp) на новый сервер
 # 3. На новом сервере
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/remnawave.sh) @ install --name remnawave
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/remnawave.sh) @ install --name remnawave
 remnawave restore --file backup.tar.gz
 ```
 
@@ -313,7 +313,7 @@ sudo ufw enable
 
 **⭐ Если проект полезен — поставьте звёздочку!**
 
-[Сообщить об ошибке](https://github.com/DigneZzZ/remnawave-scripts/issues) · [Предложить улучшение](https://github.com/DigneZzZ/remnawave-scripts/issues) · [Сообщество gig.ovh](https://gig.ovh) · [MIT License](./LICENSE)
+[Сообщить об ошибке](https://github.com/gorecvpn/Remnawave-Panel-Install/issues) · [Предложить улучшение](https://github.com/gorecvpn/Remnawave-Panel-Install/issues) · [Сообщество gig.ovh](https://gig.ovh) · [MIT License](./LICENSE)
 
 *PR приветствуются: fork → ветка → изменения → PR. Тестируйте на нескольких дистрибутивах.*
 

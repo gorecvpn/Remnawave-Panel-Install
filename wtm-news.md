@@ -228,7 +228,7 @@ sudo wtm self-update
 Или, если WTM ещё не установлен:
 
 ```bash
-sudo bash <(curl -sL https://github.com/DigneZzZ/remnawave-scripts/raw/main/wtm.sh) @ install-script
+sudo bash <(curl -sL https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/wtm.sh) @ install-script
 ```
 
 Если Tor уже стоит и ведёт себя странно — первым делом:
@@ -328,10 +328,10 @@ sudo wtm update                      # Альтернативная команд
 
 ```bash
 # Установка как глобальная команда
-sudo bash <(curl -sL https://github.com/DigneZzZ/remnawave-scripts/raw/main/wtm.sh) @ install-script
+sudo bash <(curl -sL https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/wtm.sh) @ install-script
 
 # Или прямой запуск
-bash <(curl -sL https://github.com/DigneZzZ/remnawave-scripts/raw/main/wtm.sh)
+bash <(curl -sL https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/wtm.sh)
 ```
 
 ### 🎯 Умная автоматическая установка
@@ -340,8 +340,8 @@ bash <(curl -sL https://github.com/DigneZzZ/remnawave-scripts/raw/main/wtm.sh)
 
 ```bash
 # Любая из этих команд автоматически установит wtm глобально
-sudo bash <(curl -sL https://github.com/DigneZzZ/remnawave-scripts/raw/main/wtm.sh) install-warp
-sudo bash <(curl -sL https://github.com/DigneZzZ/remnawave-scripts/raw/main/wtm.sh) install-all
+sudo bash <(curl -sL https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/wtm.sh) install-warp
+sudo bash <(curl -sL https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/wtm.sh) install-all
 # После этого просто используйте: wtm command
 ```
 
@@ -566,7 +566,7 @@ PersistentKeepalive = 25           # Поддержание соединения
 ### 🔥 Quick Start
 ```bash
 # Быстрый старт для новичков
-curl -sL https://github.com/DigneZzZ/remnawave-scripts/raw/main/wtm.sh | sudo bash -s install-all
+curl -sL https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/wtm.sh | sudo bash -s install-all
 
 # Проверка работоспособности
 wtm test
@@ -591,7 +591,7 @@ sudo cp /etc/tor/torrc /backup/
 
 ## 🔗 Ресурсы и поддержка
 
-* **GitHub Repository**: [https://github.com/DigneZzZ/remnawave-scripts](https://github.com/DigneZzZ/remnawave-scripts)
+* **GitHub Repository**: [https://github.com/gorecvpn/Remnawave-Panel-Install](https://github.com/gorecvpn/Remnawave-Panel-Install)
 * **WTM Documentation**: Полная документация в README-warp.md
 * **Issue Tracker**: Приветствуются баг-репорты и предложения
 * **Project Website**: [https://gig.ovh](https://gig.ovh)

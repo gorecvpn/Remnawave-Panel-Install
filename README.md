@@ -28,13 +28,13 @@ One-liner installs and a full-featured CLI for **Remnawave Panel**, **RemnaNode*
 
 ```bash
 # Remnawave Panel
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/remnawave.sh) @ install
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/remnawave.sh) @ install
 
 # RemnaNode
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/remnanode.sh) @ install
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/remnanode.sh) @ install
 
 # Caddy Selfsteal — Reality masking
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/selfsteal.sh) @ install
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/selfsteal.sh) @ install
 ```
 
 Want only the CLI, without installing anything else? Swap `install` for **`install-script`** — it
@@ -42,12 +42,12 @@ just drops the command into `/usr/local/bin` (handy on a server you manage remot
 newest CLI right now):
 
 ```bash
-sudo bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/remnawave.sh) @ install-script
+sudo bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/remnawave.sh) @ install-script
 ```
 
 > **GitHub blocked on your server?** Every script mirrors itself through jsDelivr, so use any of these
 > instead of `github.com/.../raw/main/`:
-> `https://cdn.jsdelivr.net/gh/DigneZzZ/remnawave-scripts@main/<script>.sh`
+> `https://cdn.jsdelivr.net/gh/gorecvpn/Remnawave-Panel-Install@main/<script>.sh`
 > Once installed, the scripts fall back to those mirrors on their own — including for self-updates.
 
 After installation each script is a global command: `remnawave`, `remnanode`, `selfsteal` — run without arguments to open the interactive menu.
@@ -111,9 +111,9 @@ remnawave backup       # manual backup (or `schedule` for cron)
 > by hand. All downloads try GitHub first, then jsDelivr mirrors.
 
 ```bash
-sudo bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/remnawave.sh) @ install-script
+sudo bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/remnawave.sh) @ install-script
 # GitHub blocked? same thing via a mirror:
-sudo bash <(curl -Ls https://cdn.jsdelivr.net/gh/DigneZzZ/remnawave-scripts@main/remnawave.sh) @ install-script
+sudo bash <(curl -Ls https://cdn.jsdelivr.net/gh/gorecvpn/Remnawave-Panel-Install@main/remnawave.sh) @ install-script
 ```
 
 </details>
@@ -183,9 +183,9 @@ remnanode xray_log_err    # real-time Xray errors
 > node container. `update` refreshes the CLI on its own first, so you rarely need this by hand.
 
 ```bash
-sudo bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/remnanode.sh) @ install-script
+sudo bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/remnanode.sh) @ install-script
 # GitHub blocked? same thing via a mirror:
-sudo bash <(curl -Ls https://cdn.jsdelivr.net/gh/DigneZzZ/remnawave-scripts@main/remnanode.sh) @ install-script
+sudo bash <(curl -Ls https://cdn.jsdelivr.net/gh/gorecvpn/Remnawave-Panel-Install@main/remnanode.sh) @ install-script
 ```
 
 ```text
@@ -230,7 +230,7 @@ Details (HTTP/3, `--no-randomize`, structure): **[README-selfsteal.md](./README-
 - Connection tests, watchdog, ready-to-paste Xray config snippets
 
 ```bash
-sudo bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/wtm.sh) @ install-script
+sudo bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/wtm.sh) @ install-script
 sudo wtm    # menu; or: wtm install-all / warp-plus / status
 ```
 
@@ -243,7 +243,7 @@ Full documentation: **[README-warp.md](./README-warp.md)**
 Installer for [NetBird](https://netbird.io/) mesh VPN: CLI, cloud-init, interactive menu, Ansible mode.
 
 ```bash
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/netbird.sh) install --key YOUR-SETUP-KEY
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/netbird.sh) install --key YOUR-SETUP-KEY
 ```
 
 Full documentation: **[README-netbird.md](./README-netbird.md)**
@@ -268,7 +268,7 @@ Before every `update` a safety snapshot (DB dump + configs) is created under `ba
 remnawave backup
 # 2. Transfer the archive (scp) to the new server
 # 3. On the new server
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/remnawave.sh) @ install --name remnawave
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/remnawave.sh) @ install --name remnawave
 remnawave restore --file backup.tar.gz
 ```
 
@@ -312,7 +312,7 @@ sudo ufw enable
 
 **⭐ Star this project if you find it useful!**
 
-[Report Bug](https://github.com/DigneZzZ/remnawave-scripts/issues) · [Request Feature](https://github.com/DigneZzZ/remnawave-scripts/issues) · [Community gig.ovh](https://gig.ovh) · [MIT License](./LICENSE)
+[Report Bug](https://github.com/gorecvpn/Remnawave-Panel-Install/issues) · [Request Feature](https://github.com/gorecvpn/Remnawave-Panel-Install/issues) · [Community gig.ovh](https://gig.ovh) · [MIT License](./LICENSE)
 
 *PRs welcome: fork → branch → changes → PR. Please test on multiple distros.*
 

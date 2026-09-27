@@ -2,7 +2,7 @@
 
 ## Overview
 
-**Repository:** `DigneZzZ/remnawave-scripts`  
+**Repository:** `gorecvpn/Remnawave-Panel-Install`  
 **Purpose:** Enterprise-grade Bash scripts for Remnawave Panel, RemnaNode, and Reality traffic masking management.  
 **Target Users:** System administrators deploying VPN/proxy infrastructure on Linux servers.
 

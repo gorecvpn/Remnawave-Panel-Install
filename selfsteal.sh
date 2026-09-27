@@ -18,7 +18,7 @@ fi
 
 # Debug mode - set via --debug flag
 DEBUG_MODE=false
-SCRIPT_URL="https://raw.githubusercontent.com/dignezzz/remnawave-scripts/main/selfsteal.sh"
+SCRIPT_URL="https://raw.githubusercontent.com/gorecvpn/Remnawave-Panel-Install/main/selfsteal.sh"
 UPDATE_URL="$SCRIPT_URL"
 
 while [[ $# -gt 0 ]]; do
@@ -339,7 +339,7 @@ acme_email_is_valid() {
 }
 
 # Repair an unusable ACME account contact left behind by earlier versions.
-# https://github.com/DigneZzZ/remnawave-scripts/issues/47
+# https://github.com/gorecvpn/Remnawave-Panel-Install/issues/47
 ensure_valid_acme_account() {
     local domain="${1:-}"
     local conf="$ACME_HOME/account.conf"
@@ -3875,7 +3875,7 @@ download_via_git() {
     local temp_dir="/tmp/selfsteal-template-$$"
     create_dir_safe "$temp_dir" || return 1
     
-    if ! git clone --filter=blob:none --sparse "https://github.com/DigneZzZ/remnawave-scripts.git" "$temp_dir" 2>/dev/null; then
+    if ! git clone --filter=blob:none --sparse "https://github.com/gorecvpn/Remnawave-Panel-Install.git" "$temp_dir" 2>/dev/null; then
         rm -rf "$temp_dir"
         return 1
     fi
@@ -3907,7 +3907,7 @@ download_via_api() {
     
     echo -e "${WHITE}📦 Using wget for recursive download...${NC}"
     
-    local api_url="https://api.github.com/repos/DigneZzZ/remnawave-scripts/git/trees/main?recursive=1"
+    local api_url="https://api.github.com/repos/gorecvpn/Remnawave-Panel-Install/git/trees/main?recursive=1"
     local tree_data
     tree_data=$(curl -s "$api_url" 2>/dev/null)
     
@@ -3928,7 +3928,7 @@ download_via_api() {
             [ -z "$file_path" ] && continue
             
             local relative_path="${file_path#sni-templates/$template_folder/}"
-            local file_url="https://raw.githubusercontent.com/DigneZzZ/remnawave-scripts/main/$file_path"
+            local file_url="https://raw.githubusercontent.com/gorecvpn/Remnawave-Panel-Install/main/$file_path"
             
             local file_dir
             file_dir=$(dirname "$relative_path")
@@ -3955,7 +3955,7 @@ download_via_curl_fallback() {
     
     echo -e "${WHITE}📦 Using curl fallback method...${NC}"
     
-    local base_url="https://raw.githubusercontent.com/DigneZzZ/remnawave-scripts/main/sni-templates/$template_folder"
+    local base_url="https://raw.githubusercontent.com/gorecvpn/Remnawave-Panel-Install/main/sni-templates/$template_folder"
     local common_files=("index.html" "favicon.ico" "favicon.svg" "site.webmanifest" "apple-touch-icon.png" "favicon-96x96.png")
     local asset_files=("assets/style.css" "assets/script.js" "assets/main.js")
     
@@ -5394,7 +5394,7 @@ show_help() {
     echo -e "  ${GRAY}TCP mode:               \"target\": \"127.0.0.1:9443\", \"xver\": 1${NC}"
     echo
     echo -e "${WHITE}For more information, visit:${NC}"
-    echo -e "  ${BLUE}https://github.com/DigneZzZ/remnawave-scripts${NC}"
+    echo -e "  ${BLUE}https://github.com/gorecvpn/Remnawave-Panel-Install${NC}"
     echo
     echo -e "${GRAY}Project: gig.ovh | Author: DigneZzZ${NC}"
 }

@@ -23,7 +23,7 @@
 |---|---|
 | **2.11.1** | `--nginx`: перед установкой acme.sh проверяется и при необходимости ставится cron — без `crontab` установщик acme.sh завершается ошибкой, и выпуск сертификата срывался |
 | **2.11.0** | Проверка сертификата в главном меню и в `status`: выдан ли он на используемый домен, доверенный ли (не self-signed / Caddy Local Authority), сколько дней осталось — для Nginx и Caddy (ACME-сертификат Caddy читается прямо из Docker-тома) |
-| **2.10.1** | Исправлен выпуск SSL для Nginx: ACME-контакт больше не собирается из `hostname` (`user35123@debian.debian` отклонялся Let's Encrypt), битый аккаунт чинится автоматически ([#47](https://github.com/DigneZzZ/remnawave-scripts/issues/47)) |
+| **2.10.1** | Исправлен выпуск SSL для Nginx: ACME-контакт больше не собирается из `hostname` (`user35123@debian.debian` отклонялся Let's Encrypt), битый аккаунт чинится автоматически ([#47](https://github.com/gorecvpn/Remnawave-Panel-Install/issues/47)) |
 | **2.10.0** | `selfsteal reissue-cert` — принудительный перевыпуск сертификата Caddy одной командой (с бэкапом и автооткатом при неудаче) |
 | **2.9.0** | Устойчивое получение Docker-образов: fallback на зеркала, когда Docker Hub недоступен/заблокирован |
 | **2.8.x** | Антифингерпринт-мутация шаблонов при установке, HTTP/3 выключен по умолчанию (`--h3` для включения), Caddy 2.11.4, `admin off` против boot-loop |
@@ -45,13 +45,13 @@
 
 ```bash
 # Caddy (по умолчанию)
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/selfsteal.sh) @ install
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/selfsteal.sh) @ install
 
 # Nginx с Unix socket (рекомендуется — см. сравнение ниже)
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/selfsteal.sh) @ --nginx install
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/selfsteal.sh) @ --nginx install
 
 # Nginx с TCP-портом вместо socket
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/selfsteal.sh) @ --nginx --tcp install
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/selfsteal.sh) @ --nginx --tcp install
 ```
 
 <details>
@@ -59,13 +59,13 @@ bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/selfsteal
 
 ```bash
 # Базовая force-установка (без интерактивных запросов и DNS-проверки)
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/selfsteal.sh) @ --nginx --force --domain reality.example.com install
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/selfsteal.sh) @ --nginx --force --domain reality.example.com install
 
 # С конкретным портом и шаблоном
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/selfsteal.sh) @ --nginx --force --domain reality.example.com --port 8443 --template 5 install
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/selfsteal.sh) @ --nginx --force --domain reality.example.com --port 8443 --template 5 install
 
 # С ручным wildcard-сертификатом (Nginx или Caddy)
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/selfsteal.sh) @ --nginx --force --domain reality.example.com \
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/selfsteal.sh) @ --nginx --force --domain reality.example.com \
     --ssl-cert /path/to/fullchain.crt --ssl-key /path/to/private.key install
 ```
 
@@ -122,7 +122,7 @@ selfsteal          # интерактивное меню
 
 ## 🎨 Шаблоны сайтов
 
-11 AI-генерированных шаблонов; при первой установке выбирается случайный. Скрипт качает их из каталога [`sni-templates/`](https://github.com/DigneZzZ/remnawave-scripts/tree/main/sni-templates) этого репозитория (оригинальная коллекция — [SmallPoppa/sni-templates](https://github.com/SmallPoppa/sni-templates)):
+11 AI-генерированных шаблонов; при первой установке выбирается случайный. Скрипт качает их из каталога [`sni-templates/`](https://github.com/gorecvpn/Remnawave-Panel-Install/tree/main/sni-templates) этого репозитория (оригинальная коллекция — [SmallPoppa/sni-templates](https://github.com/SmallPoppa/sni-templates)):
 
 `10gag` (мемы) · `converter` (видеоконвертер) · `convertit` (конвертер файлов, самый «тихий» — без внешних CDN) · `downloader` · `filecloud` (облако с формой логина) · `games-site` (ретро-игры) · `modmanager` · `speedtest` (RU-локализация) · `YouTube` (с бесконечной капчей) · `503 Error v1/v2` (страницы ошибок)
 
@@ -258,8 +258,8 @@ rm -rf ~/.acme.sh/ca/acme-v02.api.letsencrypt.org
 
 <div align="center">
 
-**Ресурсы:** [Reality (XTLS)](https://github.com/XTLS/REALITY) · [Caddy](https://caddyserver.com/docs/) · [шаблоны сайтов](https://github.com/DigneZzZ/remnawave-scripts/tree/main/sni-templates)
+**Ресурсы:** [Reality (XTLS)](https://github.com/XTLS/REALITY) · [Caddy](https://caddyserver.com/docs/) · [шаблоны сайтов](https://github.com/gorecvpn/Remnawave-Panel-Install/tree/main/sni-templates)
 
-[Сообщить об ошибке](https://github.com/DigneZzZ/remnawave-scripts/issues) · [Сообщество gig.ovh](https://gig.ovh) · Автор: **DigneZzZ** · [MIT License](./LICENSE)
+[Сообщить об ошибке](https://github.com/gorecvpn/Remnawave-Panel-Install/issues) · [Сообщество gig.ovh](https://gig.ovh) · Автор: **DigneZzZ** · [MIT License](./LICENSE)
 
 </div>

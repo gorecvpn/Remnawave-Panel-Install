@@ -29,7 +29,7 @@ fi
 # independent CDNs; it is only a fallback because a branch ref can be cached
 # there for up to ~12h, while raw.githubusercontent is always current.
 # ============================================
-SCRIPT_REPO="DigneZzZ/remnawave-scripts"
+SCRIPT_REPO="gorecvpn/Remnawave-Panel-Install"
 SCRIPT_REF="main"
 SCRIPT_FILE="remnanode.sh"
 SCRIPT_URL="https://raw.githubusercontent.com/${SCRIPT_REPO}/${SCRIPT_REF}/${SCRIPT_FILE}"
@@ -4661,7 +4661,7 @@ usage() {
     echo
     echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 55))\033[0m"
     echo -e "\033[38;5;8m📚 Project: \033[38;5;250mhttps://gig.ovh\033[0m"
-    echo -e "\033[38;5;8m🐛 Issues: \033[38;5;250mhttps://github.com/DigneZzZ/remnawave-scripts\033[0m"
+    echo -e "\033[38;5;8m🐛 Issues: \033[38;5;250mhttps://github.com/gorecvpn/Remnawave-Panel-Install\033[0m"
     echo -e "\033[38;5;8m💬 Support: \033[38;5;250mhttps://t.me/remnawave\033[0m"
     echo -e "\033[38;5;8m👨‍💻 Author: \033[38;5;250mDigneZzZ\033[0m"
     echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 55))\033[0m"
@@ -4673,7 +4673,7 @@ show_version() {
     echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 40))\033[0m"
     echo -e "\033[38;5;250mVersion: \033[38;5;15m$SCRIPT_VERSION\033[0m"
     echo -e "\033[38;5;250mAuthor:  \033[38;5;15mDigneZzZ\033[0m"
-    echo -e "\033[38;5;250mGitHub:  \033[38;5;15mhttps://github.com/DigneZzZ/remnawave-scripts\033[0m"
+    echo -e "\033[38;5;250mGitHub:  \033[38;5;15mhttps://github.com/gorecvpn/Remnawave-Panel-Install\033[0m"
     echo -e "\033[38;5;250mProject: \033[38;5;15mhttps://gig.ovh\033[0m"
     echo -e "\033[38;5;250mSupport: \033[38;5;15mhttps://t.me/remnawave\033[0m"
     echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 40))\033[0m"

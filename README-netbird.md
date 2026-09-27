@@ -28,13 +28,13 @@ A simple script for quick [NetBird](https://netbird.io/) mesh-VPN installation a
 
 ```bash
 # Silent auto-install for cloud-init / user-data
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/netbird.sh) init --key YOUR-SETUP-KEY
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/netbird.sh) init --key YOUR-SETUP-KEY
 
 # CLI installation
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/netbird.sh) install --key YOUR-SETUP-KEY
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/netbird.sh) install --key YOUR-SETUP-KEY
 
 # Interactive menu
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/netbird.sh) menu
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/netbird.sh) menu
 ```
 
 ### Modes & Commands
@@ -70,15 +70,15 @@ bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/netbird.s
 
 ```bash
 # Auto-install with SSH access between servers
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/netbird.sh) init --key ABC123-DEF456 --ssh
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/netbird.sh) init --key ABC123-DEF456 --ssh
 
 # CLI install with auto-accept (no prompts)
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/netbird.sh) install --key ABC123-DEF456 --force
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/netbird.sh) install --key ABC123-DEF456 --force
 
 # Update / status / with logging
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/netbird.sh) update
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/netbird.sh) status
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/netbird.sh) install --key KEY --log /var/log/netbird-install.log
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/netbird.sh) update
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/netbird.sh) status
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/netbird.sh) install --key KEY --log /var/log/netbird-install.log
 ```
 
 </details>
@@ -94,7 +94,7 @@ The `--ssh` flag enables `--allow-server-ssh` (incoming SSH from NetBird peers) 
 ```yaml
 #cloud-config
 runcmd:
-  - bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/netbird.sh) init --key YOUR-SETUP-KEY --ssh
+  - bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/netbird.sh) init --key YOUR-SETUP-KEY --ssh
 ```
 
 ### Ansible Integration
@@ -102,7 +102,7 @@ runcmd:
 ```yaml
 - name: Install NetBird
   shell: |
-    bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/netbird.sh) \
+    bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/netbird.sh) \
     ansible install --key {{ netbird_setup_key }}
   register: netbird_result
   changed_when: "'OK' in netbird_result.stdout"
@@ -110,7 +110,7 @@ runcmd:
 
 - name: Check NetBird status
   shell: |
-    bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/netbird.sh) \
+    bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/netbird.sh) \
     ansible status
   register: netbird_status
   changed_when: false
@@ -138,13 +138,13 @@ Exit codes: `0` — success, `1` — error (details in stderr).
 
 ```bash
 # Тихая автоустановка для cloud-init / user-data
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/netbird.sh) init --key ВАШ-SETUP-KEY
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/netbird.sh) init --key ВАШ-SETUP-KEY
 
 # CLI-установка
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/netbird.sh) install --key ВАШ-SETUP-KEY
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/netbird.sh) install --key ВАШ-SETUP-KEY
 
 # Интерактивное меню
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/netbird.sh) menu
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/netbird.sh) menu
 ```
 
 ### Режимы и команды
@@ -180,15 +180,15 @@ bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/netbird.s
 
 ```bash
 # Автоустановка с SSH-доступом между серверами
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/netbird.sh) init --key ABC123-DEF456 --ssh
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/netbird.sh) init --key ABC123-DEF456 --ssh
 
 # CLI-установка без запросов
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/netbird.sh) install --key ABC123-DEF456 --force
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/netbird.sh) install --key ABC123-DEF456 --force
 
 # Обновление / статус / с логированием
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/netbird.sh) update
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/netbird.sh) status
-bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/netbird.sh) install --key KEY --log /var/log/netbird-install.log
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/netbird.sh) update
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/netbird.sh) status
+bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/netbird.sh) install --key KEY --log /var/log/netbird-install.log
 ```
 
 </details>
@@ -204,7 +204,7 @@ bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/netbird.s
 ```yaml
 #cloud-config
 runcmd:
-  - bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/netbird.sh) init --key ВАШ-SETUP-KEY --ssh
+  - bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/netbird.sh) init --key ВАШ-SETUP-KEY --ssh
 ```
 
 ### Интеграция с Ansible
@@ -212,7 +212,7 @@ runcmd:
 ```yaml
 - name: Установка NetBird
   shell: |
-    bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/netbird.sh) \
+    bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/netbird.sh) \
     ansible install --key {{ netbird_setup_key }}
   register: netbird_result
   changed_when: "'OK' in netbird_result.stdout"
@@ -229,6 +229,6 @@ runcmd:
 
 <div align="center">
 
-[Report Bug / Сообщить об ошибке](https://github.com/DigneZzZ/remnawave-scripts/issues) · [gig.ovh](https://gig.ovh) · **DigneZzZ** · [MIT License](./LICENSE)
+[Report Bug / Сообщить об ошибке](https://github.com/gorecvpn/Remnawave-Panel-Install/issues) · [gig.ovh](https://gig.ovh) · **DigneZzZ** · [MIT License](./LICENSE)
 
 </div>

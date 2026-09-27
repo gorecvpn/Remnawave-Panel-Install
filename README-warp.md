@@ -52,10 +52,10 @@
 
 ```bash
 # Установка как глобальная команда wtm
-sudo bash <(curl -sL https://github.com/DigneZzZ/remnawave-scripts/raw/main/wtm.sh) @ install-script
+sudo bash <(curl -sL https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/wtm.sh) @ install-script
 
 # Или сразу к делу — wtm установится глобально сам при любой install-команде
-sudo bash <(curl -sL https://github.com/DigneZzZ/remnawave-scripts/raw/main/wtm.sh) @ install-all
+sudo bash <(curl -sL https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/wtm.sh) @ install-all
 ```
 
 После этого — `sudo wtm` для интерактивного меню, либо команды напрямую:
@@ -325,6 +325,6 @@ curl --socks5 127.0.0.1:9050 ifconfig.me  # через Tor
 
 **Документация:** [Cloudflare WARP](https://developers.cloudflare.com/warp-client/) · [WireGuard](https://www.wireguard.com/quickstart/) · [Tor](https://www.torproject.org/docs/) · [Xray wireguard outbound](https://xtls.github.io/config/outbounds/wireguard.html) · [wgcf](https://github.com/ViRb3/wgcf)
 
-[Сообщить об ошибке](https://github.com/DigneZzZ/remnawave-scripts/issues) · [Сообщество gig.ovh](https://gig.ovh) · Автор: **DigneZzZ**
+[Сообщить об ошибке](https://github.com/gorecvpn/Remnawave-Panel-Install/issues) · [Сообщество gig.ovh](https://gig.ovh) · Автор: **DigneZzZ**
 
 </div>

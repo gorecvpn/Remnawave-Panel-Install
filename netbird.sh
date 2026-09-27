@@ -90,7 +90,7 @@ log_message() {
 # Show version
 show_version() {
     echo "NetBird Installer v${SCRIPT_VERSION}"
-    echo "https://github.com/DigneZzZ/remnawave-scripts"
+    echo "https://github.com/gorecvpn/Remnawave-Panel-Install"
 }
 
 # Check if NetBird is already installed
@@ -449,7 +449,7 @@ show_help() {
     echo "  $0 --version                              # Версия"
     echo ""
     echo "Cloud-init / user-data:"
-    echo "  bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/netbird.sh) init --key YOUR-KEY --ssh"
+    echo "  bash <(curl -Ls https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/netbird.sh) init --key YOUR-KEY --ssh"
     echo ""
 }
 
