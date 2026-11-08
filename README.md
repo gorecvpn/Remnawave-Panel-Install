@@ -4,8 +4,8 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Shell](https://img.shields.io/badge/language-Bash-blue.svg)](#)
-[![remnawave.sh](https://img.shields.io/badge/remnawave.sh-6.7.1-blue.svg)](#-remnawave-panel)
-[![remnanode.sh](https://img.shields.io/badge/remnanode.sh-4.6.0-blue.svg)](#-remnanode)
+[![remnawave.sh](https://img.shields.io/badge/remnawave.sh-6.8.0-blue.svg)](#-remnawave-panel)
+[![remnanode.sh](https://img.shields.io/badge/remnanode.sh-4.6.2-blue.svg)](#-remnanode)
 [![Panel](https://img.shields.io/badge/Remnawave_Panel-3.4.x_ready-brightgreen.svg)](#)
 [![Localization](https://img.shields.io/badge/🌐-EN_|_RU-green.svg)](./README_RU.md)
 
@@ -56,11 +56,11 @@ After installation each script is a global command: `remnawave`, `remnanode`, `s
 
 | Script | Version | Purpose | Docs |
 |---|---|---|---|
-| 🚀 **remnawave.sh** | `6.7.1` | Panel: install, Caddy, backups, subscription-page | this file |
-| 🛰 **remnanode.sh** | `4.6.0` | Node: Xray-core, logs, auto-restart | this file |
+| 🚀 **remnawave.sh** | `6.8.0` | Panel: install, Caddy, backups, subscription-page | this file |
+| 🛰 **remnanode.sh** | `4.6.2` | Node: Xray-core, logs, auto-restart | this file |
 | 🎭 **selfsteal.sh** | `2.11.1` | Caddy masking for Reality, 11 website templates | [README-selfsteal](./README-selfsteal.md) |
 | 🌐 **wtm.sh** | `1.5.2` | WARP + Tor: WireGuard outbound for Xray, WARP+ | [README-warp](./README-warp.md) |
-| 🐦 **netbird.sh** | `1.4.2` | NetBird mesh VPN: CLI / cloud-init / Ansible | [README-netbird](./README-netbird.md) |
+| 🐦 **netbird.sh** | `2.0.0` | NetBird mesh VPN: CLI / cloud-init / Ansible | [README-netbird](./README-netbird.md) |
 
 Every script keeps itself up to date: it checks its own version on `update` (and when the menu
 opens), applies a newer one **without asking**, and re-runs your command. Downloads try GitHub
@@ -76,9 +76,10 @@ first, then jsDelivr mirrors. To install or refresh just the CLI on a server, us
 - **Turnkey install** — `.env`, secrets, ports, compose, and the admin account are generated automatically (credentials in `admin-credentials.txt`)
 - **Subscription link format** — pick `nanoid` (16..64 chars), `uuid` or your own pattern at install time; `update` writes the block into an existing `.env` and offers the same choice. Patterns are validated exactly like the panel does, with a live sample (panel 3.4.0+)
 - **Caddy reverse proxy** — auto-SSL, optional authentication portal with MFA (Caddy Security)
+- **Your configs are yours** — every generated file (`Caddyfile`, `.env`, `.env.subscription`, `docker-compose.yml`) is marked `# managed-by: remnawave.sh v<version>` with a sha256 sidecar. Edit one and the script stops rewriting it: the new template lands next to it as `<file>.new-<version>` with a diff. Before any Caddy reload the config is checked with `caddy validate` inside the running container, and every domain is probed afterwards — a domain that stops answering rolls the file back automatically
 - **Subscription-page** — alongside the panel or standalone on a separate server; API token created automatically with least-privilege scopes
 - **Safe `update`** — DB + config snapshot before every update, plus automatic migrations (including v2 → v3)
-- **Telegram** — notifications and backup delivery, thread and proxy support
+- **Telegram** — notifications and backup delivery, thread, proxy and custom Bot API address support (self-hosted server or relay)
 
 ```bash
 remnawave              # interactive menu
@@ -101,6 +102,9 @@ remnawave backup       # manual backup (or `schedule` for cron)
 | `subpage` / `subpage-token` / `subpage-restart` | Subscription-page management |
 | `install-subpage-standalone --with-caddy` | Subpage on a separate server |
 | `caddy …` | Caddy install & management (`up/down/logs/edit/reset-user`) |
+| `--yes` / `-y` | Never prompt; keep every hand-edited config as it is |
+| `--strict` | Exit non-zero when a config was kept instead of updated |
+| `--catch-all` | Add the `:443` catch-all block to a generated Caddyfile |
 | `install-script` / `update-script` | Install or refresh **the CLI itself** — no containers touched |
 | `uninstall-script` | Remove the CLI from `/usr/local/bin` |
 
@@ -136,6 +140,7 @@ sudo bash <(curl -Ls https://cdn.jsdelivr.net/gh/gorecvpn/Remnawave-Panel-Instal
 <div align="center"><img src="assets/preview-remnanode.svg" alt="remnanode menu" width="640"></div>
 
 - **Xray-core** — install and update from the menu, pre-releases included; real-time Xray logs
+- **Node version** — detected from the installed application in both older and bundled images, independently of a custom Xray-core
 - **Non-interactive mode** — `--force --secret-key="KEY"` for mass provisioning
 - **NET_ADMIN** capability and config migrations applied automatically on `update`
 - **Log rotation** — 50 MB × 5 files, zero downtime; multi-arch: x86_64 / ARM64 / ARM32 / MIPS
@@ -145,6 +150,10 @@ remnanode                 # interactive menu
 remnanode core-update     # update Xray-core
 remnanode xray_log_err    # real-time Xray errors
 ```
+
+Stable Xray versions are searched across the latest 100 releases, with a fallback to
+pre-releases if none are found.
+Refresh the CLI with `sudo remnanode install-script`, then run `sudo remnanode core-update`.
 
 <details>
 <summary><b>📋 CLI commands & install flags</b></summary>
@@ -314,6 +323,6 @@ sudo ufw enable
 
 [Report Bug](https://github.com/gorecvpn/Remnawave-Panel-Install/issues) · [Request Feature](https://github.com/gorecvpn/Remnawave-Panel-Install/issues) · [Community gig.ovh](https://gig.ovh) · [MIT License](./LICENSE)
 
-*PRs welcome: fork → branch → changes → PR. Please test on multiple distros.*
+*PRs welcome: fork → branch → changes → PR. Please test on multiple distros — and run `bash tests/run-tests.sh` ([tests/README](./tests/README.md)).*
 
 </div>
