@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Version: 4.6.0
+# Version: 4.7.0-gorec
 set -e
-SCRIPT_VERSION="4.6.0"
+SCRIPT_VERSION="4.7.0-gorec"
 
 # Original invocation, captured before any shifting, so a self-update can
 # re-exec the new script with exactly the command the user typed.
@@ -70,7 +70,7 @@ while [[ $# -gt 0 ]]; do
             if [[ "$COMMAND" == "install" ]]; then
                 FORCE_MODE="true"
             else
-                echo "Error: --force parameter is only allowed with 'install' command."
+                echo "Ошибка: параметр --force допустим только с командой 'install'."
                 exit 1
             fi
             shift
@@ -86,12 +86,12 @@ while [[ $# -gt 0 ]]; do
                         FORCE_SECRET_KEY="${BASH_REMATCH[1]}"
                         shift
                     else
-                        echo "Error: --secret-key requires a value."
+                        echo "Ошибка: для --secret-key нужно указать значение."
                         exit 1
                     fi
                 fi
             else
-                echo "Error: --secret-key parameter is only allowed with 'install' command."
+                echo "Ошибка: параметр --secret-key допустим только с командой 'install'."
                 exit 1
             fi
         ;;
@@ -100,7 +100,7 @@ while [[ $# -gt 0 ]]; do
                 FORCE_SECRET_KEY="${1#*=}"
                 shift
             else
-                echo "Error: --secret-key parameter is only allowed with 'install' command."
+                echo "Ошибка: параметр --secret-key допустим только с командой 'install'."
                 exit 1
             fi
         ;;
@@ -109,7 +109,7 @@ while [[ $# -gt 0 ]]; do
                 FORCE_NODE_PORT="$2"
                 shift 2
             else
-                echo "Error: --port parameter is only allowed with 'install' command."
+                echo "Ошибка: параметр --port допустим только с командой 'install'."
                 exit 1
             fi
         ;;
@@ -118,7 +118,7 @@ while [[ $# -gt 0 ]]; do
                 FORCE_NODE_PORT="${1#*=}"
                 shift
             else
-                echo "Error: --port parameter is only allowed with 'install' command."
+                echo "Ошибка: параметр --port допустим только с командой 'install'."
                 exit 1
             fi
         ;;
@@ -127,7 +127,7 @@ while [[ $# -gt 0 ]]; do
                 FORCE_XTLS_PORT="$2"
                 shift 2
             else
-                echo "Error: --xtls-port parameter is only allowed with 'install' command."
+                echo "Ошибка: параметр --xtls-port допустим только с командой 'install'."
                 exit 1
             fi
         ;;
@@ -136,7 +136,7 @@ while [[ $# -gt 0 ]]; do
                 FORCE_XTLS_PORT="${1#*=}"
                 shift
             else
-                echo "Error: --xtls-port parameter is only allowed with 'install' command."
+                echo "Ошибка: параметр --xtls-port допустим только с командой 'install'."
                 exit 1
             fi
         ;;
@@ -144,7 +144,7 @@ while [[ $# -gt 0 ]]; do
             if [[ "$COMMAND" == "install" ]]; then
                 FORCE_INSTALL_XRAY="true"
             else
-                echo "Error: --xray parameter is only allowed with 'install' command."
+                echo "Ошибка: параметр --xray допустим только с командой 'install'."
                 exit 1
             fi
             shift
@@ -153,7 +153,7 @@ while [[ $# -gt 0 ]]; do
             if [[ "$COMMAND" == "install" ]]; then
                 FORCE_INSTALL_XRAY="false"
             else
-                echo "Error: --no-xray parameter is only allowed with 'install' command."
+                echo "Ошибка: параметр --no-xray допустим только с командой 'install'."
                 exit 1
             fi
             shift
@@ -163,7 +163,7 @@ while [[ $# -gt 0 ]]; do
                 APP_NAME="$2"
                 shift # past argument
             else
-                echo "Error: --name parameter is only allowed with 'install' or 'install-script' commands."
+                echo "Ошибка: параметр --name допустим только с командами 'install' и 'install-script'."
                 exit 1
             fi
             shift # past value
@@ -172,7 +172,7 @@ while [[ $# -gt 0 ]]; do
             if [[ "$COMMAND" == "install" ]]; then
                 USE_DEV_BRANCH="true"
             else
-                echo "Error: --dev parameter is only allowed with 'install' command."
+                echo "Ошибка: параметр --dev допустим только с командой 'install'."
                 exit 1
             fi
             shift # past argument
@@ -183,11 +183,11 @@ while [[ $# -gt 0 ]]; do
                     NODE_IMAGE_TAG="$2"
                     shift 2
                 else
-                    echo "Error: --tag requires a value (e.g. --tag 3.4.1)."
+                    echo "Ошибка: для --tag нужно указать значение (например, --tag 3.4.1)."
                     exit 1
                 fi
             else
-                echo "Error: --tag parameter is only allowed with 'install' or 'update' commands."
+                echo "Ошибка: параметр --tag допустим только с командами 'install' и 'update'."
                 exit 1
             fi
         ;;
@@ -195,12 +195,12 @@ while [[ $# -gt 0 ]]; do
             if [[ "$COMMAND" == "install" || "$COMMAND" == "update" ]]; then
                 NODE_IMAGE_TAG="${1#*=}"
                 if [ -z "$NODE_IMAGE_TAG" ]; then
-                    echo "Error: --tag requires a value (e.g. --tag=3.4.1)."
+                    echo "Ошибка: для --tag нужно указать значение (например, --tag=3.4.1)."
                     exit 1
                 fi
                 shift
             else
-                echo "Error: --tag parameter is only allowed with 'install' or 'update' commands."
+                echo "Ошибка: параметр --tag допустим только с командами 'install' и 'update'."
                 exit 1
             fi
         ;;
@@ -211,11 +211,11 @@ while [[ $# -gt 0 ]]; do
                     SCRIPT_URL_OVERRIDDEN="true"
                     shift 2
                 else
-                    echo "Error: --source parameter must be a URL to a remnanode.sh file."
+                    echo "Ошибка: в --source нужно указать URL файла remnanode.sh."
                     exit 1
                 fi
             else
-                echo "Error: --source parameter is only allowed with 'install-script' command."
+                echo "Ошибка: параметр --source допустим только с командой 'install-script'."
                 exit 1
             fi
         ;;
@@ -227,7 +227,7 @@ while [[ $# -gt 0 ]]; do
             if [[ "$COMMAND" == "auto-restart" ]]; then
                 AUTORESTART_SUBCOMMAND="$1"
             else
-                echo "Unknown argument: $key"
+                echo "Неизвестный аргумент: $key"
                 exit 1
             fi
             shift
@@ -236,7 +236,7 @@ while [[ $# -gt 0 ]]; do
             if [[ "$COMMAND" == "auto-restart" ]]; then
                 AUTORESTART_HOUR="${1#*=}"
             else
-                echo "Error: --hour parameter is only allowed with 'auto-restart' command."
+                echo "Ошибка: параметр --hour допустим только с командой 'auto-restart'."
                 exit 1
             fi
             shift
@@ -246,7 +246,7 @@ while [[ $# -gt 0 ]]; do
                 AUTORESTART_HOUR="$2"
                 shift 2
             else
-                echo "Error: --hour parameter is only allowed with 'auto-restart' command."
+                echo "Ошибка: параметр --hour допустим только с командой 'auto-restart'."
                 exit 1
             fi
         ;;
@@ -254,7 +254,7 @@ while [[ $# -gt 0 ]]; do
             if [[ "$COMMAND" == "auto-restart" ]]; then
                 AUTORESTART_MINUTE="${1#*=}"
             else
-                echo "Error: --minute parameter is only allowed with 'auto-restart' command."
+                echo "Ошибка: параметр --minute допустим только с командой 'auto-restart'."
                 exit 1
             fi
             shift
@@ -264,7 +264,7 @@ while [[ $# -gt 0 ]]; do
                 AUTORESTART_MINUTE="$2"
                 shift 2
             else
-                echo "Error: --minute parameter is only allowed with 'auto-restart' command."
+                echo "Ошибка: параметр --minute допустим только с командой 'auto-restart'."
                 exit 1
             fi
         ;;
@@ -272,7 +272,7 @@ while [[ $# -gt 0 ]]; do
             if [[ "$COMMAND" == "auto-restart" ]]; then
                 AUTORESTART_SCHEDULE="${1#*=}"
             else
-                echo "Error: --schedule parameter is only allowed with 'auto-restart' command."
+                echo "Ошибка: параметр --schedule допустим только с командой 'auto-restart'."
                 exit 1
             fi
             shift
@@ -282,12 +282,12 @@ while [[ $# -gt 0 ]]; do
                 AUTORESTART_SCHEDULE="$2"
                 shift 2
             else
-                echo "Error: --schedule parameter is only allowed with 'auto-restart' command."
+                echo "Ошибка: параметр --schedule допустим только с командой 'auto-restart'."
                 exit 1
             fi
         ;;
         *)
-            echo "Unknown argument: $key"
+            echo "Неизвестный аргумент: $key"
             exit 1
         ;;
     esac
@@ -378,7 +378,7 @@ colorized_echo() {
 
 check_running_as_root() {
     if [ "$(id -u)" != "0" ]; then
-        colorized_echo red "This command must be run as root."
+        colorized_echo red "Эту команду нужно запускать от root."
         exit 1
     fi
 }
@@ -390,19 +390,19 @@ check_system_requirements() {
     # Проверяем свободное место (минимум 1GB)
     local available_space=$(df / | awk 'NR==2 {print $4}')
     if [ "$available_space" -lt 1048576 ]; then  # 1GB в KB
-        colorized_echo red "Error: Insufficient disk space. At least 1GB required."
+        colorized_echo red "Ошибка: мало места на диске. Нужно не меньше 1 ГБ."
         errors=$((errors + 1))
     fi
     
     # Проверяем RAM (минимум 512MB)
     local available_ram=$(free -m | awk 'NR==2{print $7}')
     if [ "$available_ram" -lt 256 ]; then
-        colorized_echo yellow "Warning: Low available RAM (${available_ram}MB). Performance may be affected."
+        colorized_echo yellow "Внимание: мало свободной памяти (${available_ram} МБ). Производительность может пострадать."
     fi
     
     # Проверяем архитектуру
     if ! identify_the_operating_system_and_architecture 2>/dev/null; then
-        colorized_echo red "Error: Unsupported system architecture."
+        colorized_echo red "Ошибка: архитектура системы не поддерживается."
         errors=$((errors + 1))
     fi
     
@@ -422,13 +422,13 @@ detect_os() {
     elif [ -f /etc/arch-release ]; then
         OS="Arch"
     else
-        colorized_echo red "Unsupported operating system"
+        colorized_echo red "Операционная система не поддерживается"
         exit 1
     fi
 }
 
 detect_and_update_package_manager() {
-    colorized_echo blue "Updating package manager"
+    colorized_echo blue "Обновляю пакетный менеджер"
     if [[ "$OS" == "Ubuntu"* ]] || [[ "$OS" == "Debian"* ]]; then
         PKG_MANAGER="apt-get"
         $PKG_MANAGER update -qq >/dev/null 2>&1
@@ -448,7 +448,7 @@ detect_and_update_package_manager() {
         PKG_MANAGER="zypper"
         $PKG_MANAGER refresh --quiet >/dev/null 2>&1
     else
-        colorized_echo red "Unsupported operating system"
+        colorized_echo red "Операционная система не поддерживается"
         exit 1
     fi
 }
@@ -460,19 +460,19 @@ detect_compose() {
         COMPOSE='docker-compose'
     else
         if [[ "$OS" == "Amazon"* ]]; then
-            colorized_echo blue "Docker Compose plugin not found. Attempting manual installation..."
+            colorized_echo blue "Плагин Docker Compose не найден. Пробую установить вручную..."
             mkdir -p /usr/libexec/docker/cli-plugins
             curl -SL "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/libexec/docker/cli-plugins/docker-compose >/dev/null 2>&1
             chmod +x /usr/libexec/docker/cli-plugins/docker-compose
             if docker compose >/dev/null 2>&1; then
                 COMPOSE='docker compose'
-                colorized_echo green "Docker Compose plugin installed successfully"
+                colorized_echo green "Плагин Docker Compose установлен"
             else
-                colorized_echo red "Failed to install Docker Compose plugin. Please check your setup."
+                colorized_echo red "Не удалось установить плагин Docker Compose. Проверьте настройки системы."
                 exit 1
             fi
         else
-            colorized_echo red "docker compose not found"
+            colorized_echo red "docker compose не найден"
             exit 1
         fi
     fi
@@ -484,7 +484,7 @@ install_package() {
     fi
 
     PACKAGE=$1
-    colorized_echo blue "Installing $PACKAGE"
+    colorized_echo blue "Устанавливаю $PACKAGE"
     if [[ "$OS" == "Ubuntu"* ]] || [[ "$OS" == "Debian"* ]]; then
         $PKG_MANAGER -y -qq install "$PACKAGE" >/dev/null 2>&1
     elif [[ "$OS" == "CentOS"* ]] || [[ "$OS" == "AlmaLinux"* ]] || [[ "$OS" == "Amazon"* ]]; then
@@ -496,27 +496,27 @@ install_package() {
     elif [[ "$OS" == "openSUSE"* ]]; then
         $PKG_MANAGER --quiet install -y "$PACKAGE" >/dev/null 2>&1
     else
-        colorized_echo red "Unsupported operating system"
+        colorized_echo red "Операционная система не поддерживается"
         exit 1
     fi
 }
 
 install_docker() {
-    colorized_echo blue "Installing Docker"
+    colorized_echo blue "Устанавливаю Docker"
     if [[ "$OS" == "Amazon"* ]]; then
         amazon-linux-extras enable docker >/dev/null 2>&1
         yum install -y docker >/dev/null 2>&1
         systemctl start docker
         systemctl enable docker
-        colorized_echo green "Docker installed successfully on Amazon Linux"
+        colorized_echo green "Docker установлен (Amazon Linux)"
     else
         curl -fsSL https://get.docker.com | sh
-        colorized_echo green "Docker installed successfully"
+        colorized_echo green "Docker установлен"
     fi
 }
 
 install_remnanode_script() {
-    colorized_echo blue "Installing remnanode script v$SCRIPT_VERSION"
+    colorized_echo blue "Устанавливаю скрипт remnanode v$SCRIPT_VERSION"
     TARGET_PATH="/usr/local/bin/$APP_NAME"
 
     [ -d /usr/local/bin ] || mkdir -p /usr/local/bin
@@ -526,37 +526,37 @@ install_remnanode_script() {
     # working CLI. Falls through the mirror list (GitHub raw, then jsDelivr).
     local tmp
     tmp=$(mktemp "${TMPDIR:-/tmp}/${APP_NAME}.inst.XXXXXX") || {
-        colorized_echo red "Failed to create temporary file"
+        colorized_echo red "Не удалось создать временный файл"
         exit 1
     }
 
     if ! fetch_script_file "$tmp"; then
         rm -f "$tmp"
-        colorized_echo yellow "⚠️  Could not download the script from any mirror"
+        colorized_echo yellow "⚠️  Не удалось скачать скрипт ни с одного зеркала"
         # Fall back to the copy we are executing right now — it is by definition
         # a valid script of this exact version.
         if [ -f "${BASH_SOURCE[0]}" ] && install -m 755 "${BASH_SOURCE[0]}" "$TARGET_PATH" 2>/dev/null; then
-            colorized_echo green "Remnanode script v$SCRIPT_VERSION installed from the local copy at $TARGET_PATH"
+            colorized_echo green "Скрипт remnanode v$SCRIPT_VERSION установлен из локальной копии в $TARGET_PATH"
             return 0
         fi
-        colorized_echo red "Failed to install remnanode script at $TARGET_PATH"
+        colorized_echo red "Не удалось установить скрипт remnanode в $TARGET_PATH"
         exit 1
     fi
 
     if ! install -m 755 "$tmp" "$TARGET_PATH"; then
         rm -f "$tmp"
-        colorized_echo red "Failed to install remnanode script at $TARGET_PATH"
+        colorized_echo red "Не удалось установить скрипт remnanode в $TARGET_PATH"
         exit 1
     fi
     rm -f "$tmp"
-    colorized_echo blue "Fetched remnanode script from $SCRIPT_SOURCE_USED"
+    colorized_echo blue "Скрипт remnanode скачан с $SCRIPT_SOURCE_USED"
 
     # Получаем версию установленного скрипта
     local installed_version=$(grep "^SCRIPT_VERSION=" "$TARGET_PATH" 2>/dev/null | head -1 | cut -d'"' -f2)
     if [ -n "$installed_version" ]; then
-        colorized_echo green "Remnanode script v$installed_version installed successfully at $TARGET_PATH"
+        colorized_echo green "Скрипт remnanode v$installed_version установлен в $TARGET_PATH"
     else
-        colorized_echo green "Remnanode script installed successfully at $TARGET_PATH"
+        colorized_echo green "Скрипт remnanode установлен в $TARGET_PATH"
     fi
 }
 
@@ -571,7 +571,7 @@ validate_port() {
     
     # Проверяем, что порт не зарезервирован системой
     if [ "$port" -lt 1024 ] && [ "$(id -u)" != "0" ]; then
-        colorized_echo yellow "Warning: Port $port requires root privileges"
+        colorized_echo yellow "Внимание: для порта $port нужны права root"
     fi
     
     return 0
@@ -586,14 +586,14 @@ get_occupied_ports() {
     elif command -v netstat &>/dev/null; then
         ports=$(netstat -tuln 2>/dev/null | awk 'NR>2 {print $4}' | grep -Eo '[0-9]+$' | sort -n | uniq)
     else
-        colorized_echo yellow "Neither ss nor netstat found. Installing net-tools..."
+        colorized_echo yellow "Нет ни ss, ни netstat. Устанавливаю net-tools..."
         detect_os
         if install_package net-tools; then
             if command -v netstat &>/dev/null; then
                 ports=$(netstat -tuln 2>/dev/null | awk 'NR>2 {print $4}' | grep -Eo '[0-9]+$' | sort -n | uniq)
             fi
         else
-            colorized_echo yellow "Could not install net-tools. Skipping port conflict check."
+            colorized_echo yellow "Не удалось установить net-tools. Пропускаю проверку занятых портов."
             return 1
         fi
     fi
@@ -631,16 +631,16 @@ install_latest_xray_core() {
     is_prerelease=$(echo "$release_json" | grep -oP '"prerelease":\s*\K(true|false)' | head -n1) || true
 
     if [ -z "$latest_release" ]; then
-        colorized_echo red "Failed to fetch latest Xray-core version."
+        colorized_echo red "Не удалось узнать последнюю версию Xray-core."
         exit 1
     fi
 
     if [ "$is_prerelease" = "true" ]; then
-        colorized_echo yellow "⚠️  Newest Xray-core is a pre-release: ${latest_release}"
+        colorized_echo yellow "⚠️  Самая новая версия Xray-core — предварительная (pre-release): ${latest_release}"
     fi
     
     if ! dpkg -s unzip >/dev/null 2>&1; then
-        colorized_echo blue "Installing unzip..."
+        colorized_echo blue "Устанавливаю unzip..."
         detect_os
         install_package unzip
     fi
@@ -648,17 +648,17 @@ install_latest_xray_core() {
     xray_filename="Xray-linux-$ARCH.zip"
     xray_download_url="https://github.com/XTLS/Xray-core/releases/download/${latest_release}/${xray_filename}"
     
-    colorized_echo blue "Downloading Xray-core version ${latest_release}..."
+    colorized_echo blue "Скачиваю Xray-core версии ${latest_release}..."
     wget "${xray_download_url}" -q
     if [ $? -ne 0 ]; then
-        colorized_echo red "Error: Failed to download Xray-core."
+        colorized_echo red "Ошибка: не удалось скачать Xray-core."
         exit 1
     fi
     
-    colorized_echo blue "Extracting Xray-core..."
+    colorized_echo blue "Распаковываю Xray-core..."
     unzip -o "${xray_filename}" -d "$DATA_DIR" >/dev/null 2>&1
     if [ $? -ne 0 ]; then
-        colorized_echo red "Error: Failed to extract Xray-core."
+        colorized_echo red "Ошибка: не удалось распаковать Xray-core."
         exit 1
     fi
 
@@ -666,9 +666,9 @@ install_latest_xray_core() {
     chmod +x "$XRAY_FILE"
     
     # Check what files were extracted
-    colorized_echo blue "Extracted files:"
+    colorized_echo blue "Распакованные файлы:"
     if [ -f "$XRAY_FILE" ]; then
-        colorized_echo green "  ✅ xray executable"
+        colorized_echo green "  ✅ исполняемый файл xray"
     fi
     if [ -f "$GEOIP_FILE" ]; then
         colorized_echo green "  ✅ geoip.dat"
@@ -677,7 +677,7 @@ install_latest_xray_core() {
         colorized_echo green "  ✅ geosite.dat"
     fi
     
-    colorized_echo green "Xray-core (${latest_release}) installed at $XRAY_FILE"
+    colorized_echo green "Xray-core (${latest_release}) установлен в $XRAY_FILE"
 }
 
 setup_log_rotation() {
@@ -685,26 +685,26 @@ setup_log_rotation() {
 
     # Check if the log directory exists
     if [ ! -d "$LOG_DIR" ]; then
-        colorized_echo blue "Creating directory $LOG_DIR"
+        colorized_echo blue "Создаю папку $LOG_DIR"
         mkdir -p "$LOG_DIR"
     else
-        colorized_echo green "Directory $LOG_DIR already exists"
+        colorized_echo green "Папка $LOG_DIR уже есть"
     fi
 
     # Migration: move existing log files from old location (/var/lib -> /var/log)
     local OLD_LOG_DIR="/var/lib/$APP_NAME"
     if ls "$OLD_LOG_DIR"/*.log 1>/dev/null 2>&1; then
         mv "$OLD_LOG_DIR"/*.log "$LOG_DIR/"
-        colorized_echo blue "Migrated log files from $OLD_LOG_DIR to $LOG_DIR"
+        colorized_echo blue "Логи перенесены из $OLD_LOG_DIR в $LOG_DIR"
     fi
 
     # Check if logrotate is installed
     if ! command -v logrotate &> /dev/null; then
-        colorized_echo blue "Installing logrotate"
+        colorized_echo blue "Устанавливаю logrotate"
         detect_os
         install_package logrotate
     else
-        colorized_echo green "Logrotate is already installed"
+        colorized_echo green "logrotate уже установлен"
     fi
 
     # Check if logrotate config already exists
@@ -713,20 +713,20 @@ setup_log_rotation() {
     # Migration: update old logrotate config path (/var/lib -> /var/log)
     if [ -f "$LOGROTATE_CONFIG" ] && grep -q "$OLD_LOG_DIR" "$LOGROTATE_CONFIG"; then
         sed -i "s|$OLD_LOG_DIR|$LOG_DIR|g" "$LOGROTATE_CONFIG"
-        colorized_echo blue "Migrated logrotate config: $OLD_LOG_DIR -> $LOG_DIR"
+        colorized_echo blue "Конфиг logrotate перенесён: $OLD_LOG_DIR -> $LOG_DIR"
     fi
 
     if [ -f "$LOGROTATE_CONFIG" ]; then
-        colorized_echo yellow "Logrotate configuration already exists at $LOGROTATE_CONFIG"
-        read -p "Do you want to overwrite it? (y/n): " -r overwrite
+        colorized_echo yellow "Конфиг logrotate уже есть: $LOGROTATE_CONFIG"
+        read -p "Перезаписать его? (y/n): " -r overwrite
         if [[ ! $overwrite =~ ^[Yy]$ ]]; then
-            colorized_echo yellow "Keeping existing logrotate configuration"
+            colorized_echo yellow "Оставляю текущий конфиг logrotate"
             return
         fi
     fi
 
     # Create logrotate configuration
-    colorized_echo blue "Creating logrotate configuration at $LOGROTATE_CONFIG"
+    colorized_echo blue "Создаю конфиг logrotate: $LOGROTATE_CONFIG"
     cat > "$LOGROTATE_CONFIG" <<EOL
 $LOG_DIR/*.log {
     size 50M
@@ -741,36 +741,36 @@ EOL
     chmod 644 "$LOGROTATE_CONFIG"
     
     # Test logrotate configuration
-    colorized_echo blue "Testing logrotate configuration"
+    colorized_echo blue "Проверяю конфиг logrotate"
     if logrotate -d "$LOGROTATE_CONFIG" &> /dev/null; then
-        colorized_echo green "Logrotate configuration test successful"
+        colorized_echo green "Конфиг logrotate в порядке"
         
         # Ask if user wants to run logrotate now
-        read -p "Do you want to run logrotate now? (y/n): " -r run_now
+        read -p "Запустить logrotate сейчас? (y/n): " -r run_now
         if [[ $run_now =~ ^[Yy]$ ]]; then
-            colorized_echo blue "Running logrotate"
+            colorized_echo blue "Запускаю logrotate"
             if logrotate -vf "$LOGROTATE_CONFIG"; then
-                colorized_echo green "Logrotate executed successfully"
+                colorized_echo green "logrotate выполнен"
             else
-                colorized_echo red "Error running logrotate"
+                colorized_echo red "Ошибка при запуске logrotate"
             fi
         fi
     else
-        colorized_echo red "Logrotate configuration test failed"
+        colorized_echo red "Проверка конфига logrotate не прошла"
         logrotate -d "$LOGROTATE_CONFIG"
     fi
     
     # Update docker-compose.yml to mount logs directory
     if [ -f "$COMPOSE_FILE" ]; then
-        colorized_echo blue "Updating docker-compose.yml to mount logs directory"
+        colorized_echo blue "Добавляю в docker-compose.yml монтирование папки логов"
         
 
-        colorized_echo blue "Creating backup of docker-compose.yml..."
+        colorized_echo blue "Делаю резервную копию docker-compose.yml..."
         backup_file=$(create_backup "$COMPOSE_FILE")
         if [ $? -eq 0 ]; then
-            colorized_echo green "Backup created: $backup_file"
+            colorized_echo green "Резервная копия: $backup_file"
         else
-            colorized_echo red "Failed to create backup"
+            colorized_echo red "Не удалось сделать резервную копию"
             return
         fi
 
@@ -778,13 +778,13 @@ EOL
         # Migrate active volume line
         if grep -q "$OLD_LOG_DIR:$OLD_LOG_DIR" "$COMPOSE_FILE" 2>/dev/null; then
             sed -i "s|$OLD_LOG_DIR:$OLD_LOG_DIR|$LOG_DIR:$LOG_DIR|g" "$COMPOSE_FILE"
-            colorized_echo blue "Migrated volume: $OLD_LOG_DIR -> $LOG_DIR"
+            colorized_echo blue "Том перенесён: $OLD_LOG_DIR -> $LOG_DIR"
         fi
 
         # Migrate commented volume line (handles "# - path" and "#   - path")
         if grep -q "#.*- $OLD_LOG_DIR:$OLD_LOG_DIR" "$COMPOSE_FILE" 2>/dev/null; then
             sed -i "s|#\(.*- \)$OLD_LOG_DIR:$OLD_LOG_DIR|#\1$LOG_DIR:$LOG_DIR|g" "$COMPOSE_FILE"
-            colorized_echo blue "Migrated commented volume: $OLD_LOG_DIR -> $LOG_DIR"
+            colorized_echo blue "Закомментированный том перенесён: $OLD_LOG_DIR -> $LOG_DIR"
         fi
 
         local service_indent=$(get_service_property_indentation "$COMPOSE_FILE")
@@ -804,14 +804,14 @@ EOL
         if grep -q "^${escaped_service_indent}volumes:" "$COMPOSE_FILE"; then
             # Check for UNCOMMENTED volume line (not starting with #)
             if grep -qE "^[[:space:]]*-[[:space:]]*${LOG_DIR}:${LOG_DIR}" "$COMPOSE_FILE"; then
-                colorized_echo yellow "Logs volume already exists in volumes section"
+                colorized_echo yellow "Том логов уже есть в разделе volumes"
             # Check for COMMENTED volume line and uncomment it
             elif grep -qE "^[[:space:]]*#[[:space:]]*-[[:space:]]*${LOG_DIR}:${LOG_DIR}" "$COMPOSE_FILE"; then
                 sed -i "s|^\\([[:space:]]*\\)#[[:space:]]*\\(-[[:space:]]*${LOG_DIR}:${LOG_DIR}\\)|\\1\\2|g" "$COMPOSE_FILE"
-                colorized_echo green "Uncommented logs volume line"
+                colorized_echo green "Строка тома логов раскомментирована"
             else
                 sed -i "/^${escaped_service_indent}volumes:/a\\${volume_item_indent}- $LOG_DIR:$LOG_DIR" "$COMPOSE_FILE"
-                colorized_echo green "Added logs volume to existing volumes section"
+                colorized_echo green "Том логов добавлен в раздел volumes"
             fi
         elif grep -q "^${escaped_service_indent}# volumes:" "$COMPOSE_FILE"; then
             # Uncomment the volumes: key
@@ -820,48 +820,48 @@ EOL
             # Check for commented LOG_DIR line with flexible whitespace matching
             if grep -qE "^[[:space:]]*#[[:space:]]*-[[:space:]]*${LOG_DIR}:${LOG_DIR}" "$COMPOSE_FILE"; then
                 sed -i "s|^\\([[:space:]]*\\)#[[:space:]]*\\(-[[:space:]]*${LOG_DIR}:${LOG_DIR}\\)|\\1\\2|g" "$COMPOSE_FILE"
-                colorized_echo green "Uncommented volumes section and logs volume line"
+                colorized_echo green "Раздел volumes и строка тома логов раскомментированы"
             else
                 sed -i "/^${escaped_service_indent}volumes:/a\\${volume_item_indent}- $LOG_DIR:$LOG_DIR" "$COMPOSE_FILE"
-                colorized_echo green "Uncommented volumes section and added logs volume line"
+                colorized_echo green "Раздел volumes раскомментирован, том логов добавлен"
             fi
         else
             sed -i "/^${escaped_service_indent}restart: always/a\\${service_indent}volumes:\\n${volume_item_indent}- $LOG_DIR:$LOG_DIR" "$COMPOSE_FILE"
-            colorized_echo green "Added new volumes section with logs volume"
+            colorized_echo green "Добавлен раздел volumes с томом логов"
         fi
         
 
-        colorized_echo blue "Validating docker-compose.yml..."
+        colorized_echo blue "Проверяю docker-compose.yml..."
         if validate_compose_file "$COMPOSE_FILE"; then
-            colorized_echo green "Docker-compose.yml validation successful"
+            colorized_echo green "docker-compose.yml в порядке"
             cleanup_old_backups "$COMPOSE_FILE"
 
             if is_remnanode_up; then
-                read -p "Do you want to restart RemnaNode to apply changes? (y/n): " -r restart_now
+                read -p "Перезапустить RemnaNode, чтобы применить изменения? (y/n): " -r restart_now
                 if [[ $restart_now =~ ^[Yy]$ ]]; then
-                    colorized_echo blue "Restarting RemnaNode"
+                    colorized_echo blue "Перезапускаю RemnaNode"
                     restart_command -n
-                    colorized_echo green "RemnaNode restarted successfully"
+                    colorized_echo green "RemnaNode перезапущена"
                 else
-                    colorized_echo yellow "Remember to restart RemnaNode to apply changes"
+                    colorized_echo yellow "Не забудьте перезапустить RemnaNode, чтобы изменения вступили в силу"
                 fi
             fi
         else
-            colorized_echo red "Docker-compose.yml validation failed! Restoring backup..."
+            colorized_echo red "docker-compose.yml не прошёл проверку! Восстанавливаю резервную копию..."
             if restore_backup "$backup_file" "$COMPOSE_FILE"; then
-                colorized_echo green "Backup restored successfully"
+                colorized_echo green "Резервная копия восстановлена"
             else
-                colorized_echo red "Failed to restore backup!"
+                colorized_echo red "Не удалось восстановить резервную копию!"
             fi
             return
         fi
     else
-        colorized_echo yellow "Docker Compose file not found. Log directory will be mounted on next installation."
+        colorized_echo yellow "Файл Docker Compose не найден. Папка логов будет подключена при следующей установке."
     fi
     
-    colorized_echo green "Log rotation setup completed successfully"
+    colorized_echo green "Ротация логов настроена"
     echo
-    echo -e "\033[38;5;250mUsage in Xray config:\033[0m"
+    echo -e "\033[38;5;250mКак указать в конфиге Xray:\033[0m"
     echo -e "\033[38;5;8m┌──────────────────────────────────────────────────┐\033[0m"
     echo -e "\033[38;5;8m│\033[0m  \033[38;5;213m\"log\"\033[0m: {                                       \033[38;5;8m│\033[0m"
     echo -e "\033[38;5;8m│\033[0m      \033[38;5;213m\"error\"\033[0m: \033[38;5;113m\"$LOG_DIR/error.log\"\033[0m,      \033[38;5;8m│\033[0m"
@@ -869,7 +869,7 @@ EOL
     echo -e "\033[38;5;8m│\033[0m      \033[38;5;213m\"loglevel\"\033[0m: \033[38;5;113m\"warning\"\033[0m                    \033[38;5;8m│\033[0m"
     echo -e "\033[38;5;8m│\033[0m  }                                              \033[38;5;8m│\033[0m"
     echo -e "\033[38;5;8m└──────────────────────────────────────────────────┘\033[0m"
-    echo -e "\033[38;5;250mAdd this to your Xray config in the panel to enable logging.\033[0m"
+    echo -e "\033[38;5;250mДобавьте это в конфиг Xray в панели, чтобы включить логи.\033[0m"
 }
 
 # ============================================
@@ -897,13 +897,13 @@ enable_shm_volume() {
     
     # Check if already uncommented
     if grep -qE "^[[:space:]]*-[[:space:]]*/dev/shm:/dev/shm" "$compose_file"; then
-        colorized_echo green "✅ /dev/shm volume is already enabled"
+        colorized_echo green "✅ Том /dev/shm уже подключён"
         return 0
     fi
     
     # Check if commented and uncomment
     if grep -qE "^[[:space:]]*#.*-[[:space:]]*/dev/shm:/dev/shm" "$compose_file"; then
-        colorized_echo blue "Enabling /dev/shm volume for selfsteal socket access..."
+        colorized_echo blue "Подключаю том /dev/shm для доступа к сокету selfsteal..."
         
         # First, check if 'volumes:' is also commented and uncomment it
         if grep -qE "^[[:space:]]*#[[:space:]]*volumes:" "$compose_file"; then
@@ -914,37 +914,37 @@ enable_shm_volume() {
         sed -i 's|^[[:space:]]*#[[:space:]]*\(-[[:space:]]*/dev/shm:/dev/shm.*\)|      \1|' "$compose_file"
         
         if docker compose -f "$compose_file" config >/dev/null 2>&1; then
-            colorized_echo green "✅ /dev/shm volume enabled successfully"
+            colorized_echo green "✅ Том /dev/shm подключён"
             return 0
         else
-            colorized_echo red "Failed to validate docker-compose.yml after modification"
+            colorized_echo red "docker-compose.yml не прошёл проверку после изменения"
             return 1
         fi
     fi
     
-    colorized_echo yellow "⚠️  /dev/shm volume line not found in docker-compose.yml"
+    colorized_echo yellow "⚠️  Строка тома /dev/shm в docker-compose.yml не найдена"
     return 1
 }
 
 # Configure selfsteal socket access after installation
 configure_selfsteal_integration() {
     echo
-    colorized_echo cyan "🔍 Checking for Selfsteal (nginx/caddy) installation..."
+    colorized_echo cyan "🔍 Ищу установленный Selfsteal (nginx/caddy)..."
     
     if check_selfsteal_socket; then
-        colorized_echo green "✅ Detected selfsteal socket at $SELFSTEAL_SOCKET"
-        colorized_echo blue "   Enabling socket access for remnanode container..."
+        colorized_echo green "✅ Найден сокет selfsteal: $SELFSTEAL_SOCKET"
+        colorized_echo blue "   Открываю контейнеру remnanode доступ к сокету..."
         
         if enable_shm_volume "$COMPOSE_FILE"; then
-            colorized_echo green "✅ Remnanode configured for selfsteal socket access"
+            colorized_echo green "✅ remnanode настроена на работу с сокетом selfsteal"
             echo
-            colorized_echo cyan "📋 Xray Reality Configuration:"
+            colorized_echo cyan "📋 Настройка Xray Reality:"
             colorized_echo white "   \"target\": \"$SELFSTEAL_SOCKET\","
             colorized_echo white "   \"xver\": 1"
         fi
     else
-        colorized_echo gray "   No selfsteal socket detected"
-        colorized_echo gray "   If you install selfsteal later with --nginx, run:"
+        colorized_echo gray "   Сокет selfsteal не найден"
+        colorized_echo gray "   Если позже поставите selfsteal с --nginx, выполните:"
         colorized_echo white "   remnanode enable-socket"
     fi
 }
@@ -952,25 +952,25 @@ configure_selfsteal_integration() {
 # Command to enable socket access manually
 enable_socket_command() {
     echo
-    colorized_echo cyan "🔌 Selfsteal Socket Configuration"
+    colorized_echo cyan "🔌 Настройка сокета Selfsteal"
     echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 50))\033[0m"
     
     if [ ! -f "$COMPOSE_FILE" ]; then
-        colorized_echo red "❌ docker-compose.yml not found at $COMPOSE_FILE"
-        colorized_echo gray "   Please install remnanode first: remnanode install"
+        colorized_echo red "❌ docker-compose.yml не найден: $COMPOSE_FILE"
+        colorized_echo gray "   Сначала установите remnanode: remnanode install"
         exit 1
     fi
     
     # Check if socket exists
     if check_selfsteal_socket; then
-        colorized_echo green "✅ Selfsteal socket detected at $SELFSTEAL_SOCKET"
+        colorized_echo green "✅ Сокет selfsteal найден: $SELFSTEAL_SOCKET"
     else
-        colorized_echo yellow "⚠️  Selfsteal socket not found at $SELFSTEAL_SOCKET"
-        colorized_echo gray "   Make sure selfsteal with --nginx is installed and running"
+        colorized_echo yellow "⚠️  Сокет selfsteal не найден: $SELFSTEAL_SOCKET"
+        colorized_echo gray "   Убедитесь, что selfsteal с --nginx установлен и запущен"
         echo
-        read -p "Continue anyway? [y/N]: " -r confirm
+        read -p "Всё равно продолжить? [y/N]: " -r confirm
         if [[ ! $confirm =~ ^[Yy]$ ]]; then
-            colorized_echo gray "Cancelled"
+            colorized_echo gray "Отменено"
             exit 0
         fi
     fi
@@ -978,29 +978,29 @@ enable_socket_command() {
     echo
     if enable_shm_volume "$COMPOSE_FILE"; then
         echo
-        colorized_echo blue "🔄 Restarting remnanode container..."
+        colorized_echo blue "🔄 Перезапускаю контейнер remnanode..."
         
         cd "$APP_DIR"
         if docker compose down && docker compose up -d; then
-            colorized_echo green "✅ Remnanode restarted with socket access"
+            colorized_echo green "✅ remnanode перезапущена с доступом к сокету"
             
             # Verify
             sleep 2
             if docker exec "$APP_NAME" ls -la /dev/shm/nginx.sock >/dev/null 2>&1; then
-                colorized_echo green "✅ Verified: Container can access $SELFSTEAL_SOCKET"
+                colorized_echo green "✅ Проверено: контейнер видит $SELFSTEAL_SOCKET"
             else
-                colorized_echo yellow "⚠️  Socket not accessible yet (selfsteal may not be running)"
+                colorized_echo yellow "⚠️  Сокет пока недоступен (возможно, selfsteal не запущен)"
             fi
         else
-            colorized_echo red "❌ Failed to restart remnanode"
+            colorized_echo red "❌ Не удалось перезапустить remnanode"
         fi
         
         echo
-        colorized_echo cyan "📋 Xray Reality Configuration:"
+        colorized_echo cyan "📋 Настройка Xray Reality:"
         colorized_echo white "   \"target\": \"$SELFSTEAL_SOCKET\","
         colorized_echo white "   \"xver\": 1"
     else
-        colorized_echo red "❌ Failed to enable socket access"
+        colorized_echo red "❌ Не удалось открыть доступ к сокету"
     fi
 }
 
@@ -1097,7 +1097,7 @@ ensure_latest_script() {
 
     if ! fetch_script_file "$tmp"; then
         rm -f "$tmp"
-        colorized_echo yellow "⚠️  Could not reach any script mirror — continuing with v$SCRIPT_VERSION"
+        colorized_echo yellow "⚠️  Ни одно зеркало скрипта недоступно — продолжаю на v$SCRIPT_VERSION"
         return 0
     fi
 
@@ -1107,12 +1107,12 @@ ensure_latest_script() {
     if [ -z "$remote_version" ] || ! version_gte "$remote_version" "$SCRIPT_VERSION" || \
        [ "$remote_version" = "$SCRIPT_VERSION" ]; then
         rm -f "$tmp"
-        colorized_echo green "✅ Script is up to date (v$SCRIPT_VERSION)"
+        colorized_echo green "✅ Скрипт последней версии (v$SCRIPT_VERSION)"
         return 0
     fi
 
-    colorized_echo yellow "🔄 Script update: v$SCRIPT_VERSION → v$remote_version (applying automatically)"
-    colorized_echo gray   "   Source: $SCRIPT_SOURCE_USED"
+    colorized_echo yellow "🔄 Обновление скрипта: v$SCRIPT_VERSION → v$remote_version (применяю автоматически)"
+    colorized_echo gray   "   Источник: $SCRIPT_SOURCE_USED"
 
     if [ ! -d /usr/local/bin ]; then
         mkdir -p /usr/local/bin 2>/dev/null || true
@@ -1120,7 +1120,7 @@ ensure_latest_script() {
 
     if ! install -m 755 "$tmp" "$target_path" 2>/dev/null; then
         rm -f "$tmp"
-        colorized_echo yellow "⚠️  Could not write $target_path — continuing with v$SCRIPT_VERSION"
+        colorized_echo yellow "⚠️  Не удалось записать $target_path — продолжаю на v$SCRIPT_VERSION"
         return 0
     fi
     rm -f "$tmp"
@@ -1128,11 +1128,11 @@ ensure_latest_script() {
     local installed_version
     installed_version=$(grep "^SCRIPT_VERSION=" "$target_path" 2>/dev/null | head -1 | cut -d'"' -f2)
     if [ "$installed_version" != "$remote_version" ]; then
-        colorized_echo yellow "⚠️  Update verification failed (expected v$remote_version, got v${installed_version:-unknown})"
+        colorized_echo yellow "⚠️  Проверка обновления не прошла (ожидалась v$remote_version, получена v${installed_version:-unknown})"
         return 0
     fi
 
-    colorized_echo green "✅ Updated to v$installed_version — continuing"
+    colorized_echo green "✅ Обновлено до v$installed_version — продолжаю"
     echo
 
     export REMNANODE_SELFUPDATE_DONE=1
@@ -1178,38 +1178,38 @@ confirm_panel_supports_sni() {
     [ -f "$PANEL_COMPAT_ACK_FILE" ] && return 0
 
     if [ "$FORCE_MODE" == "true" ]; then
-        colorized_echo yellow "⚠️  node 3.3.x requires Remnawave panel >= $NODE_SNI_MIN_VERSION (--force: not asking)"
+        colorized_echo yellow "⚠️  node 3.3.x требует панель Remnawave >= $NODE_SNI_MIN_VERSION (--force: не спрашиваю)"
         mark_panel_compat_ack
         return 0
     fi
 
     if [ ! -t 0 ]; then
-        colorized_echo yellow "⚠️  node 3.3.x requires Remnawave panel >= $NODE_SNI_MIN_VERSION (non-interactive: not asking)"
+        colorized_echo yellow "⚠️  node 3.3.x требует панель Remnawave >= $NODE_SNI_MIN_VERSION (неинтерактивный режим: не спрашиваю)"
         mark_panel_compat_ack
         return 0
     fi
 
     echo
     colorized_echo yellow "==================================================="
-    colorized_echo yellow "⚠️  Panel version requirement"
+    colorized_echo yellow "⚠️  Требование к версии панели"
     colorized_echo yellow "==================================================="
-    colorized_echo white  "   The node line 3.3.0 .. 3.3.2 only accepts connections from a"
-    colorized_echo white  "   panel running $NODE_SNI_MIN_VERSION or newer."
+    colorized_echo white  "   Ноды версий 3.3.0 .. 3.3.2 принимают подключения только от"
+    colorized_echo white  "   панели версии $NODE_SNI_MIN_VERSION или новее."
     echo
-    colorized_echo gray   "   Those releases reject the TLS handshake unless the panel presents"
-    colorized_echo gray   "   a derived SNI. On an older panel the node will simply show up as"
-    colorized_echo gray   "   offline ('unknown sni' in the node logs)."
+    colorized_echo gray   "   Эти версии отклоняют TLS-рукопожатие, если панель не передаёт"
+    colorized_echo gray   "   производный SNI. Со старой панелью нода просто будет"
+    colorized_echo gray   "   офлайн ('unknown sni' в логах ноды)."
     echo
-    colorized_echo gray   "   node $NODE_SNI_OPTIONAL_VERSION+ made that check opt-in (SNI_VERIFICATION, off by"
-    colorized_echo gray   "   default), so on an older panel take a tag outside the 3.3.x window:"
-    colorized_echo green  "      sudo $APP_NAME $context            # latest (3.4+, no SNI gate)"
+    colorized_echo gray   "   С node $NODE_SNI_OPTIONAL_VERSION+ эта проверка включается по желанию (SNI_VERIFICATION, по"
+    colorized_echo gray   "   умолчанию выключена), поэтому со старой панелью берите тег вне 3.3.x:"
+    colorized_echo green  "      sudo $APP_NAME $context            # последняя (3.4+, без проверки SNI)"
     colorized_echo green  "      sudo $APP_NAME $context --tag 3.2.2"
     echo
-    read -p "   Is your panel already on $NODE_SNI_MIN_VERSION or newer? [y/N]: " -r panel_ok
+    read -p "   Ваша панель уже версии $NODE_SNI_MIN_VERSION или новее? [y/N]: " -r panel_ok
     echo
 
     if [[ ! "$panel_ok" =~ ^[Yy]$ ]]; then
-        colorized_echo red "❌ Cancelled — upgrade the panel first, or pick a tag outside 3.3.x"
+        colorized_echo red "❌ Отменено — сначала обновите панель или выберите тег вне 3.3.x"
         return 1
     fi
 
@@ -1253,7 +1253,7 @@ verify_node_tag_exists() {
 
     # Distinguish "tag missing" from "cannot check at all"
     if ! docker manifest inspect "${registry}:latest" >/dev/null 2>&1; then
-        colorized_echo yellow "⚠️  Could not verify tag '${tag}' (registry unreachable) — continuing"
+        colorized_echo yellow "⚠️  Не удалось проверить тег '${tag}' (реестр недоступен) — продолжаю"
         return 0
     fi
 
@@ -1266,11 +1266,11 @@ verify_node_tag_exists() {
             local newest
             newest=$(echo "$tags" | grep -E "^${tag}\.[0-9]+\.[0-9]+$" | head -1)
             if [ -n "$newest" ]; then
-                colorized_echo yellow "   Note: remnawave/node has no floating '${tag}' tag — use the exact version."
-                colorized_echo green  "   Did you mean:  --tag ${newest}"
+                colorized_echo yellow "   Примечание: у remnawave/node нет плавающего тега '${tag}' — укажите точную версию."
+                colorized_echo green  "   Возможно, вы имели в виду:  --tag ${newest}"
             fi
         fi
-        colorized_echo yellow "   Available tags: $(echo "$tags" | head -8 | tr '\n' ' ')"
+        colorized_echo yellow "   Доступные теги: $(echo "$tags" | head -8 | tr '\n' ' ')"
     fi
     return 1
 }
@@ -1278,22 +1278,22 @@ verify_node_tag_exists() {
 install_remnanode() {
 
     if ! check_system_requirements; then
-        colorized_echo red "System requirements check failed. Installation aborted."
+        colorized_echo red "Проверка системных требований не прошла. Установка прервана."
         exit 1
     fi
 
-    colorized_echo blue "Creating directory $APP_DIR"
+    colorized_echo blue "Создаю папку $APP_DIR"
     mkdir -p "$APP_DIR"
 
-    colorized_echo blue "Creating directory $DATA_DIR"
+    colorized_echo blue "Создаю папку $DATA_DIR"
     mkdir -p "$DATA_DIR"
 
     # Get SECRET_KEY (from command line or interactive input)
     if [ -n "$FORCE_SECRET_KEY" ]; then
         SECRET_KEY_VALUE="$FORCE_SECRET_KEY"
-        colorized_echo green "✅ Using SECRET_KEY from command line"
+        colorized_echo green "✅ Использую SECRET_KEY из командной строки"
     else
-        colorized_echo blue "Please paste the content of the SECRET_KEY from Remnawave-Panel, press ENTER on a new line when finished: "
+        colorized_echo blue "Вставьте SECRET_KEY из панели Remnawave, затем нажмите Enter на новой пустой строке: "
         SECRET_KEY_VALUE=""
         while IFS= read -r line; do
             if [[ -z $line ]]; then
@@ -1305,7 +1305,7 @@ install_remnanode() {
 
     # Validate SECRET_KEY
     if [ -z "$SECRET_KEY_VALUE" ]; then
-        colorized_echo red "❌ SECRET_KEY is required!"
+        colorized_echo red "❌ SECRET_KEY обязателен!"
         exit 1
     fi
 
@@ -1315,37 +1315,37 @@ install_remnanode() {
     if [ -n "$FORCE_NODE_PORT" ]; then
         NODE_PORT="$FORCE_NODE_PORT"
         if ! validate_port "$NODE_PORT"; then
-            colorized_echo red "❌ Invalid NODE_PORT: $NODE_PORT"
+            colorized_echo red "❌ Неверный NODE_PORT: $NODE_PORT"
             exit 1
         fi
         if is_port_occupied "$NODE_PORT"; then
-            colorized_echo red "❌ NODE_PORT $NODE_PORT is already in use!"
+            colorized_echo red "❌ NODE_PORT $NODE_PORT уже занят!"
             exit 1
         fi
-        colorized_echo green "✅ Using NODE_PORT: $NODE_PORT"
+        colorized_echo green "✅ Использую NODE_PORT: $NODE_PORT"
     elif [ "$FORCE_MODE" == "true" ]; then
         # Force mode without explicit port: use default 3000
         NODE_PORT=3000
         if is_port_occupied "$NODE_PORT"; then
-            colorized_echo red "❌ Default NODE_PORT $NODE_PORT is already in use!"
-            colorized_echo yellow "   Use --port=PORT to specify a different port"
+            colorized_echo red "❌ NODE_PORT по умолчанию ($NODE_PORT) уже занят!"
+            colorized_echo yellow "   Укажите другой порт через --port=PORT"
             exit 1
         fi
-        colorized_echo green "✅ Using default NODE_PORT: $NODE_PORT"
+        colorized_echo green "✅ Использую NODE_PORT по умолчанию: $NODE_PORT"
     else
         while true; do
-            read -p "Enter the NODE_PORT (default 3000): " -r NODE_PORT
+            read -p "Введите NODE_PORT (по умолчанию 3000): " -r NODE_PORT
             NODE_PORT=${NODE_PORT:-3000}
             
             if validate_port "$NODE_PORT"; then
                 if is_port_occupied "$NODE_PORT"; then
-                    colorized_echo red "Port $NODE_PORT is already in use. Please enter another port."
-                    colorized_echo blue "Occupied ports: $(echo $OCCUPIED_PORTS | tr '\n' ' ')"
+                    colorized_echo red "Порт $NODE_PORT уже занят. Введите другой порт."
+                    colorized_echo blue "Занятые порты: $(echo $OCCUPIED_PORTS | tr '\n' ' ')"
                 else
                     break
                 fi
             else
-                colorized_echo red "Invalid port. Please enter a port between 1 and 65535."
+                colorized_echo red "Неверный порт. Введите число от 1 до 65535."
             fi
         done
     fi
@@ -1363,13 +1363,13 @@ install_remnanode() {
     if [ -n "$FORCE_XTLS_PORT" ]; then
         XTLS_API_PORT="$FORCE_XTLS_PORT"
         if ! validate_port "$XTLS_API_PORT"; then
-            colorized_echo red "❌ Invalid XTLS_API_PORT: $XTLS_API_PORT"
+            colorized_echo red "❌ Неверный XTLS_API_PORT: $XTLS_API_PORT"
             exit 1
         fi
         if is_port_occupied "$XTLS_API_PORT"; then
-            colorized_echo yellow "⚠️  XTLS_API_PORT $XTLS_API_PORT is in use (harmless on node 2.8.0+, which ignores it)"
+            colorized_echo yellow "⚠️  XTLS_API_PORT $XTLS_API_PORT занят (на node 2.8.0+ не важно, там он не используется)"
         fi
-        colorized_echo green "✅ Using XTLS_API_PORT: $XTLS_API_PORT"
+        colorized_echo green "✅ Использую XTLS_API_PORT: $XTLS_API_PORT"
     else
         XTLS_API_PORT=$DEFAULT_XTLS_API_PORT
         # Pick the next free port instead of aborting: on node 2.8.0+ the value is
@@ -1382,13 +1382,13 @@ install_remnanode() {
                 attempts=$((attempts + 1))
             done
             if [ $attempts -lt 50 ]; then
-                colorized_echo yellow "⚠️  Default XTLS_API_PORT $XTLS_API_PORT is in use → using $candidate"
+                colorized_echo yellow "⚠️  XTLS_API_PORT по умолчанию ($XTLS_API_PORT) занят → использую $candidate"
                 XTLS_API_PORT=$candidate
             else
-                colorized_echo yellow "⚠️  Could not find a free port near $XTLS_API_PORT — keeping $XTLS_API_PORT (unused on node 2.8.0+)"
+                colorized_echo yellow "⚠️  Не нашёл свободный порт рядом с $XTLS_API_PORT — оставляю $XTLS_API_PORT (на node 2.8.0+ не используется)"
             fi
         fi
-        colorized_echo gray "ℹ️  XTLS_API_PORT: $XTLS_API_PORT (legacy, ignored by node 2.8.0+; override with --xtls-port)"
+        colorized_echo gray "ℹ️  XTLS_API_PORT: $XTLS_API_PORT (устаревший, node 2.8.0+ его игнорирует; задать: --xtls-port)"
     fi
     echo
 
@@ -1398,15 +1398,15 @@ install_remnanode() {
     # so installing the stable release here would be useless.
     INSTALL_XRAY=false
     if [ "$FORCE_INSTALL_XRAY" == "true" ]; then
-        colorized_echo green "✅ Installing Xray-core (--xray flag)"
+        colorized_echo green "✅ Устанавливаю Xray-core (флаг --xray)"
         INSTALL_XRAY=true
         install_latest_xray_core
     else
-        colorized_echo gray "ℹ️  Skipping Xray-core installation (use --xray flag, or run 'core-update' later to install)"
+        colorized_echo gray "ℹ️  Пропускаю установку Xray-core (флаг --xray или позже команда 'core-update')"
         INSTALL_XRAY=false
     fi
 
-    colorized_echo blue "Generating .env file"
+    colorized_echo blue "Создаю файл .env"
     cat > "$ENV_FILE" <<EOL
 ### NODE ###
 NODE_PORT=$NODE_PORT
@@ -1423,7 +1423,7 @@ XTLS_API_PORT=$XTLS_API_PORT
 ### 3.3.0 or newer, otherwise the node stops accepting connections.
 #SNI_VERIFICATION=true
 EOL
-    colorized_echo green "Environment file saved in $ENV_FILE"
+    colorized_echo green "Файл окружения сохранён: $ENV_FILE"
 
     # Determine image based on --dev / --tag flags
     IMAGE_TAG="latest"
@@ -1436,16 +1436,16 @@ EOL
     # --tag wins over --dev: an explicit version is never a guess
     if [ -n "$NODE_IMAGE_TAG" ]; then
         if [ "$USE_DEV_BRANCH" == "true" ]; then
-            colorized_echo yellow "⚠️  Both --dev and --tag given — using --tag $NODE_IMAGE_TAG"
+            colorized_echo yellow "⚠️  Указаны и --dev, и --tag — использую --tag $NODE_IMAGE_TAG"
             IMAGE_REGISTRY="ghcr.io/remnawave/node"
         fi
         IMAGE_TAG="$NODE_IMAGE_TAG"
         if ! verify_node_tag_exists "$IMAGE_REGISTRY" "$IMAGE_TAG"; then
-            colorized_echo red "Image ${IMAGE_REGISTRY}:${IMAGE_TAG} was not found in the registry."
-            colorized_echo yellow "   Check available tags: https://github.com/remnawave/node/pkgs/container/node"
+            colorized_echo red "Образ ${IMAGE_REGISTRY}:${IMAGE_TAG} не найден в реестре."
+            colorized_echo yellow "   Доступные теги: https://github.com/remnawave/node/pkgs/container/node"
             exit 1
         fi
-        colorized_echo green "✅ Pinned node image: ${IMAGE_REGISTRY}:${IMAGE_TAG}"
+        colorized_echo green "✅ Образ ноды закреплён: ${IMAGE_REGISTRY}:${IMAGE_TAG}"
     fi
 
     # node 3.3.x only talks to panel 3.3.0+ (derived-SNI TLS gate) — confirm once
@@ -1453,7 +1453,7 @@ EOL
         exit 1
     fi
 
-    colorized_echo blue "Generating docker-compose.yml file"
+    colorized_echo blue "Создаю файл docker-compose.yml"
     
     # Create docker-compose.yml with commented volumes section
     cat > "$COMPOSE_FILE" <<EOL
@@ -1507,19 +1507,19 @@ EOL
 EOL
     fi
 
-    colorized_echo green "Docker Compose file saved in $COMPOSE_FILE"
+    colorized_echo green "Файл Docker Compose сохранён: $COMPOSE_FILE"
 }
 
 uninstall_remnanode_script() {
     if [ -f "/usr/local/bin/$APP_NAME" ]; then
-        colorized_echo yellow "Removing remnanode script"
+        colorized_echo yellow "Удаляю скрипт remnanode"
         rm "/usr/local/bin/$APP_NAME"
     fi
 }
 
 uninstall_remnanode() {
     if [ -d "$APP_DIR" ]; then
-        colorized_echo yellow "Removing directory: $APP_DIR"
+        colorized_echo yellow "Удаляю папку: $APP_DIR"
         rm -r "$APP_DIR"
     fi
 }
@@ -1527,10 +1527,10 @@ uninstall_remnanode() {
 uninstall_remnanode_docker_images() {
     images=$(docker images | grep remnawave/node | awk '{print $3}')
     if [ -n "$images" ]; then
-        colorized_echo yellow "Removing Docker images of remnanode"
+        colorized_echo yellow "Удаляю Docker-образы remnanode"
         for image in $images; do
             if docker rmi "$image" >/dev/null 2>&1; then
-                colorized_echo yellow "Image $image removed"
+                colorized_echo yellow "Образ $image удалён"
             fi
         done
     fi
@@ -1538,7 +1538,7 @@ uninstall_remnanode_docker_images() {
 
 uninstall_remnanode_data_files() {
     if [ -d "$DATA_DIR" ]; then
-        colorized_echo yellow "Removing directory: $DATA_DIR"
+        colorized_echo yellow "Удаляю папку: $DATA_DIR"
         rm -r "$DATA_DIR"
     fi
 }
@@ -1554,20 +1554,20 @@ enable_ipv4_preference() {
         return 0
     fi
 
-    colorized_echo yellow "🔧 Enabling IPv4 preference for network connections..."
+    colorized_echo yellow "🔧 Включаю приоритет IPv4 для сетевых подключений..."
 
     if [ -f "$gai_conf" ]; then
         # Uncomment existing rule if present
         if grep -q "^#precedence ::ffff:0:0/96" "$gai_conf"; then
             sed -i 's/^#precedence ::ffff:0:0\/96.*/precedence ::ffff:0:0\/96  100/' "$gai_conf"
-            colorized_echo green "✅ IPv4 preference enabled (uncommented existing rule in $gai_conf)"
+            colorized_echo green "✅ Приоритет IPv4 включён (раскомментировано правило в $gai_conf)"
             return 0
         fi
     fi
 
     # Append rule
     echo "$ipv4_rule" >> "$gai_conf"
-    colorized_echo green "✅ IPv4 preference enabled (added rule to $gai_conf)"
+    colorized_echo green "✅ Приоритет IPv4 включён (добавлено правило в $gai_conf)"
 }
 
 # Pull docker images with retry logic to handle transient network failures
@@ -1590,20 +1590,20 @@ docker_pull_with_retry() {
 
         # Detect IPv6 connection failures and switch to IPv4
         if [ "$ipv4_forced" = false ] && echo "$pull_output" | grep -qE '\[([0-9a-f]{0,4}:){2,}[0-9a-f]{0,4}\]'; then
-            colorized_echo yellow "⚠️  IPv6 connection failure detected (attempt $attempt/$max_retries)"
+            colorized_echo yellow "⚠️  Ошибка подключения по IPv6 (попытка $attempt/$max_retries)"
             enable_ipv4_preference
             ipv4_forced=true
-            colorized_echo blue "🔄 Retrying with IPv4 in ${retry_delay}s..."
+            colorized_echo blue "🔄 Повтор через IPv4 через ${retry_delay} с..."
             sleep $retry_delay
             retry_delay=$((retry_delay * 2))
         elif [ $attempt -lt $max_retries ]; then
-            colorized_echo yellow "⚠️  Image pull failed (attempt $attempt/$max_retries). Retrying in ${retry_delay}s..."
+            colorized_echo yellow "⚠️  Не удалось скачать образ (попытка $attempt/$max_retries). Повтор через ${retry_delay} с..."
             sleep $retry_delay
             retry_delay=$((retry_delay * 2))
         else
-            colorized_echo red "❌ Image pull failed after $max_retries attempts."
-            colorized_echo yellow "   This is usually caused by a network issue."
-            colorized_echo yellow "   You can try again later with: sudo $APP_NAME up"
+            colorized_echo red "❌ Не удалось скачать образ за $max_retries попыток."
+            colorized_echo yellow "   Обычно это проблема с сетью."
+            colorized_echo yellow "   Попробуйте позже: sudo $APP_NAME up"
             return 1
         fi
 
@@ -1642,7 +1642,7 @@ up_remnanode() {
     # there is no version to preserve, and pulling explicitly keeps the retry
     # logic that a bare `compose up` does not have.
     if ! image_present_locally; then
-        colorized_echo blue "Image not present locally — downloading it"
+        colorized_echo blue "Образа нет локально — скачиваю"
         docker_pull_with_retry
     fi
 
@@ -1671,7 +1671,7 @@ update_remnanode_script() {
         [ -z "$old_version" ] && old_version="unknown"
     fi
 
-    colorized_echo blue "Updating remnanode script (current: v$old_version)"
+    colorized_echo blue "Обновляю скрипт remnanode (сейчас: v$old_version)"
 
     # Скачиваем во временный файл, а не через `curl | install /dev/stdin`:
     # на минимальных системах /dev/stdin недоступен и install падает с
@@ -1681,23 +1681,23 @@ update_remnanode_script() {
     # версия, размер, `bash -n`), так что подменить рабочий CLI мусором нельзя.
     local tmp_file
     tmp_file=$(mktemp "${TMPDIR:-/tmp}/${APP_NAME}.XXXXXX") || {
-        colorized_echo red "Failed to create temporary file"
+        colorized_echo red "Не удалось создать временный файл"
         return 1
     }
 
     if ! fetch_script_file "$tmp_file"; then
-        colorized_echo red "Failed to download a valid script from any mirror"
+        colorized_echo red "Не удалось скачать рабочий скрипт ни с одного зеркала"
         rm -f "$tmp_file"
         return 1
     fi
 
     local new_version
     new_version=$(script_file_version "$tmp_file")
-    colorized_echo blue "Fetched from $SCRIPT_SOURCE_USED"
+    colorized_echo blue "Скачано с $SCRIPT_SOURCE_USED"
 
     # Устанавливаем из обычного файла (без /dev/stdin)
     if ! install -m 755 "$tmp_file" "$target_path"; then
-        colorized_echo red "Failed to install updated script to $target_path"
+        colorized_echo red "Не удалось установить обновлённый скрипт в $target_path"
         rm -f "$tmp_file"
         return 1
     fi
@@ -1707,11 +1707,11 @@ update_remnanode_script() {
     local installed_version
     installed_version=$(grep "^SCRIPT_VERSION=" "$target_path" 2>/dev/null | head -1 | cut -d'"' -f2)
     if [ "$installed_version" != "$new_version" ]; then
-        colorized_echo red "Script update verification failed (expected v$new_version, got v${installed_version:-unknown})"
+        colorized_echo red "Проверка обновления скрипта не прошла (ожидалась v$new_version, получена v${installed_version:-unknown})"
         return 1
     fi
 
-    colorized_echo green "Remnanode script updated successfully: v$old_version → v$installed_version"
+    colorized_echo green "Скрипт remnanode обновлён: v$old_version → v$installed_version"
     return 0
 }
 
@@ -1805,13 +1805,13 @@ get_container_xray_version() {
 install_command() {
     check_running_as_root
     if is_remnanode_installed; then
-        colorized_echo red "Remnanode is already installed at $APP_DIR"
+        colorized_echo red "Remnanode уже установлена в $APP_DIR"
         if [ "$FORCE_MODE" == "true" ]; then
-            colorized_echo yellow "⚠️  Force mode: overriding existing installation"
+            colorized_echo yellow "⚠️  Режим --force: перезаписываю текущую установку"
         else
-            read -p "Do you want to override the previous installation? (y/n) "
+            read -p "Перезаписать текущую установку? (y/n) "
             if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-                colorized_echo red "Aborted installation"
+                colorized_echo red "Установка отменена"
                 exit 1
             fi
         fi
@@ -1838,63 +1838,63 @@ install_command() {
     clear
     echo
     echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 70))\033[0m"
-    echo -e "\033[1;37m🎉 RemnaNode Successfully Installed!\033[0m"
+    echo -e "\033[1;37m🎉 RemnaNode установлена!\033[0m"
     echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 70))\033[0m"
     echo
     
-    echo -e "\033[1;37m🌐 Connection Information:\033[0m"
-    printf "   \033[38;5;15m%-12s\033[0m \033[38;5;250m%s\033[0m\n" "IP Address:" "$NODE_IP"
-    printf "   \033[38;5;15m%-12s\033[0m \033[38;5;250m%s\033[0m\n" "Port:" "$NODE_PORT"
-    printf "   \033[38;5;15m%-12s\033[0m \033[38;5;250m%s:%s\033[0m\n" "Full URL:" "$NODE_IP" "$NODE_PORT"
+    echo -e "\033[1;37m🌐 Данные для подключения:\033[0m"
+    printf "   \033[38;5;15m%s\033[0m \033[38;5;250m%s\033[0m\n" "IP-адрес:   " "$NODE_IP"
+    printf "   \033[38;5;15m%s\033[0m \033[38;5;250m%s\033[0m\n" "Порт:       " "$NODE_PORT"
+    printf "   \033[38;5;15m%s\033[0m \033[38;5;250m%s:%s\033[0m\n" "Адрес:      " "$NODE_IP" "$NODE_PORT"
     echo
     
-    echo -e "\033[1;37m📋 Next Steps:\033[0m"
-    echo -e "   \033[38;5;250m1.\033[0m Use the IP and port above to set up your Remnawave Panel"
-    echo -e "   \033[38;5;250m2.\033[0m Configure log rotation: \033[38;5;15msudo $APP_NAME setup-logs\033[0m"
+    echo -e "\033[1;37m📋 Что дальше:\033[0m"
+    echo -e "   \033[38;5;250m1.\033[0m Добавьте ноду в панель Remnawave по IP и порту выше"
+    echo -e "   \033[38;5;250m2.\033[0m Настройте ротацию логов: \033[38;5;15msudo $APP_NAME setup-logs\033[0m"
     
     if [ "$INSTALL_XRAY" == "true" ]; then
-        echo -e "   \033[38;5;250m3.\033[0m \033[1;37mXray-core is already installed and ready! ✅\033[0m"
+        echo -e "   \033[38;5;250m3.\033[0m \033[1;37mXray-core уже установлен и готов! ✅\033[0m"
     else
-        echo -e "   \033[38;5;250m3.\033[0m Install Xray-core: \033[38;5;15msudo $APP_NAME core-update\033[0m"
+        echo -e "   \033[38;5;250m3.\033[0m Установите Xray-core: \033[38;5;15msudo $APP_NAME core-update\033[0m"
     fi
     
-    echo -e "   \033[38;5;250m4.\033[0m Secure with UFW: \033[38;5;15msudo ufw allow from \033[38;5;244mPANEL_IP\033[38;5;15m to any port $NODE_PORT\033[0m"
-    echo -e "      \033[38;5;8m(Enable UFW: \033[38;5;15msudo ufw enable\033[38;5;8m)\033[0m"
+    echo -e "   \033[38;5;250m4.\033[0m Закройте порт через UFW: \033[38;5;15msudo ufw allow from \033[38;5;244mPANEL_IP\033[38;5;15m to any port $NODE_PORT\033[0m"
+    echo -e "      \033[38;5;8m(Включить UFW: \033[38;5;15msudo ufw enable\033[38;5;8m)\033[0m"
     echo
     
-    echo -e "\033[1;37m🛠️  Quick Commands:\033[0m"
-    printf "   \033[38;5;15m%-15s\033[0m %s\n" "status" "📊 Check service status"
-    printf "   \033[38;5;15m%-15s\033[0m %s\n" "logs" "📋 View container logs"
-    printf "   \033[38;5;15m%-15s\033[0m %s\n" "restart" "🔄 Restart the service"
+    echo -e "\033[1;37m🛠️  Быстрые команды:\033[0m"
+    printf "   \033[38;5;15m%-15s\033[0m %s\n" "status" "📊 Статус сервисов"
+    printf "   \033[38;5;15m%-15s\033[0m %s\n" "logs" "📋 Логи контейнера"
+    printf "   \033[38;5;15m%-15s\033[0m %s\n" "restart" "🔄 Перезапустить сервис"
     if [ "$INSTALL_XRAY" == "true" ]; then
-        printf "   \033[38;5;15m%-15s\033[0m %s\n" "xray_log_out" "📤 View Xray logs"
+        printf "   \033[38;5;15m%-15s\033[0m %s\n" "xray_log_out" "📤 Логи Xray"
     fi
     echo
     
-    echo -e "\033[1;37m📁 File Locations:\033[0m"
-    printf "   \033[38;5;15m%-15s\033[0m \033[38;5;250m%s\033[0m\n" "Configuration:" "$APP_DIR"
-    printf "   \033[38;5;15m%-15s\033[0m \033[38;5;250m%s\033[0m\n" "Data:" "$DATA_DIR"
+    echo -e "\033[1;37m📁 Где лежат файлы:\033[0m"
+    printf "   \033[38;5;15m%s\033[0m \033[38;5;250m%s\033[0m\n" "Конфигурация:  " "$APP_DIR"
+    printf "   \033[38;5;15m%s\033[0m \033[38;5;250m%s\033[0m\n" "Данные:        " "$DATA_DIR"
     if [ "$INSTALL_XRAY" == "true" ]; then
-        printf "   \033[38;5;15m%-15s\033[0m \033[38;5;250m%s\033[0m\n" "Xray Binary:" "$XRAY_FILE"
+        printf "   \033[38;5;15m%s\033[0m \033[38;5;250m%s\033[0m\n" "Файл Xray:     " "$XRAY_FILE"
     fi
     echo
     
     echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 70))\033[0m"
-    echo -e "\033[38;5;8m💡 For all commands: \033[38;5;15msudo $APP_NAME\033[0m"
-    echo -e "\033[38;5;8m📚 Project: \033[38;5;250mhttps://gig.ovh\033[0m"
+    echo -e "\033[38;5;8m💡 Все команды: \033[38;5;15msudo $APP_NAME\033[0m"
+    echo -e "\033[38;5;8m📚 Проект: \033[38;5;250mhttps://gig.ovh\033[0m"
     echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 70))\033[0m"
 }
 
 uninstall_command() {
     check_running_as_root
     if ! is_remnanode_installed; then
-        colorized_echo red "Remnanode not installed!"
+        colorized_echo red "Remnanode не установлена!"
         exit 1
     fi
     
-    read -p "Do you really want to uninstall Remnanode? (y/n) "
+    read -p "Точно удалить Remnanode? (y/n) "
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        colorized_echo red "Aborted"
+        colorized_echo red "Отменено"
         exit 1
     fi
     
@@ -1906,18 +1906,18 @@ uninstall_command() {
     uninstall_remnanode
     uninstall_remnanode_docker_images
     
-    read -p "Do you want to remove Remnanode data files too ($DATA_DIR)? (y/n) "
+    read -p "Удалить также данные Remnanode ($DATA_DIR)? (y/n) "
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        colorized_echo green "Remnanode uninstalled successfully"
+        colorized_echo green "Remnanode удалена"
     else
         uninstall_remnanode_data_files
-        colorized_echo green "Remnanode uninstalled successfully"
+        colorized_echo green "Remnanode удалена"
     fi
 }
 
 install_script_command() {
     check_running_as_root
-    colorized_echo blue "Installing RemnaNode script globally"
+    colorized_echo blue "Устанавливаю скрипт RemnaNode глобально"
     install_remnanode_script
 
     # Report what actually landed on disk — install_remnanode_script fetches the
@@ -1925,36 +1925,36 @@ install_script_command() {
     local installed_version
     installed_version=$(grep "^SCRIPT_VERSION=" "/usr/local/bin/$APP_NAME" 2>/dev/null | head -1 | cut -d'"' -f2)
 
-    colorized_echo green "✅ Script installed successfully!"
-    colorized_echo white "   Version: ${installed_version:-$SCRIPT_VERSION}"
-    colorized_echo white "   Location: /usr/local/bin/$APP_NAME"
-    colorized_echo white "You can now run '$APP_NAME' from anywhere"
+    colorized_echo green "✅ Скрипт установлен!"
+    colorized_echo white "   Версия: ${installed_version:-$SCRIPT_VERSION}"
+    colorized_echo white "   Путь: /usr/local/bin/$APP_NAME"
+    colorized_echo white "Теперь '$APP_NAME' можно запускать из любой папки"
 }
 
 uninstall_script_command() {
     check_running_as_root
     if [ ! -f "/usr/local/bin/$APP_NAME" ]; then
-        colorized_echo red "❌ Script not found at /usr/local/bin/$APP_NAME"
+        colorized_echo red "❌ Скрипт не найден: /usr/local/bin/$APP_NAME"
         exit 1
     fi
     
-    read -p "Are you sure you want to remove the script? (y/n): " -r
+    read -p "Точно удалить скрипт? (y/n): " -r
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        colorized_echo yellow "Operation cancelled"
+        colorized_echo yellow "Операция отменена"
         exit 0
     fi
     
-    colorized_echo blue "Removing RemnaNode script"
+    colorized_echo blue "Удаляю скрипт RemnaNode"
     uninstall_remnanode_script
-    colorized_echo green "✅ Script removed successfully!"
+    colorized_echo green "✅ Скрипт удалён!"
 }
 
 up_command() {
     help() {
-        colorized_echo red "Usage: remnanode up [options]"
-        echo "OPTIONS:"
-        echo "  -h, --help        display this help message"
-        echo "  -n, --no-logs     do not follow logs after starting"
+        colorized_echo red "Использование: remnanode up [опции]"
+        echo "ОПЦИИ:"
+        echo "  -h, --help        показать эту справку"
+        echo "  -n, --no-logs     не показывать логи после запуска"
     }
     
     local no_logs=false
@@ -1962,20 +1962,20 @@ up_command() {
         case "$1" in
             -n|--no-logs) no_logs=true ;;
             -h|--help) help; exit 0 ;;
-            *) echo "Error: Invalid option: $1" >&2; help; exit 0 ;;
+            *) echo "Ошибка: неверная опция: $1" >&2; help; exit 0 ;;
         esac
         shift
     done
     
     if ! is_remnanode_installed; then
-        colorized_echo red "Remnanode not installed!"
+        colorized_echo red "Remnanode не установлена!"
         exit 1
     fi
     
     detect_compose
     
     if is_remnanode_up; then
-        colorized_echo red "Remnanode already up"
+        colorized_echo red "Remnanode уже запущена"
         exit 1
     fi
     
@@ -1987,14 +1987,14 @@ up_command() {
 
 down_command() {
     if ! is_remnanode_installed; then
-        colorized_echo red "Remnanode not installed!"
+        colorized_echo red "Remnanode не установлена!"
         exit 1
     fi
     
     detect_compose
     
     if ! is_remnanode_up; then
-        colorized_echo red "Remnanode already down"
+        colorized_echo red "Remnanode уже остановлена"
         exit 1
     fi
     
@@ -2003,10 +2003,10 @@ down_command() {
 
 restart_command() {
     help() {
-        colorized_echo red "Usage: remnanode restart [options]"
-        echo "OPTIONS:"
-        echo "  -h, --help        display this help message"
-        echo "  -n, --no-logs     do not follow logs after starting"
+        colorized_echo red "Использование: remnanode restart [опции]"
+        echo "ОПЦИИ:"
+        echo "  -h, --help        показать эту справку"
+        echo "  -n, --no-logs     не показывать логи после запуска"
     }
     
     local no_logs=false
@@ -2014,13 +2014,13 @@ restart_command() {
         case "$1" in
             -n|--no-logs) no_logs=true ;;
             -h|--help) help; exit 0 ;;
-            *) echo "Error: Invalid option: $1" >&2; help; exit 0 ;;
+            *) echo "Ошибка: неверная опция: $1" >&2; help; exit 0 ;;
         esac
         shift
     done
     
     if ! is_remnanode_installed; then
-        colorized_echo red "Remnanode not installed!"
+        colorized_echo red "Remnanode не установлена!"
         exit 1
     fi
     
@@ -2036,24 +2036,24 @@ restart_command() {
 }
 
 status_command() {
-    echo -e "\033[1;37m📊 RemnaNode Status Check:\033[0m"
+    echo -e "\033[1;37m📊 Проверка статуса RemnaNode:\033[0m"
     echo
     
     if ! is_remnanode_installed; then
-        printf "   \033[38;5;15m%-12s\033[0m \033[1;31m❌ Not Installed\033[0m\n" "Status:"
-        echo -e "\033[38;5;8m   Run '\033[38;5;15msudo $APP_NAME install\033[38;5;8m' to install\033[0m"
+        printf "   \033[38;5;15m%s\033[0m \033[1;31m❌ Не установлена\033[0m\n" "Статус:     "
+        echo -e "\033[38;5;8m   Установка: '\033[38;5;15msudo $APP_NAME install\033[38;5;8m'\033[0m"
         exit 1
     fi
     
     detect_compose
     
     if ! is_remnanode_up; then
-        printf "   \033[38;5;15m%-12s\033[0m \033[1;33m⏹️  Down\033[0m\n" "Status:"
-        echo -e "\033[38;5;8m   Run '\033[38;5;15msudo $APP_NAME up\033[38;5;8m' to start\033[0m"
+        printf "   \033[38;5;15m%s\033[0m \033[1;33m⏹️  Остановлена\033[0m\n" "Статус:     "
+        echo -e "\033[38;5;8m   Запуск: '\033[38;5;15msudo $APP_NAME up\033[38;5;8m'\033[0m"
         exit 1
     fi
     
-    printf "   \033[38;5;15m%-12s\033[0m \033[1;32m✅ Running\033[0m\n" "Status:"
+    printf "   \033[38;5;15m%s\033[0m \033[1;32m✅ Работает\033[0m\n" "Статус:     "
     
     # Получаем порт через универсальную функцию
     local node_port=$(get_env_variable "NODE_PORT")
@@ -2063,7 +2063,7 @@ status_command() {
     fi
     
     if [ -n "$node_port" ]; then
-        printf "   \033[38;5;15m%-12s\033[0m \033[38;5;250m%s\033[0m\n" "Port:" "$node_port"
+        printf "   \033[38;5;15m%s\033[0m \033[38;5;250m%s\033[0m\n" "Порт:       " "$node_port"
     fi
     
     # Получаем версию RemnaNode
@@ -2074,17 +2074,17 @@ status_command() {
     
     # Проверяем Xray
     local xray_version=$(get_current_xray_core_version)
-    printf "   \033[38;5;15m%-12s\033[0m \033[38;5;250m%s\033[0m\n" "Xray Core:" "$xray_version"
+    printf "   \033[38;5;15m%-12s\033[0m \033[38;5;250m%s\033[0m\n" "Xray Core:" "${xray_version/#Not installed/Не установлен}"
     
     echo
 }
 
 logs_command() {
     help() {
-        colorized_echo red "Usage: remnanode logs [options]"
-        echo "OPTIONS:"
-        echo "  -h, --help        display this help message"
-        echo "  -n, --no-follow   do not show follow logs"
+        colorized_echo red "Использование: remnanode logs [опции]"
+        echo "ОПЦИИ:"
+        echo "  -h, --help        показать эту справку"
+        echo "  -n, --no-follow   не следить за логами в реальном времени"
     }
     
     local no_follow=false
@@ -2092,20 +2092,20 @@ logs_command() {
         case "$1" in
             -n|--no-follow) no_follow=true ;;
             -h|--help) help; exit 0 ;;
-            *) echo "Error: Invalid option: $1" >&2; help; exit 0 ;;
+            *) echo "Ошибка: неверная опция: $1" >&2; help; exit 0 ;;
         esac
         shift
     done
     
     if ! is_remnanode_installed; then
-        colorized_echo red "Remnanode not installed!"
+        colorized_echo red "Remnanode не установлена!"
         exit 1
     fi
     
     detect_compose
     
     if ! is_remnanode_up; then
-        colorized_echo red "Remnanode is not up."
+        colorized_echo red "Remnanode не запущена."
         exit 1
     fi
     
@@ -2169,17 +2169,17 @@ check_env_configuration() {
 # Функция для миграции старых переменных окружения к новым
 migrate_env_variables() {
     echo
-    colorized_echo blue "🔄 Starting Environment Variables Migration Check..."
+    colorized_echo blue "🔄 Проверяю, нужна ли миграция переменных окружения..."
     echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 50))\033[0m"
     
     if ! is_remnanode_installed; then
-        colorized_echo yellow "⚠️  RemnaNode not installed, nothing to migrate"
+        colorized_echo yellow "⚠️  RemnaNode не установлена, мигрировать нечего"
         return 0
     fi
     
     local env_type=$(check_env_configuration)
     
-    colorized_echo blue "🔍 Detected configuration type: $env_type"
+    colorized_echo blue "🔍 Тип конфигурации: $env_type"
     echo
     
     if [ "$env_type" = "env_file" ]; then
@@ -2187,7 +2187,7 @@ migrate_env_variables() {
     elif [ "$env_type" = "inline" ]; then
         migrate_inline_env
     else
-        colorized_echo yellow "⚠️  Unknown configuration type, skipping migration"
+        colorized_echo yellow "⚠️  Неизвестный тип конфигурации, пропускаю миграцию"
         return 0
     fi
     
@@ -2199,7 +2199,7 @@ migrate_env_file() {
     local env_file="$ENV_FILE"
     
     if [ ! -f "$env_file" ]; then
-        colorized_echo yellow "⚠️  .env file not found, skipping migration"
+        colorized_echo yellow "⚠️  Файл .env не найден, пропускаю миграцию"
         return 0
     fi
     
@@ -2219,27 +2219,27 @@ migrate_env_file() {
     fi
     
     if [ "$needs_migration" = false ]; then
-        colorized_echo green "✅ .env file is up to date"
-        colorized_echo blue "   No migration needed - all variables use new format:"
-        colorized_echo blue "   • NODE_PORT (instead of APP_PORT)"
-        colorized_echo blue "   • SECRET_KEY (instead of SSL_CERT)"
+        colorized_echo green "✅ Файл .env в актуальном формате"
+        colorized_echo blue "   Миграция не нужна — все переменные в новом формате:"
+        colorized_echo blue "   • NODE_PORT (вместо APP_PORT)"
+        colorized_echo blue "   • SECRET_KEY (вместо SSL_CERT)"
         return 0
     fi
     
-    colorized_echo blue "🔄 Detected old environment variables in .env:"
+    colorized_echo blue "🔄 В .env найдены старые переменные:"
     if [ "$has_app_port" = true ]; then
-        colorized_echo yellow "   • APP_PORT → will be migrated to NODE_PORT"
+        colorized_echo yellow "   • APP_PORT → будет перенесён в NODE_PORT"
     fi
     if [ "$has_ssl_cert" = true ]; then
-        colorized_echo yellow "   • SSL_CERT → will be migrated to SECRET_KEY"
+        colorized_echo yellow "   • SSL_CERT → будет перенесён в SECRET_KEY"
     fi
     echo
-    colorized_echo blue "📝 Starting migration..."
+    colorized_echo blue "📝 Начинаю миграцию..."
     
     # Создаем backup
     local backup_file="${env_file}.backup.$(date +%Y%m%d_%H%M%S)"
     cp "$env_file" "$backup_file"
-    colorized_echo green "✅ Backup created: $backup_file"
+    colorized_echo green "✅ Резервная копия: $backup_file"
     
     # Выполняем миграцию
     local temp_file=$(mktemp)
@@ -2248,11 +2248,11 @@ migrate_env_file() {
         if [[ "$line" =~ ^APP_PORT= ]]; then
             # Заменяем APP_PORT на NODE_PORT
             echo "$line" | sed 's/^APP_PORT=/NODE_PORT=/' >> "$temp_file"
-            colorized_echo green "  ✅ Migrated: APP_PORT → NODE_PORT"
+            colorized_echo green "  ✅ Перенесено: APP_PORT → NODE_PORT"
         elif [[ "$line" =~ ^SSL_CERT= ]]; then
             # Заменяем SSL_CERT на SECRET_KEY
             echo "$line" | sed 's/^SSL_CERT=/SECRET_KEY=/' >> "$temp_file"
-            colorized_echo green "  ✅ Migrated: SSL_CERT → SECRET_KEY"
+            colorized_echo green "  ✅ Перенесено: SSL_CERT → SECRET_KEY"
         elif [[ "$line" =~ ^###[[:space:]]*APP[[:space:]]*### ]]; then
             # Заменяем заголовок секции
             echo "### NODE ###" >> "$temp_file"
@@ -2265,17 +2265,17 @@ migrate_env_file() {
     mv "$temp_file" "$env_file"
     
     echo
-    colorized_echo green "🎉 .env migration completed successfully!"
-    colorized_echo blue "📋 Summary:"
+    colorized_echo green "🎉 Миграция .env завершена!"
+    colorized_echo blue "📋 Итог:"
     if [ "$has_app_port" = true ]; then
         colorized_echo green "   ✅ APP_PORT → NODE_PORT"
     fi
     if [ "$has_ssl_cert" = true ]; then
         colorized_echo green "   ✅ SSL_CERT → SECRET_KEY"
     fi
-    colorized_echo blue "💾 Backup: $backup_file"
+    colorized_echo blue "💾 Резервная копия: $backup_file"
     echo
-    colorized_echo yellow "⚠️  Note: Old variables are deprecated and will be removed in future versions"
+    colorized_echo yellow "⚠️  Примечание: старые переменные устарели и будут удалены в будущих версиях"
     echo
     
     return 0
@@ -2286,7 +2286,7 @@ migrate_inline_env() {
     local compose_file="$COMPOSE_FILE"
     
     if [ ! -f "$compose_file" ]; then
-        colorized_echo yellow "⚠️  docker-compose.yml not found, skipping migration"
+        colorized_echo yellow "⚠️  docker-compose.yml не найден, пропускаю миграцию"
         return 0
     fi
     
@@ -2298,27 +2298,27 @@ migrate_inline_env() {
     fi
     
     if [ "$needs_migration" = false ]; then
-        colorized_echo green "✅ docker-compose.yml is up to date"
-        colorized_echo blue "   No migration needed - all variables use new format:"
-        colorized_echo blue "   • NODE_PORT (instead of APP_PORT)"
-        colorized_echo blue "   • SECRET_KEY (instead of SSL_CERT)"
+        colorized_echo green "✅ docker-compose.yml в актуальном формате"
+        colorized_echo blue "   Миграция не нужна — все переменные в новом формате:"
+        colorized_echo blue "   • NODE_PORT (вместо APP_PORT)"
+        colorized_echo blue "   • SECRET_KEY (вместо SSL_CERT)"
         return 0
     fi
     
-    colorized_echo blue "🔄 Detected old environment variables in docker-compose.yml:"
+    colorized_echo blue "🔄 В docker-compose.yml найдены старые переменные:"
     if grep -A 10 "environment:" "$compose_file" | grep -q "APP_PORT"; then
-        colorized_echo yellow "   • APP_PORT → will be migrated to NODE_PORT"
+        colorized_echo yellow "   • APP_PORT → будет перенесён в NODE_PORT"
     fi
     if grep -A 10 "environment:" "$compose_file" | grep -q "SSL_CERT"; then
-        colorized_echo yellow "   • SSL_CERT → will be migrated to SECRET_KEY"
+        colorized_echo yellow "   • SSL_CERT → будет перенесён в SECRET_KEY"
     fi
     echo
-    colorized_echo blue "📝 Starting migration..."
+    colorized_echo blue "📝 Начинаю миграцию..."
     
     # Создаем backup
     local backup_file="${compose_file}.backup.$(date +%Y%m%d_%H%M%S)"
     cp "$compose_file" "$backup_file"
-    colorized_echo green "✅ Backup created: $backup_file"
+    colorized_echo green "✅ Резервная копия: $backup_file"
     
     # Выполняем миграцию
     local temp_file=$(mktemp)
@@ -2327,11 +2327,11 @@ migrate_inline_env() {
         if [[ "$line" =~ APP_PORT ]]; then
             # Заменяем APP_PORT на NODE_PORT
             echo "$line" | sed 's/APP_PORT/NODE_PORT/g' >> "$temp_file"
-            colorized_echo green "  ✅ Migrated: APP_PORT → NODE_PORT"
+            colorized_echo green "  ✅ Перенесено: APP_PORT → NODE_PORT"
         elif [[ "$line" =~ SSL_CERT ]]; then
             # Заменяем SSL_CERT на SECRET_KEY
             echo "$line" | sed 's/SSL_CERT/SECRET_KEY/g' >> "$temp_file"
-            colorized_echo green "  ✅ Migrated: SSL_CERT → SECRET_KEY"
+            colorized_echo green "  ✅ Перенесено: SSL_CERT → SECRET_KEY"
         else
             echo "$line" >> "$temp_file"
         fi
@@ -2341,24 +2341,24 @@ migrate_inline_env() {
     mv "$temp_file" "$compose_file"
     
     echo
-    colorized_echo green "🎉 docker-compose.yml migration completed successfully!"
-    colorized_echo blue "💾 Backup: $backup_file"
+    colorized_echo green "🎉 Миграция docker-compose.yml завершена!"
+    colorized_echo blue "💾 Резервная копия: $backup_file"
     echo
     
     # Предлагаем мигрировать на .env файл
-    colorized_echo blue "💡 Recommendation: Consider migrating to .env file for better security"
-    colorized_echo blue "   Environment variables in docker-compose.yml are less secure"
+    colorized_echo blue "💡 Совет: перенесите переменные в файл .env — так безопаснее"
+    colorized_echo blue "   Переменные прямо в docker-compose.yml защищены хуже"
     echo
-    read -p "Do you want to migrate to .env file now? (y/n): " -r migrate_to_env
+    read -p "Перенести в файл .env сейчас? (y/n): " -r migrate_to_env
     
     if [[ $migrate_to_env =~ ^[Yy]$ ]]; then
         migrate_to_env_file
     else
-        colorized_echo yellow "⚠️  Keeping inline environment variables"
+        colorized_echo yellow "⚠️  Оставляю переменные в docker-compose.yml"
     fi
     
     echo
-    colorized_echo yellow "⚠️  Note: Old variables are deprecated and will be removed in future versions"
+    colorized_echo yellow "⚠️  Примечание: старые переменные устарели и будут удалены в будущих версиях"
     echo
     
     return 0
@@ -2366,7 +2366,7 @@ migrate_inline_env() {
 
 # Функция для миграции inline переменных в .env файл
 migrate_to_env_file() {
-    colorized_echo blue "🔄 Migrating inline environment variables to .env file..."
+    colorized_echo blue "🔄 Переношу переменные из docker-compose.yml в файл .env..."
     
     # Извлекаем переменные из docker-compose.yml
     local node_port=$(grep -A 10 "environment:" "$COMPOSE_FILE" 2>/dev/null | grep "NODE_PORT" | cut -d'=' -f2- | tr -d '"' | tr -d "'" | xargs)
@@ -2381,7 +2381,7 @@ NODE_PORT=${node_port:-3000}
 SECRET_KEY=$secret_key
 EOL
     
-    colorized_echo green "✅ .env file created: $ENV_FILE"
+    colorized_echo green "✅ Файл .env создан: $ENV_FILE"
     
     # Обновляем docker-compose.yml для использования env_file
     local temp_file=$(mktemp)
@@ -2417,7 +2417,7 @@ EOL
     # Заменяем оригинальный файл
     mv "$temp_file" "$COMPOSE_FILE"
     
-    colorized_echo green "✅ docker-compose.yml updated to use .env file"
+    colorized_echo green "✅ docker-compose.yml теперь использует файл .env"
 }
 
 # ============================================
@@ -2451,18 +2451,18 @@ migrate_deprecated_ports() {
     fi
     
     echo
-    colorized_echo cyan "🔄 Migration: Removing deprecated port configurations"
+    colorized_echo cyan "🔄 Миграция: удаляю устаревшие настройки портов"
     echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 50))\033[0m"
     
-    colorized_echo blue "   Since remnawave/node v2.5.0, internal communication uses unix sockets."
-    colorized_echo blue "   The following deprecated variables will be removed from .env:"
+    colorized_echo blue "   С remnawave/node v2.5.0 внутренняя связь идёт через unix-сокеты."
+    colorized_echo blue "   Из .env будут удалены устаревшие переменные:"
     
     if [ "$has_supervisord_port" = true ]; then
-        colorized_echo yellow "   • SUPERVISORD_PORT (now uses /run/supervisord.sock)"
+        colorized_echo yellow "   • SUPERVISORD_PORT (теперь /run/supervisord.sock)"
     fi
     
     if [ "$has_internal_rest_port" = true ]; then
-        colorized_echo yellow "   • INTERNAL_REST_PORT (now uses /run/remnawave-internal.sock)"
+        colorized_echo yellow "   • INTERNAL_REST_PORT (теперь /run/remnawave-internal.sock)"
     fi
     
     echo
@@ -2474,13 +2474,13 @@ migrate_deprecated_ports() {
     # Remove deprecated variables
     if [ "$has_supervisord_port" = true ]; then
         sed -i '/^SUPERVISORD_PORT=/d' "$env_file"
-        colorized_echo green "   ✅ Removed SUPERVISORD_PORT"
+        colorized_echo green "   ✅ SUPERVISORD_PORT удалён"
         migrated=true
     fi
     
     if [ "$has_internal_rest_port" = true ]; then
         sed -i '/^INTERNAL_REST_PORT=/d' "$env_file"
-        colorized_echo green "   ✅ Removed INTERNAL_REST_PORT"
+        colorized_echo green "   ✅ INTERNAL_REST_PORT удалён"
         migrated=true
     fi
     
@@ -2502,8 +2502,8 @@ migrate_deprecated_ports() {
     
     if [ "$migrated" = true ]; then
         echo
-        colorized_echo green "🎉 Migration completed successfully!"
-        colorized_echo gray "   Backup saved: $backup_file"
+        colorized_echo green "🎉 Миграция завершена!"
+        colorized_echo gray "   Резервная копия: $backup_file"
         echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 50))\033[0m"
     fi
     
@@ -2529,12 +2529,12 @@ migrate_cap_add() {
     fi
     
     echo
-    colorized_echo cyan "🔄 Migration: Adding NET_ADMIN capability (remnawave/node v2.6.0+)"
+    colorized_echo cyan "🔄 Миграция: добавляю право NET_ADMIN (remnawave/node v2.6.0+)"
     echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 50))\033[0m"
     
-    colorized_echo blue "   NET_ADMIN capability enables IP Management features:"
-    colorized_echo blue "   • View user connections from any node"
-    colorized_echo blue "   • Drop user connections remotely"
+    colorized_echo blue "   NET_ADMIN включает управление IP:"
+    colorized_echo blue "   • просмотр подключений пользователей с любой ноды"
+    colorized_echo blue "   • удалённый разрыв подключений пользователей"
     echo
     
     # Create backup before modifying
@@ -2589,23 +2589,23 @@ migrate_cap_add() {
     fi
     
     if [ "$inserted" = false ]; then
-        colorized_echo yellow "⚠️  Could not find insertion point for cap_add"
+        colorized_echo yellow "⚠️  Не нашёл, куда вставить cap_add"
         rm -f "$backup_file"
         return 1
     fi
     
     # Validate the modified file
-    colorized_echo blue "   Validating docker-compose.yml..."
+    colorized_echo blue "   Проверяю docker-compose.yml..."
     if validate_compose_file "$compose_file"; then
-        colorized_echo green "   ✅ cap_add: NET_ADMIN added successfully"
-        colorized_echo gray "   Backup saved: $backup_file"
+        colorized_echo green "   ✅ cap_add: NET_ADMIN добавлен"
+        colorized_echo gray "   Резервная копия: $backup_file"
         cleanup_old_backups "$compose_file"
     else
-        colorized_echo red "   ❌ Validation failed! Restoring backup..."
+        colorized_echo red "   ❌ Проверка не прошла! Восстанавливаю резервную копию..."
         if restore_backup "$backup_file" "$compose_file"; then
-            colorized_echo green "   ✅ Backup restored"
+            colorized_echo green "   ✅ Резервная копия восстановлена"
         else
-            colorized_echo red "   ❌ Failed to restore backup!"
+            colorized_echo red "   ❌ Не удалось восстановить резервную копию!"
         fi
         return 1
     fi
@@ -2636,24 +2636,24 @@ migrate_log_volumes() {
         if grep -q "$old_log_dir:$old_log_dir" "$compose_file" 2>/dev/null; then
             if [ "$migrated" = false ]; then
                 echo
-                colorized_echo cyan "🔄 Migration: Log path /var/lib -> /var/log"
+                colorized_echo cyan "🔄 Миграция: путь логов /var/lib -> /var/log"
                 echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 50))\033[0m"
                 migrated=true
             fi
             sed -i "s|$old_log_dir:$old_log_dir|$new_log_dir:$new_log_dir|g" "$compose_file"
-            colorized_echo blue "   Migrated volume: $old_log_dir -> $new_log_dir"
+            colorized_echo blue "   Том перенесён: $old_log_dir -> $new_log_dir"
         fi
 
         # Migrate commented volume line
         if grep -q "#.*- $old_log_dir:$old_log_dir" "$compose_file" 2>/dev/null; then
             if [ "$migrated" = false ]; then
                 echo
-                colorized_echo cyan "🔄 Migration: Log path /var/lib -> /var/log"
+                colorized_echo cyan "🔄 Миграция: путь логов /var/lib -> /var/log"
                 echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 50))\033[0m"
                 migrated=true
             fi
             sed -i "s|#\(.*- \)$old_log_dir:$old_log_dir|#\1$new_log_dir:$new_log_dir|g" "$compose_file"
-            colorized_echo blue "   Migrated commented volume"
+            colorized_echo blue "   Закомментированный том перенесён"
         fi
     fi
 
@@ -2662,30 +2662,30 @@ migrate_log_volumes() {
     if [ -f "$logrotate_config" ] && grep -q "$old_log_dir" "$logrotate_config" 2>/dev/null; then
         if [ "$migrated" = false ]; then
             echo
-            colorized_echo cyan "🔄 Migration: Log path /var/lib -> /var/log"
+            colorized_echo cyan "🔄 Миграция: путь логов /var/lib -> /var/log"
             echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 50))\033[0m"
             migrated=true
         fi
         sed -i "s|$old_log_dir|$new_log_dir|g" "$logrotate_config"
-        colorized_echo blue "   Migrated logrotate config"
+        colorized_echo blue "   Конфиг logrotate перенесён"
     fi
 
     # Migrate log files
     if ls "$old_log_dir"/*.log 1>/dev/null 2>&1; then
         if [ "$migrated" = false ]; then
             echo
-            colorized_echo cyan "🔄 Migration: Log path /var/lib -> /var/log"
+            colorized_echo cyan "🔄 Миграция: путь логов /var/lib -> /var/log"
             echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 50))\033[0m"
             migrated=true
         fi
         mkdir -p "$new_log_dir"
         mv "$old_log_dir"/*.log "$new_log_dir/"
-        colorized_echo blue "   Migrated log files to $new_log_dir"
+        colorized_echo blue "   Логи перенесены в $new_log_dir"
     fi
 
     if [ "$migrated" = true ]; then
         echo
-        echo -e "\033[38;5;250m   Update your Xray config in the panel:\033[0m"
+        echo -e "\033[38;5;250m   Обновите конфиг Xray в панели:\033[0m"
         echo -e "\033[38;5;8m   ┌──────────────────────────────────────────────────┐\033[0m"
         echo -e "\033[38;5;8m   │\033[0m  \033[38;5;213m\"log\"\033[0m: {                                       \033[38;5;8m│\033[0m"
         echo -e "\033[38;5;8m   │\033[0m      \033[38;5;213m\"error\"\033[0m: \033[38;5;113m\"$new_log_dir/error.log\"\033[0m,      \033[38;5;8m│\033[0m"
@@ -2766,24 +2766,24 @@ audit_compose_file() {
     fi
     
     echo
-    colorized_echo cyan "🔍 Docker Compose Audit"
+    colorized_echo cyan "🔍 Проверка Docker Compose"
     echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 50))\033[0m"
     
-    colorized_echo yellow "   ⚠️  Outdated docker-compose.yml detected:"
+    colorized_echo yellow "   ⚠️  docker-compose.yml устарел:"
     for issue in "${issues[@]}"; do
         colorized_echo yellow "      • $issue"
     done
     echo
     
-    colorized_echo blue "   Your docker-compose.yml can be regenerated from the current template."
-    colorized_echo gray "   All settings (image, volumes, env_file) will be preserved."
+    colorized_echo blue "   docker-compose.yml можно пересоздать по текущему шаблону."
+    colorized_echo gray "   Все настройки (image, volumes, env_file) сохранятся."
     echo
-    read -p "   Regenerate docker-compose.yml? [y/N]: " -r regen_choice
+    read -p "   Пересоздать docker-compose.yml? [y/N]: " -r regen_choice
     
     if [[ $regen_choice =~ ^[Yy]$ ]]; then
         regenerate_compose_file
     else
-        colorized_echo gray "   Skipped. You can manually edit: $APP_NAME edit"
+        colorized_echo gray "   Пропущено. Отредактировать вручную: $APP_NAME edit"
     fi
     
     echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 50))\033[0m"
@@ -2794,7 +2794,7 @@ audit_compose_file() {
 regenerate_compose_file() {
     local compose_file="$COMPOSE_FILE"
     
-    colorized_echo blue "   📝 Regenerating docker-compose.yml..."
+    colorized_echo blue "   📝 Пересоздаю docker-compose.yml..."
     
     # Extract current image
     local current_image=$(grep -E "image:.*remnawave/node" "$compose_file" 2>/dev/null | awk '{print $NF}' | tr -d '"' | tr -d "'" | head -1)
@@ -2850,7 +2850,7 @@ regenerate_compose_file() {
     # Create backup
     local backup_file="${compose_file}.backup.$(date +%Y%m%d_%H%M%S)"
     cp "$compose_file" "$backup_file"
-    colorized_echo green "   ✅ Backup: $backup_file"
+    colorized_echo green "   ✅ Резервная копия: $backup_file"
     
     # Generate new docker-compose.yml from current template
     cat > "$compose_file" <<EOL
@@ -2900,16 +2900,16 @@ EOL
     fi
     
     # Validate the regenerated file
-    colorized_echo blue "   Validating regenerated docker-compose.yml..."
+    colorized_echo blue "   Проверяю новый docker-compose.yml..."
     if validate_compose_file "$compose_file"; then
-        colorized_echo green "   ✅ docker-compose.yml regenerated successfully"
-        colorized_echo green "   💾 Backup preserved: $backup_file"
+        colorized_echo green "   ✅ docker-compose.yml пересоздан"
+        colorized_echo green "   💾 Резервная копия сохранена: $backup_file"
     else
-        colorized_echo red "   ❌ Validation failed! Restoring backup..."
+        colorized_echo red "   ❌ Проверка не прошла! Восстанавливаю резервную копию..."
         if restore_backup "$backup_file" "$compose_file"; then
-            colorized_echo green "   ✅ Backup restored"
+            colorized_echo green "   ✅ Резервная копия восстановлена"
         else
-            colorized_echo red "   ❌ Failed to restore backup!"
+            colorized_echo red "   ❌ Не удалось восстановить резервную копию!"
         fi
         return 1
     fi
@@ -2954,21 +2954,35 @@ EOL
 
 
 
+# Display-only translation of update_command's $update_reason. The English
+# value itself is still matched by the update logic below, so it stays as is.
+_update_reason_ru() {
+    case "$1" in
+        "Local image not found, downloaded new version") echo "Локального образа не было, скачана новая версия" ;;
+        "New version downloaded via docker pull") echo "Новая версия скачана через docker pull" ;;
+        "Already up to date (verified via docker pull)") echo "Уже последняя версия (проверено через docker pull)" ;;
+        "Unable to verify current version") echo "Не удалось проверить текущую версию" ;;
+        "Image re-pinned to "*) echo "Образ перезакреплён на ${1#Image re-pinned to }" ;;
+        "Running container does not match "*) echo "Запущенный контейнер не совпадает с ${1#Running container does not match }" ;;
+        *) echo "$1" ;;
+    esac
+}
+
 update_command() {
     check_running_as_root
     if ! is_remnanode_installed; then
-        echo -e "\033[1;31m❌ RemnaNode not installed!\033[0m"
-        echo -e "\033[38;5;8m   Run '\033[38;5;15msudo $APP_NAME install\033[38;5;8m' first\033[0m"
+        echo -e "\033[1;31m❌ RemnaNode не установлена!\033[0m"
+        echo -e "\033[38;5;8m   Сначала выполните '\033[38;5;15msudo $APP_NAME install\033[38;5;8m'\033[0m"
         exit 1
     fi
     
     detect_compose
     
-    echo -e "\033[1;37m🔄 Starting RemnaNode Update Check...\033[0m"
+    echo -e "\033[1;37m🔄 Проверяю обновления RemnaNode...\033[0m"
     echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 50))\033[0m"
     
     # Проверяем и обновляем скрипт ПЕРВЫМ ДЕЛОМ
-    echo -e "\033[38;5;250m📝 Step 1:\033[0m Checking script version..."
+    echo -e "\033[38;5;250m📝 Шаг 1:\033[0m проверяю версию скрипта..."
     # Applies a newer script and re-execs into it with the same arguments — no
     # prompt, no "please run update again". Migrations only ship with the script,
     # so running an update from an outdated copy is never the right outcome.
@@ -3006,9 +3020,9 @@ update_command() {
         requested_tag="$NODE_IMAGE_TAG"
     fi
 
-    echo -e "\033[38;5;250m🏷️  Current tag:\033[0m \033[38;5;15m$current_tag\033[0m"
+    echo -e "\033[38;5;250m🏷️  Текущий тег:\033[0m \033[38;5;15m$current_tag\033[0m"
     if [ "$requested_tag" != "$current_tag" ]; then
-        echo -e "\033[38;5;250m🏷️  Requested tag:\033[0m \033[38;5;15m$requested_tag\033[0m"
+        echo -e "\033[38;5;250m🏷️  Запрошенный тег:\033[0m \033[38;5;15m$requested_tag\033[0m"
     fi
 
     # node 3.3.x only talks to panel 3.3.0+ (derived-SNI TLS gate) — confirm once,
@@ -3019,7 +3033,7 @@ update_command() {
 
     if [ "$requested_tag" != "$current_tag" ]; then
         if ! verify_node_tag_exists "$image_name" "$requested_tag"; then
-            echo -e "\033[1;31m❌ Image ${image_name}:${requested_tag} was not found in the registry.\033[0m"
+            echo -e "\033[1;31m❌ Образ ${image_name}:${requested_tag} не найден в реестре.\033[0m"
             exit 1
         fi
 
@@ -3031,18 +3045,18 @@ update_command() {
         local repinned_tag
         repinned_tag=$(grep -E "image:.*remnawave/node:" "$COMPOSE_FILE" | sed 's/.*remnawave\/node://' | tr -d '"' | tr -d "'" | xargs)
         if [ "$repinned_tag" != "$requested_tag" ]; then
-            echo -e "\033[1;31m❌ Could not re-pin the image in $COMPOSE_FILE (still '${repinned_tag:-unknown}')\033[0m"
-            echo -e "\033[38;5;244m   Edit the 'image:' line by hand, then re-run the update.\033[0m"
+            echo -e "\033[1;31m❌ Не удалось сменить тег образа в $COMPOSE_FILE (по-прежнему '${repinned_tag:-unknown}')\033[0m"
+            echo -e "\033[38;5;244m   Исправьте строку 'image:' вручную и запустите обновление снова.\033[0m"
             exit 1
         fi
 
-        echo -e "\033[1;32m✅ Re-pinned node image:\033[0m \033[38;5;15m${image_name}:${requested_tag}\033[0m"
+        echo -e "\033[1;32m✅ Образ ноды перезакреплён:\033[0m \033[38;5;15m${image_name}:${requested_tag}\033[0m"
         current_tag="$requested_tag"
         tag_repinned=true
     fi
 
     # Получаем локальную версию образа
-    echo -e "\033[38;5;250m📝 Step 2:\033[0m Checking local image version..."
+    echo -e "\033[38;5;250m📝 Шаг 2:\033[0m проверяю локальный образ..."
     local local_image_id=""
     local local_created=""
 
@@ -3050,16 +3064,16 @@ update_command() {
         local_image_id=$(docker images ${image_name}:$current_tag --format "{{.ID}}" | head -1)
         local_created=$(docker images ${image_name}:$current_tag --format "{{.CreatedAt}}" | head -1 | cut -d' ' -f1,2)
         
-        echo -e "\033[1;32m✅ Local image found\033[0m"
-        echo -e "\033[38;5;8m   Image ID: $local_image_id\033[0m"
-        echo -e "\033[38;5;8m   Created: $local_created\033[0m"
+        echo -e "\033[1;32m✅ Локальный образ найден\033[0m"
+        echo -e "\033[38;5;8m   ID образа: $local_image_id\033[0m"
+        echo -e "\033[38;5;8m   Создан: $local_created\033[0m"
     else
-        echo -e "\033[1;33m⚠️  Local image not found\033[0m"
+        echo -e "\033[1;33m⚠️  Локальный образ не найден\033[0m"
         local_image_id="none"
     fi
     
     # Проверяем обновления через docker pull
-    echo -e "\033[38;5;250m📝 Step 3:\033[0m Checking for updates with docker pull..."
+    echo -e "\033[38;5;250m📝 Шаг 3:\033[0m ищу обновления через docker pull..."
     
     # Сохраняем текущий образ ID для сравнения
     local old_image_id="$local_image_id"
@@ -3075,18 +3089,18 @@ update_command() {
         if [ "$old_image_id" = "none" ]; then
             needs_update=true
             update_reason="Local image not found, downloaded new version"
-            echo -e "\033[1;33m🔄 New image downloaded\033[0m"
+            echo -e "\033[1;33m🔄 Скачан новый образ\033[0m"
         elif [ "$old_image_id" != "$new_image_id" ]; then
             needs_update=true
             update_reason="New version downloaded via docker pull"
-            echo -e "\033[1;33m🔄 New version detected and downloaded\033[0m"
+            echo -e "\033[1;33m🔄 Найдена и скачана новая версия\033[0m"
         else
             needs_update=false
             update_reason="Already up to date (verified via docker pull)"
-            echo -e "\033[1;32m✅ Already up to date\033[0m"
+            echo -e "\033[1;32m✅ Уже последняя версия\033[0m"
         fi
     else
-        echo -e "\033[1;33m⚠️  Docker pull failed, assuming update needed\033[0m"
+        echo -e "\033[1;33m⚠️  docker pull не удался, считаю, что обновление нужно\033[0m"
         local needs_update=true
         local update_reason="Unable to verify current version"
         local new_image_id="$old_image_id"
@@ -3106,22 +3120,22 @@ update_command() {
         if [ "$tag_repinned" = true ]; then
             needs_update=true
             update_reason="Image re-pinned to ${current_tag}"
-            echo -e "\033[1;33m🔄 Re-pinned to ${current_tag} — container must be recreated\033[0m"
+            echo -e "\033[1;33m🔄 Тег перезакреплён на ${current_tag} — контейнер нужно пересоздать\033[0m"
         elif [ -n "$running_image_id" ] && [ -n "$target_image_id" ] && \
              [ "$target_image_id" != "none" ] && [ "$running_image_id" != "$target_image_id" ]; then
             needs_update=true
             update_reason="Running container does not match ${image_name}:${current_tag}"
-            echo -e "\033[1;33m🔄 Running container is out of sync with the compose image\033[0m"
+            echo -e "\033[1;33m🔄 Запущенный контейнер не совпадает с образом в compose\033[0m"
         fi
     fi
     
     echo
-    echo -e "\033[1;37m📊 Update Analysis:\033[0m"
+    echo -e "\033[1;37m📊 Анализ обновления:\033[0m"
     echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 40))\033[0m"
     
     if [ "$needs_update" = true ]; then
-        echo -e "\033[1;33m🔄 Update Available\033[0m"
-        echo -e "\033[38;5;250m   Reason: \033[38;5;15m$update_reason\033[0m"
+        echo -e "\033[1;33m🔄 Есть обновление\033[0m"
+        echo -e "\033[38;5;250m   Причина: \033[38;5;15m$(_update_reason_ru "$update_reason")\033[0m"
         echo
         
         # Автоматически продолжаем, когда решение уже принято: новая версия
@@ -3129,21 +3143,21 @@ update_command() {
         # с compose-файлом (в последних двух случаях спрашивать нечего).
         if [[ "$update_reason" == *"downloaded"* ]] || [ "$tag_repinned" = true ] || \
            [[ "$update_reason" == *"does not match"* ]] || [ "$FORCE_MODE" == "true" ] || [ ! -t 0 ]; then
-            echo -e "\033[1;37m🚀 Proceeding with update...\033[0m"
+            echo -e "\033[1;37m🚀 Продолжаю обновление...\033[0m"
         else
-            read -p "Do you want to proceed with the update? (y/n): " -r confirm_update
+            read -p "Обновить? (y/n): " -r confirm_update
             if [[ ! $confirm_update =~ ^[Yy]$ ]]; then
-                echo -e "\033[1;31m❌ Update cancelled by user\033[0m"
+                echo -e "\033[1;31m❌ Обновление отменено\033[0m"
                 exit 0
             fi
         fi
         
         echo
-        echo -e "\033[1;37m🚀 Performing Update...\033[0m"
+        echo -e "\033[1;37m🚀 Обновляю...\033[0m"
         echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 40))\033[0m"
         
         # Проверяем и мигрируем переменные окружения
-        echo -e "\033[38;5;250m📝 Step 4:\033[0m Checking environment variables..."
+        echo -e "\033[38;5;250m📝 Шаг 4:\033[0m проверяю переменные окружения..."
         migrate_env_variables
         
         # Миграция устаревших портов (v4.0.0+)
@@ -3162,55 +3176,55 @@ update_command() {
         local was_running=false
         if is_remnanode_up; then
             was_running=true
-            echo -e "\033[38;5;250m📝 Step 5:\033[0m Stopping running container..."
+            echo -e "\033[38;5;250m📝 Шаг 5:\033[0m останавливаю контейнер..."
             if down_remnanode; then
-                echo -e "\033[1;32m✅ Container stopped\033[0m"
+                echo -e "\033[1;32m✅ Контейнер остановлен\033[0m"
             else
-                echo -e "\033[1;31m❌ Failed to stop container\033[0m"
+                echo -e "\033[1;31m❌ Не удалось остановить контейнер\033[0m"
                 exit 1
             fi
         else
-            echo -e "\033[38;5;250m📝 Step 5:\033[0m Container not running, skipping stop..."
+            echo -e "\033[38;5;250m📝 Шаг 5:\033[0m контейнер не запущен, останавливать нечего..."
         fi
         
         # Загружаем образ только если еще не загружен
         if [[ "$update_reason" != *"downloaded"* ]]; then
-            echo -e "\033[38;5;250m📝 Step 6:\033[0m Pulling latest image..."
+            echo -e "\033[38;5;250m📝 Шаг 6:\033[0m скачиваю последний образ..."
             if update_remnanode; then
-                echo -e "\033[1;32m✅ Image updated\033[0m"
+                echo -e "\033[1;32m✅ Образ обновлён\033[0m"
                 # Обновляем ID образа
                 new_image_id=$(docker images ${image_name}:$current_tag --format "{{.ID}}" | head -1)
             else
-                echo -e "\033[1;31m❌ Failed to pull image\033[0m"
+                echo -e "\033[1;31m❌ Не удалось скачать образ\033[0m"
                 
                 # Если контейнер был запущен, пытаемся его восстановить
                 if [ "$was_running" = true ]; then
-                    echo -e "\033[38;5;250m🔄 Attempting to restore service...\033[0m"
+                    echo -e "\033[38;5;250m🔄 Пробую восстановить сервис...\033[0m"
                     up_remnanode
                 fi
                 exit 1
             fi
         else
-            echo -e "\033[38;5;250m📝 Step 6:\033[0m Image already updated during check\033[0m"
+            echo -e "\033[38;5;250m📝 Шаг 6:\033[0m образ уже обновлён при проверке\033[0m"
         fi
         
         # Запускаем контейнер только если он был запущен ранее
         if [ "$was_running" = true ]; then
-            echo -e "\033[38;5;250m📝 Step 7:\033[0m Starting updated container..."
+            echo -e "\033[38;5;250m📝 Шаг 7:\033[0m запускаю обновлённый контейнер..."
             if up_remnanode; then
-                echo -e "\033[1;32m✅ Container started\033[0m"
+                echo -e "\033[1;32m✅ Контейнер запущен\033[0m"
             else
-                echo -e "\033[1;31m❌ Failed to start container\033[0m"
+                echo -e "\033[1;31m❌ Не удалось запустить контейнер\033[0m"
                 exit 1
             fi
         else
-            echo -e "\033[38;5;250m📝 Step 7:\033[0m Container was not running, leaving it stopped..."
+            echo -e "\033[38;5;250m📝 Шаг 7:\033[0m контейнер не был запущен, оставляю остановленным..."
         fi
         
         # Показываем финальную информацию
         echo
         echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 50))\033[0m"
-        echo -e "\033[1;37m🎉 RemnaNode updated successfully!\033[0m"
+        echo -e "\033[1;37m🎉 RemnaNode обновлена!\033[0m"
         
         # Получаем актуальную информацию об образе
         local final_image_id=$(docker images ${image_name}:$current_tag --format "{{.ID}}" | head -1)
@@ -3228,40 +3242,40 @@ update_command() {
             node_version=$(get_remnanode_version 2>/dev/null || echo "N/A")
         fi
         
-        echo -e "\033[1;37m📋 Update Summary:\033[0m"
+        echo -e "\033[1;37m📋 Итог обновления:\033[0m"
         echo -e "\033[38;5;250m   RemnaNode: \033[38;5;15mv${node_version}\033[0m"
-        echo -e "\033[38;5;250m   Image ID:  \033[38;5;8m${final_image_id:-N/A}\033[0m"
-        echo -e "\033[38;5;250m   Created:   \033[38;5;15m${final_created:-N/A}\033[0m"
-        echo -e "\033[38;5;250m   Script:    \033[38;5;15mv$current_script_version\033[0m"
+        echo -e "\033[38;5;250m   ID образа: \033[38;5;8m${final_image_id:-N/A}\033[0m"
+        echo -e "\033[38;5;250m   Создан:    \033[38;5;15m${final_created:-N/A}\033[0m"
+        echo -e "\033[38;5;250m   Скрипт:    \033[38;5;15mv$current_script_version\033[0m"
         
         if [ "$was_running" = true ]; then
-            echo -e "\033[38;5;250m   Status:    \033[1;32mRunning\033[0m"
+            echo -e "\033[38;5;250m   Статус:    \033[1;32mработает\033[0m"
         else
-            echo -e "\033[38;5;250m   Status:    \033[1;33mStopped\033[0m"
-            echo -e "\033[38;5;8m   Use '\033[38;5;15msudo $APP_NAME up\033[38;5;8m' to start\033[0m"
+            echo -e "\033[38;5;250m   Статус:    \033[1;33mостановлена\033[0m"
+            echo -e "\033[38;5;8m   Запуск: '\033[38;5;15msudo $APP_NAME up\033[38;5;8m'\033[0m"
         fi
         
         echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 50))\033[0m"
         
     else
-        echo -e "\033[1;32m✅ Already Up to Date\033[0m"
-        echo -e "\033[38;5;250m   Reason: \033[38;5;15m$update_reason\033[0m"
+        echo -e "\033[1;32m✅ Уже последняя версия\033[0m"
+        echo -e "\033[38;5;250m   Причина: \033[38;5;15m$(_update_reason_ru "$update_reason")\033[0m"
         echo
         
         echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 40))\033[0m"
-        echo -e "\033[1;37m📊 Current Status:\033[0m"
+        echo -e "\033[1;37m📊 Текущее состояние:\033[0m"
         
-        echo -e "\033[38;5;250m   Script:    \033[38;5;15mv$current_script_version\033[0m"
+        echo -e "\033[38;5;250m   Скрипт:    \033[38;5;15mv$current_script_version\033[0m"
         
         if is_remnanode_up; then
-            echo -e "\033[38;5;250m   Container: \033[1;32mRunning ✅\033[0m"
+            echo -e "\033[38;5;250m   Контейнер: \033[1;32mработает ✅\033[0m"
         else
-            echo -e "\033[38;5;250m   Container: \033[1;33mStopped ⏹️\033[0m"
-            echo -e "\033[38;5;8m   Use '\033[38;5;15msudo $APP_NAME up\033[38;5;8m' to start\033[0m"
+            echo -e "\033[38;5;250m   Контейнер: \033[1;33mостановлен ⏹️\033[0m"
+            echo -e "\033[38;5;8m   Запуск: '\033[38;5;15msudo $APP_NAME up\033[38;5;8m'\033[0m"
         fi
         
-        echo -e "\033[38;5;250m   Image Tag: \033[38;5;15m$current_tag\033[0m"
-        echo -e "\033[38;5;250m   Image ID:  \033[38;5;15m$local_image_id\033[0m"
+        echo -e "\033[38;5;250m   Тег образа: \033[38;5;15m$current_tag\033[0m"
+        echo -e "\033[38;5;250m   ID образа:  \033[38;5;15m$local_image_id\033[0m"
         echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 40))\033[0m"
     fi
 }
@@ -3283,10 +3297,10 @@ identify_the_operating_system_and_architecture() {
             'ppc64le') ARCH='ppc64le' ;;
             'riscv64') ARCH='riscv64' ;;
             's390x') ARCH='s390x' ;;
-            *) echo "error: The architecture is not supported."; exit 1 ;;
+            *) echo "Ошибка: архитектура не поддерживается."; exit 1 ;;
         esac
     else
-        echo "error: This operating system is not supported."
+        echo "Ошибка: эта операционная система не поддерживается."
         exit 1
     fi
 }
@@ -3313,7 +3327,7 @@ get_current_xray_core_version() {
         # с ненулевым кодом завершило бы скрипт до проверки [ $? -eq 0 ].
         if version_output=$("$XRAY_FILE" -version 2>/dev/null); then
             version=$(echo "$version_output" | head -n1 | awk '{print $2}')
-            echo "$version (external)"
+            echo "$version (внешний)"
             return 0
         fi
     fi
@@ -3321,7 +3335,7 @@ get_current_xray_core_version() {
     # Если Xray не примонтирован или файл не работает, проверяем встроенную версию в контейнере
     local container_version=$(get_container_xray_version 2>/dev/null)
     if [ "$container_version" != "unknown" ] && [ -n "$container_version" ]; then
-        echo "$container_version (built-in)"
+        echo "$container_version (встроенный)"
         return 0
     fi
     
@@ -3347,7 +3361,7 @@ get_xray_core() {
         clear
         
         # Заголовок в монохромном стиле
-        echo -e "\033[1;37m⚡ Xray-core Installer\033[0m \033[38;5;8mVersion Manager\033[0m \033[38;5;244mv$SCRIPT_VERSION\033[0m"
+        echo -e "\033[1;37m⚡ Установщик Xray-core\033[0m \033[38;5;8mвыбор версии\033[0m \033[38;5;244mv$SCRIPT_VERSION\033[0m"
         echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 70))\033[0m"
         echo
         
@@ -3356,30 +3370,30 @@ get_xray_core() {
         # остановлен / не примонтирован). Без защиты set -e (стр. 3) молча убил
         # бы скрипт прямо здесь — баннер уже показан, а меню не появляется.
         current_version=$(get_current_xray_core_version || true)
-        echo -e "\033[1;37m🌐 Current Status:\033[0m"
-        printf "   \033[38;5;15m%-15s\033[0m \033[38;5;250m%s\033[0m\n" "Xray Version:" "$current_version"
-        printf "   \033[38;5;15m%-15s\033[0m \033[38;5;250m%s\033[0m\n" "Architecture:" "$ARCH"
+        echo -e "\033[1;37m🌐 Текущее состояние:\033[0m"
+        printf "   \033[38;5;15m%s\033[0m \033[38;5;250m%s\033[0m\n" "Версия Xray:   " "${current_version/#Not installed/Не установлен}"
+        printf "   \033[38;5;15m%s\033[0m \033[38;5;250m%s\033[0m\n" "Архитектура:   " "$ARCH"
         
         # Показываем путь установки только если Xray примонтирован
         if is_xray_mounted; then
-            printf "   \033[38;5;15m%-15s\033[0m \033[38;5;250m%s\033[0m\n" "Install Path:" "$XRAY_FILE"
-            printf "   \033[38;5;15m%-15s\033[0m \033[1;32m%s\033[0m\n" "Mount Status:" "✅ Mounted to container"
+            printf "   \033[38;5;15m%s\033[0m \033[38;5;250m%s\033[0m\n" "Путь установки:" "$XRAY_FILE"
+            printf "   \033[38;5;15m%s\033[0m \033[1;32m%s\033[0m\n" "Монтирование:  " "✅ Подключён к контейнеру"
         else
-            printf "   \033[38;5;15m%-15s\033[0m \033[38;5;244m%s\033[0m\n" "Mount Status:" "⚪ Using built-in version"
+            printf "   \033[38;5;15m%s\033[0m \033[38;5;244m%s\033[0m\n" "Монтирование:  " "⚪ Встроенная версия"
         fi
         echo
         
         # Показываем режим выбора релизов
-        echo -e "\033[1;37m🎯 Release Mode:\033[0m"
+        echo -e "\033[1;37m🎯 Какие релизы показывать:\033[0m"
         if [ "$show_prereleases" = true ]; then
-            printf "   \033[38;5;15m%-15s\033[0m \033[38;5;250m%s\033[0m \033[38;5;244m(Including Pre-releases)\033[0m\n" "Current:" "All Releases"
+            printf "   \033[38;5;15m%s\033[0m \033[38;5;250m%s\033[0m \033[38;5;244m(включая pre-release)\033[0m\n" "Сейчас:        " "Все релизы"
         else
-            printf "   \033[38;5;15m%-15s\033[0m \033[38;5;250m%s\033[0m \033[1;37m(Stable Only)\033[0m\n" "Current:" "Stable Releases"
+            printf "   \033[38;5;15m%s\033[0m \033[38;5;250m%s\033[0m \033[1;37m(только стабильные)\033[0m\n" "Сейчас:        " "Стабильные релизы"
         fi
         echo
         
         # Доступные версии с метками
-        echo -e "\033[1;37m🚀 Available Versions:\033[0m"
+        echo -e "\033[1;37m🚀 Доступные версии:\033[0m"
         for ((i=0; i<${#versions[@]}; i++)); do
             local version_num=$((i + 1))
             local version_name="${versions[i]}"
@@ -3387,48 +3401,48 @@ get_xray_core() {
             
             # Определяем тип релиза и используем echo вместо printf
             if [ "$is_prerelease" = "true" ]; then
-                echo -e "   \033[38;5;15m${version_num}:\033[0m \033[38;5;250m${version_name}\033[0m \033[38;5;244m(Pre-release)\033[0m"
+                echo -e "   \033[38;5;15m${version_num}:\033[0m \033[38;5;250m${version_name}\033[0m \033[38;5;244m(pre-release)\033[0m"
             elif [ $i -eq 0 ] && [ "$is_prerelease" = "false" ]; then
-                echo -e "   \033[38;5;15m${version_num}:\033[0m \033[38;5;250m${version_name}\033[0m \033[1;37m(Latest Stable)\033[0m"
+                echo -e "   \033[38;5;15m${version_num}:\033[0m \033[38;5;250m${version_name}\033[0m \033[1;37m(последняя стабильная)\033[0m"
             else
-                echo -e "   \033[38;5;15m${version_num}:\033[0m \033[38;5;250m${version_name}\033[0m \033[38;5;8m(Stable)\033[0m"
+                echo -e "   \033[38;5;15m${version_num}:\033[0m \033[38;5;250m${version_name}\033[0m \033[38;5;8m(стабильная)\033[0m"
             fi
         done
         echo
         
         # Опции
-        echo -e "\033[1;37m🔧 Options:\033[0m"
-        printf "   \033[38;5;15m%-3s\033[0m %s\n" "M:" "📝 Enter version manually"
+        echo -e "\033[1;37m🔧 Действия:\033[0m"
+        printf "   \033[38;5;15m%-3s\033[0m %s\n" "M:" "📝 Ввести версию вручную"
         if [ "$show_prereleases" = true ]; then
-            printf "   \033[38;5;15m%-3s\033[0m %s\n" "S:" "🔒 Show stable releases only"
+            printf "   \033[38;5;15m%-3s\033[0m %s\n" "S:" "🔒 Только стабильные релизы"
         else
-            printf "   \033[38;5;15m%-3s\033[0m %s\n" "A:" "🧪 Show all releases (including pre-releases)"
+            printf "   \033[38;5;15m%-3s\033[0m %s\n" "A:" "🧪 Все релизы (включая pre-release)"
         fi
-        printf "   \033[38;5;15m%-3s\033[0m %s\n" "R:" "🔄 Refresh version list"
-        printf "   \033[38;5;15m%-3s\033[0m %s\n" "D:" "🏠 Restore to container default Xray"
-        printf "   \033[38;5;15m%-3s\033[0m %s\n" "Q:" "❌ Quit installer"
+        printf "   \033[38;5;15m%-3s\033[0m %s\n" "R:" "🔄 Обновить список версий"
+        printf "   \033[38;5;15m%-3s\033[0m %s\n" "D:" "🏠 Вернуть встроенный в контейнер Xray"
+        printf "   \033[38;5;15m%-3s\033[0m %s\n" "Q:" "❌ Выйти из установщика"
         echo
         
         echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 70))\033[0m"
-        echo -e "\033[1;37m📖 Usage:\033[0m"
-        echo -e "   Choose a number \033[38;5;15m(1-${#versions[@]})\033[0m, \033[38;5;15mM\033[0m for manual, \033[38;5;15mA/S\033[0m to toggle releases, \033[38;5;15mD\033[0m to restore default, or \033[38;5;15mQ\033[0m to quit"
+        echo -e "\033[1;37m📖 Как выбрать:\033[0m"
+        echo -e "   Выберите номер \033[38;5;15m(1-${#versions[@]})\033[0m, \033[38;5;15mM\033[0m — ввести вручную, \033[38;5;15mA/S\033[0m — все/стабильные, \033[38;5;15mD\033[0m — встроенный Xray, \033[38;5;15mQ\033[0m — выход"
         echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 70))\033[0m"
     }
     
     fetch_versions() {
         local include_prereleases="$1"
-        echo -e "\033[1;37m🔍 Fetching Xray-core versions...\033[0m"
+        echo -e "\033[1;37m🔍 Получаю список версий Xray-core...\033[0m"
         
         if [ "$include_prereleases" = true ]; then
-            echo -e "\033[38;5;8m   Including pre-releases...\033[0m"
+            echo -e "\033[38;5;8m   Включая pre-release...\033[0m"
             latest_releases=$(curl -s "https://api.github.com/repos/XTLS/Xray-core/releases?per_page=8")
         else
-            echo -e "\033[38;5;8m   Stable releases only...\033[0m"
+            echo -e "\033[38;5;8m   Только стабильные...\033[0m"
             latest_releases=$(curl -s "https://api.github.com/repos/XTLS/Xray-core/releases?per_page=15")
         fi
         
         if [ -z "$latest_releases" ] || echo "$latest_releases" | grep -q '"message":'; then
-            echo -e "\033[1;31m❌ Failed to fetch versions. Please check your internet connection.\033[0m"
+            echo -e "\033[1;31m❌ Не удалось получить список версий. Проверьте подключение к интернету.\033[0m"
             return 1
         fi
         
@@ -3469,11 +3483,11 @@ get_xray_core() {
         rm "$temp_file"
         
         if [ ${#versions[@]} -eq 0 ]; then
-            echo -e "\033[1;31m❌ No versions found.\033[0m"
+            echo -e "\033[1;31m❌ Версии не найдены.\033[0m"
             return 1
         fi
         
-        echo -e "\033[1;32m✅ Found ${#versions[@]} versions\033[0m"
+        echo -e "\033[1;32m✅ Найдено версий: ${#versions[@]}\033[0m"
         return 0
     }
     
@@ -3497,38 +3511,38 @@ get_xray_core() {
             
             echo
             if [ "$selected_prerelease" = "true" ]; then
-                echo -e "\033[1;33m⚠️  Selected pre-release version: \033[1;37m$selected_version\033[0m"
-                echo -e "\033[38;5;8m   Pre-releases may contain bugs and are not recommended for production.\033[0m"
-                read -p "Are you sure you want to continue? (y/n): " -r confirm_prerelease
+                echo -e "\033[1;33m⚠️  Выбрана предварительная версия: \033[1;37m$selected_version\033[0m"
+                echo -e "\033[38;5;8m   В pre-release могут быть ошибки, для рабочих серверов их не советуют.\033[0m"
+                read -p "Точно продолжить? (y/n): " -r confirm_prerelease
                 if [[ ! $confirm_prerelease =~ ^[Yy]$ ]]; then
-                    echo -e "\033[1;31m❌ Installation cancelled.\033[0m"
+                    echo -e "\033[1;31m❌ Установка отменена.\033[0m"
                     continue
                 fi
             else
-                echo -e "\033[1;32m✅ Selected stable version: \033[1;37m$selected_version\033[0m"
+                echo -e "\033[1;32m✅ Выбрана стабильная версия: \033[1;37m$selected_version\033[0m"
             fi
             break
             
         elif [ "$choice" == "M" ] || [ "$choice" == "m" ]; then
             echo
-            echo -e "\033[1;37m📝 Manual Version Entry:\033[0m"
+            echo -e "\033[1;37m📝 Ввод версии вручную:\033[0m"
             while true; do
-                echo -n -e "\033[38;5;8mEnter version (e.g., v1.8.4): \033[0m"
+                echo -n -e "\033[38;5;8mВведите версию (например, v1.8.4): \033[0m"
                 read custom_version
                 
                 if [ -z "$custom_version" ]; then
-                    echo -e "\033[1;31m❌ Version cannot be empty. Please try again.\033[0m"
+                    echo -e "\033[1;31m❌ Версия не может быть пустой. Попробуйте ещё раз.\033[0m"
                     continue
                 fi
                 
-                echo -e "\033[1;37m🔍 Validating version $custom_version...\033[0m"
+                echo -e "\033[1;37m🔍 Проверяю версию $custom_version...\033[0m"
                 if [ "$(validate_version "$custom_version")" == "valid" ]; then
                     selected_version="$custom_version"
-                    echo -e "\033[1;32m✅ Version $custom_version is valid!\033[0m"
+                    echo -e "\033[1;32m✅ Версия $custom_version найдена!\033[0m"
                     break 2
                 else
-                    echo -e "\033[1;31m❌ Version $custom_version not found. Please try again.\033[0m"
-                    echo -e "\033[38;5;8m   Hint: Check https://github.com/XTLS/Xray-core/releases\033[0m"
+                    echo -e "\033[1;31m❌ Версия $custom_version не найдена. Попробуйте ещё раз.\033[0m"
+                    echo -e "\033[38;5;8m   Подсказка: список на https://github.com/XTLS/Xray-core/releases\033[0m"
                     echo
                 fi
             done
@@ -3558,48 +3572,48 @@ get_xray_core() {
             
         elif [ "$choice" == "D" ] || [ "$choice" == "d" ]; then
             echo
-            echo -e "\033[1;33m🏠 Restore to Container Default Xray\033[0m"
-            echo -e "\033[38;5;8m   This will remove external Xray mount and use the version built into the container.\033[0m"
+            echo -e "\033[1;33m🏠 Вернуть встроенный в контейнер Xray\033[0m"
+            echo -e "\033[38;5;8m   Внешний Xray будет отключён, контейнер возьмёт свою встроенную версию.\033[0m"
             echo
-            read -p "Are you sure you want to restore to container default? (y/n): " -r confirm_restore
+            read -p "Точно вернуть встроенный Xray? (y/n): " -r confirm_restore
             if [[ $confirm_restore =~ ^[Yy]$ ]]; then
                 restore_to_container_default
                 echo
-                echo -n -e "\033[38;5;8mPress Enter to continue...\033[0m"
+                echo -n -e "\033[38;5;8mНажмите Enter, чтобы продолжить...\033[0m"
                 read
             else
-                echo -e "\033[1;31m❌ Restore cancelled.\033[0m"
+                echo -e "\033[1;31m❌ Возврат отменён.\033[0m"
                 echo
-                echo -n -e "\033[38;5;8mPress Enter to continue...\033[0m"
+                echo -n -e "\033[38;5;8mНажмите Enter, чтобы продолжить...\033[0m"
                 read
             fi
             
         elif [ "$choice" == "Q" ] || [ "$choice" == "q" ]; then
             echo
-            echo -e "\033[1;31m❌ Installation cancelled by user.\033[0m"
+            echo -e "\033[1;31m❌ Установка отменена.\033[0m"
             exit 0
             
         else
             echo
-            echo -e "\033[1;31m❌ Invalid choice: '$choice'\033[0m"
-            echo -e "\033[38;5;8m   Please enter a number between 1-${#versions[@]}, M for manual, A/S to toggle releases, R to refresh, D to restore default, or Q to quit.\033[0m"
+            echo -e "\033[1;31m❌ Неверный выбор: '$choice'\033[0m"
+            echo -e "\033[38;5;8m   Введите номер от 1 до ${#versions[@]}, M — вручную, A/S — все/стабильные, R — обновить список, D — встроенный Xray, Q — выход.\033[0m"
             echo
-            echo -n -e "\033[38;5;8mPress Enter to continue...\033[0m"
+            echo -n -e "\033[38;5;8mНажмите Enter, чтобы продолжить...\033[0m"
             read
         fi
     done
     
     echo
     echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 60))\033[0m"
-    echo -e "\033[1;37m🚀 Starting Installation\033[0m"
+    echo -e "\033[1;37m🚀 Начинаю установку\033[0m"
     echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 60))\033[0m"
     
     # Проверка и установка unzip
     if ! dpkg -s unzip >/dev/null 2>&1; then
-        echo -e "\033[1;37m📦 Installing required packages...\033[0m"
+        echo -e "\033[1;37m📦 Устанавливаю нужные пакеты...\033[0m"
         detect_os
         install_package unzip
-        echo -e "\033[1;32m✅ Packages installed successfully\033[0m"
+        echo -e "\033[1;32m✅ Пакеты установлены\033[0m"
     fi
     
     mkdir -p "$DATA_DIR"
@@ -3609,24 +3623,24 @@ get_xray_core() {
     xray_download_url="https://github.com/XTLS/Xray-core/releases/download/${selected_version}/${xray_filename}"
     
     # Скачивание с прогрессом
-    echo -e "\033[1;37m📥 Downloading Xray-core $selected_version...\033[0m"
+    echo -e "\033[1;37m📥 Скачиваю Xray-core $selected_version...\033[0m"
     echo -e "\033[38;5;8m   URL: $xray_download_url\033[0m"
     
     if wget "${xray_download_url}" -q --show-progress; then
-        echo -e "\033[1;32m✅ Download completed successfully\033[0m"
+        echo -e "\033[1;32m✅ Скачано\033[0m"
     else
-        echo -e "\033[1;31m❌ Download failed!\033[0m"
-        echo -e "\033[38;5;8m   Please check your internet connection or try a different version.\033[0m"
+        echo -e "\033[1;31m❌ Скачать не удалось!\033[0m"
+        echo -e "\033[38;5;8m   Проверьте подключение к интернету или выберите другую версию.\033[0m"
         exit 1
     fi
     
     # Извлечение
-    echo -e "\033[1;37m📦 Extracting Xray-core...\033[0m"
+    echo -e "\033[1;37m📦 Распаковываю Xray-core...\033[0m"
     if unzip -o "${xray_filename}" -d "$DATA_DIR" >/dev/null 2>&1; then
-        echo -e "\033[1;32m✅ Extraction completed successfully\033[0m"
+        echo -e "\033[1;32m✅ Распаковано\033[0m"
     else
-        echo -e "\033[1;31m❌ Extraction failed!\033[0m"
-        echo -e "\033[38;5;8m   The downloaded file may be corrupted.\033[0m"
+        echo -e "\033[1;31m❌ Распаковать не удалось!\033[0m"
+        echo -e "\033[38;5;8m   Возможно, скачанный файл повреждён.\033[0m"
         exit 1
     fi
     
@@ -3637,24 +3651,24 @@ get_xray_core() {
     # Финальное сообщение
     echo
     echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 60))\033[0m"
-    echo -e "\033[1;37m🎉 Installation Complete!\033[0m"
+    echo -e "\033[1;37m🎉 Установка завершена!\033[0m"
     
     # Информация об установке
-    echo -e "\033[1;37m📋 Installation Details:\033[0m"
-    printf "   \033[38;5;15m%-15s\033[0m \033[38;5;250m%s\033[0m\n" "Version:" "$selected_version"
-    printf "   \033[38;5;15m%-15s\033[0m \033[38;5;250m%s\033[0m\n" "Architecture:" "$ARCH"
-    printf "   \033[38;5;15m%-15s\033[0m \033[38;5;250m%s\033[0m\n" "Install Path:" "$XRAY_FILE"
-    printf "   \033[38;5;15m%-15s\033[0m \033[38;5;250m%s\033[0m\n" "File Size:" "$(du -h "$XRAY_FILE" | cut -f1)"
+    echo -e "\033[1;37m📋 Подробности установки:\033[0m"
+    printf "   \033[38;5;15m%s\033[0m \033[38;5;250m%s\033[0m\n" "Версия:        " "$selected_version"
+    printf "   \033[38;5;15m%s\033[0m \033[38;5;250m%s\033[0m\n" "Архитектура:   " "$ARCH"
+    printf "   \033[38;5;15m%s\033[0m \033[38;5;250m%s\033[0m\n" "Путь установки:" "$XRAY_FILE"
+    printf "   \033[38;5;15m%s\033[0m \033[38;5;250m%s\033[0m\n" "Размер файла:  " "$(du -h "$XRAY_FILE" | cut -f1)"
     echo
     
     # Проверка версии
-    echo -e "\033[1;37m🔍 Verifying installation...\033[0m"
+    echo -e "\033[1;37m🔍 Проверяю установку...\033[0m"
     if installed_version=$("$XRAY_FILE" -version 2>/dev/null | head -n1 | awk '{print $2}'); then
-        echo -e "\033[1;32m✅ Xray-core is working correctly\033[0m"
-        printf "   \033[38;5;15m%-15s\033[0m \033[38;5;250m%s\033[0m\n" "Running Version:" "$installed_version"
+        echo -e "\033[1;32m✅ Xray-core работает\033[0m"
+        printf "   \033[38;5;15m%s\033[0m \033[38;5;250m%s\033[0m\n" "Рабочая версия:" "$installed_version"
     else
-        echo -e "\033[1;31m⚠️  Installation completed but verification failed\033[0m"
-        echo -e "\033[38;5;8m   The binary may not be compatible with your system\033[0m"
+        echo -e "\033[1;31m⚠️  Установка завершена, но проверка не прошла\033[0m"
+        echo -e "\033[38;5;8m   Возможно, этот файл не подходит для вашей системы\033[0m"
     fi
 }
 
@@ -3712,7 +3726,7 @@ validate_compose_file() {
             return 0
         else
 
-            colorized_echo red "Docker Compose validation errors:"
+            colorized_echo red "Ошибки в Docker Compose:"
             $COMPOSE config 2>&1 | head -10
             cd "$current_dir"
             return 1
@@ -3841,21 +3855,21 @@ escape_for_sed() {
 update_core_command() {
     check_running_as_root
     get_xray_core
-    colorized_echo blue "Updating docker-compose.yml with Xray-core volume..."
+    colorized_echo blue "Добавляю том Xray-core в docker-compose.yml..."
     
 
     if [ ! -f "$COMPOSE_FILE" ]; then
-        colorized_echo red "Docker Compose file not found at $COMPOSE_FILE"
+        colorized_echo red "Файл Docker Compose не найден: $COMPOSE_FILE"
         exit 1
     fi
     
 
-    colorized_echo blue "Creating backup of docker-compose.yml..."
+    colorized_echo blue "Делаю резервную копию docker-compose.yml..."
     backup_file=$(create_backup "$COMPOSE_FILE")
     if [ $? -eq 0 ]; then
-        colorized_echo green "Backup created: $backup_file"
+        colorized_echo green "Резервная копия: $backup_file"
     else
-        colorized_echo red "Failed to create backup"
+        colorized_echo red "Не удалось сделать резервную копию"
         exit 1
     fi
     
@@ -3894,7 +3908,7 @@ update_core_command() {
         # Insert volumes after the volumes: line
         sed -i "/^${escaped_service_indent}volumes:/r $temp_volumes" "$COMPOSE_FILE"
         rm "$temp_volumes"
-        colorized_echo green "Updated Xray volumes in existing volumes section"
+        colorized_echo green "Тома Xray обновлены в разделе volumes"
         
     elif grep -q "^${escaped_service_indent}# volumes:" "$COMPOSE_FILE"; then
         sed -i "s|^${escaped_service_indent}# volumes:|${service_indent}volumes:|g" "$COMPOSE_FILE"
@@ -3912,7 +3926,7 @@ update_core_command() {
         # Insert volumes after the volumes: line
         sed -i "/^${escaped_service_indent}volumes:/r $temp_volumes" "$COMPOSE_FILE"
         rm "$temp_volumes"
-        colorized_echo green "Uncommented volumes section and added Xray volumes"
+        colorized_echo green "Раздел volumes раскомментирован, тома Xray добавлены"
         
     else
         # Create temporary file with volumes section
@@ -3929,11 +3943,11 @@ update_core_command() {
         # Insert volumes section after restart: always
         sed -i "/^${escaped_service_indent}restart: always/r $temp_volumes" "$COMPOSE_FILE"
         rm "$temp_volumes"
-        colorized_echo green "Added new volumes section with Xray volumes"
+        colorized_echo green "Добавлен раздел volumes с томами Xray"
     fi
     
     # Show what was mounted
-    colorized_echo blue "Mounted volumes:"
+    colorized_echo blue "Подключённые тома:"
     colorized_echo green "  ✅ xray → /usr/local/bin/xray"
     if [ -f "$GEOIP_FILE" ]; then
         colorized_echo green "  ✅ geoip.dat → /usr/local/share/xray/geoip.dat"
@@ -3943,35 +3957,35 @@ update_core_command() {
     fi
     
 
-    colorized_echo blue "Validating docker-compose.yml..."
+    colorized_echo blue "Проверяю docker-compose.yml..."
     if validate_compose_file "$COMPOSE_FILE"; then
-        colorized_echo green "Docker-compose.yml validation successful"
+        colorized_echo green "docker-compose.yml в порядке"
         
-        colorized_echo blue "Restarting RemnaNode..."
+        colorized_echo blue "Перезапускаю RemnaNode..."
 
         restart_command -n
         
-        colorized_echo green "Installation of XRAY-CORE version $selected_version completed."
+        colorized_echo green "Установка XRAY-CORE версии $selected_version завершена."
         
 
-        read -p "Operation completed successfully. Do you want to keep the backup file? (y/n): " -r keep_backup
+        read -p "Готово. Оставить резервную копию? (y/n): " -r keep_backup
         if [[ ! $keep_backup =~ ^[Yy]$ ]]; then
             rm "$backup_file"
-            colorized_echo blue "Backup file removed"
+            colorized_echo blue "Резервная копия удалена"
         else
-            colorized_echo blue "Backup file kept at: $backup_file"
+            colorized_echo blue "Резервная копия оставлена: $backup_file"
         fi
 
         cleanup_old_backups "$COMPOSE_FILE"
         
     else
-        colorized_echo red "Docker-compose.yml validation failed! Restoring backup..."
+        colorized_echo red "docker-compose.yml не прошёл проверку! Восстанавливаю резервную копию..."
         if restore_backup "$backup_file" "$COMPOSE_FILE"; then
-            colorized_echo green "Backup restored successfully"
-            colorized_echo red "Please check the docker-compose.yml file manually"
+            colorized_echo green "Резервная копия восстановлена"
+            colorized_echo red "Проверьте файл docker-compose.yml вручную"
         else
-            colorized_echo red "Failed to restore backup! Original file may be corrupted"
-            colorized_echo red "Backup location: $backup_file"
+            colorized_echo red "Не удалось восстановить резервную копию! Исходный файл может быть повреждён"
+            colorized_echo red "Резервная копия лежит здесь: $backup_file"
         fi
         exit 1
     fi
@@ -3980,20 +3994,20 @@ update_core_command() {
 
 restore_to_container_default() {
     check_running_as_root
-    colorized_echo blue "Restoring to container default Xray-core..."
+    colorized_echo blue "Возвращаю встроенный в контейнер Xray-core..."
     
     if [ ! -f "$COMPOSE_FILE" ]; then
-        colorized_echo red "Docker Compose file not found at $COMPOSE_FILE"
+        colorized_echo red "Файл Docker Compose не найден: $COMPOSE_FILE"
         exit 1
     fi
     
     # Create backup before making changes
-    colorized_echo blue "Creating backup of docker-compose.yml..."
+    colorized_echo blue "Делаю резервную копию docker-compose.yml..."
     backup_file=$(create_backup "$COMPOSE_FILE")
     if [ $? -eq 0 ]; then
-        colorized_echo green "Backup created: $backup_file"
+        colorized_echo green "Резервная копия: $backup_file"
     else
-        colorized_echo red "Failed to create backup"
+        colorized_echo red "Не удалось сделать резервную копию"
         exit 1
     fi
     
@@ -4011,7 +4025,7 @@ restore_to_container_default() {
     local escaped_volume_item_indent=$(escape_for_sed "$volume_item_indent")
     
     # Remove xray-related volume mounts using # as delimiter
-    colorized_echo blue "Removing external Xray volume mounts..."
+    colorized_echo blue "Убираю внешние тома Xray..."
     sed -i "\#$XRAY_FILE#d" "$COMPOSE_FILE"
     sed -i "\#geoip\.dat#d" "$COMPOSE_FILE"
     sed -i "\#geosite\.dat#d" "$COMPOSE_FILE"
@@ -4046,41 +4060,41 @@ restore_to_container_default() {
         rm -f "$temp_file"
         
         if [ "$volume_count" -eq 0 ]; then
-            colorized_echo blue "No volumes left, commenting out volumes section..."
+            colorized_echo blue "Томов не осталось, комментирую раздел volumes..."
             sed -i "s|^${escaped_service_indent}volumes:|${service_indent}# volumes:|g" "$COMPOSE_FILE"
         fi
     fi
     
     # Validate the docker-compose file
-    colorized_echo blue "Validating docker-compose.yml..."
+    colorized_echo blue "Проверяю docker-compose.yml..."
     if validate_compose_file "$COMPOSE_FILE"; then
-        colorized_echo green "Docker-compose.yml validation successful"
+        colorized_echo green "docker-compose.yml в порядке"
         
-        colorized_echo blue "Restarting RemnaNode to use container default Xray..."
+        colorized_echo blue "Перезапускаю RemnaNode со встроенным Xray..."
         restart_command -n
         
-        colorized_echo green "✅ Successfully restored to container default Xray-core"
-        colorized_echo blue "The container will now use its built-in Xray version"
+        colorized_echo green "✅ Встроенный в контейнер Xray-core возвращён"
+        colorized_echo blue "Теперь контейнер использует свою версию Xray"
         
         # Ask about backup
-        read -p "Operation completed successfully. Do you want to keep the backup file? (y/n): " -r keep_backup
+        read -p "Готово. Оставить резервную копию? (y/n): " -r keep_backup
         if [[ ! $keep_backup =~ ^[Yy]$ ]]; then
             rm "$backup_file"
-            colorized_echo blue "Backup file removed"
+            colorized_echo blue "Резервная копия удалена"
         else
-            colorized_echo blue "Backup file kept at: $backup_file"
+            colorized_echo blue "Резервная копия оставлена: $backup_file"
         fi
 
         cleanup_old_backups "$COMPOSE_FILE"
         
     else
-        colorized_echo red "Docker-compose.yml validation failed! Restoring backup..."
+        colorized_echo red "docker-compose.yml не прошёл проверку! Восстанавливаю резервную копию..."
         if restore_backup "$backup_file" "$COMPOSE_FILE"; then
-            colorized_echo green "Backup restored successfully"
-            colorized_echo red "Please check the docker-compose.yml file manually"
+            colorized_echo green "Резервная копия восстановлена"
+            colorized_echo red "Проверьте файл docker-compose.yml вручную"
         else
-            colorized_echo red "Failed to restore backup! Original file may be corrupted"
-            colorized_echo red "Backup location: $backup_file"
+            colorized_echo red "Не удалось восстановить резервную копию! Исходный файл может быть повреждён"
+            colorized_echo red "Резервная копия лежит здесь: $backup_file"
         fi
         exit 1
     fi
@@ -4103,58 +4117,58 @@ check_editor() {
 
 xray_log_out() {
     if ! is_remnanode_installed; then
-        colorized_echo red "RemnaNode not installed!"
+        colorized_echo red "RemnaNode не установлена!"
         exit 1
     fi
     detect_compose
 
     if ! is_remnanode_up; then
-        colorized_echo red "RemnaNode is not running. Start it first with 'remnanode up'"
+        colorized_echo red "RemnaNode не запущена. Сначала запустите: 'remnanode up'"
         exit 1
     fi
 
     # Check if log file exists
     if ! docker exec $APP_NAME test -f /var/log/supervisor/xray.out.log 2>/dev/null; then
-        colorized_echo yellow "⚠️  Xray output log file not found yet."
-        colorized_echo gray "   The log file will be created when Xray generates output."
-        colorized_echo gray "   Try again later or check container logs: $APP_NAME logs"
+        colorized_echo yellow "⚠️  Лог вывода Xray пока не создан."
+        colorized_echo gray "   Файл появится, когда Xray начнёт что-то писать."
+        colorized_echo gray "   Попробуйте позже или посмотрите логи контейнера: $APP_NAME logs"
         return 0
     fi
 
-    colorized_echo blue "📤 Following Xray output logs (Ctrl+C to exit)..."
+    colorized_echo blue "📤 Показываю лог вывода Xray (выход — Ctrl+C)..."
     echo
     docker exec -it $APP_NAME tail -n 100 -f /var/log/supervisor/xray.out.log
 }
 
 xray_log_err() {
     if ! is_remnanode_installed; then
-        colorized_echo red "RemnaNode not installed!"
+        colorized_echo red "RemnaNode не установлена!"
         exit 1
     fi
     
     detect_compose
  
     if ! is_remnanode_up; then
-        colorized_echo red "RemnaNode is not running. Start it first with 'remnanode up'"
+        colorized_echo red "RemnaNode не запущена. Сначала запустите: 'remnanode up'"
         exit 1
     fi
 
     # Check if log file exists
     if ! docker exec $APP_NAME test -f /var/log/supervisor/xray.err.log 2>/dev/null; then
-        colorized_echo yellow "⚠️  Xray error log file not found yet."
-        colorized_echo gray "   The log file will be created when Xray generates errors."
-        colorized_echo green "   ✅ No errors is good news!"
+        colorized_echo yellow "⚠️  Лог ошибок Xray пока не создан."
+        colorized_echo gray "   Файл появится, когда у Xray будут ошибки."
+        colorized_echo green "   ✅ Нет ошибок — это хорошо!"
         return 0
     fi
 
     # Check if log file is empty
     local log_size=$(docker exec $APP_NAME stat -c%s /var/log/supervisor/xray.err.log 2>/dev/null || echo "0")
     if [ "$log_size" = "0" ]; then
-        colorized_echo green "✅ Xray error log is empty - no errors recorded!"
+        colorized_echo green "✅ Лог ошибок Xray пуст — ошибок нет!"
         return 0
     fi
 
-    colorized_echo blue "📥 Following Xray error logs (Ctrl+C to exit)..."
+    colorized_echo blue "📥 Показываю лог ошибок Xray (выход — Ctrl+C)..."
     echo
     docker exec -it $APP_NAME tail -n 100 -f /var/log/supervisor/xray.err.log
 }
@@ -4165,7 +4179,7 @@ edit_command() {
     if [ -f "$COMPOSE_FILE" ]; then
         $EDITOR "$COMPOSE_FILE"
     else
-        colorized_echo red "Compose file not found at $COMPOSE_FILE"
+        colorized_echo red "Файл compose не найден: $COMPOSE_FILE"
         exit 1
     fi
 }
@@ -4180,33 +4194,33 @@ edit_env_command() {
         if [ -f "$ENV_FILE" ]; then
             $EDITOR "$ENV_FILE"
         else
-            colorized_echo red "Environment file not found at $ENV_FILE"
+            colorized_echo red "Файл окружения не найден: $ENV_FILE"
             exit 1
         fi
     elif [ "$env_type" = "inline" ]; then
-        colorized_echo yellow "⚠️  Environment variables are stored in docker-compose.yml"
-        colorized_echo blue "💡 Recommendation: Migrate to .env file for better security"
+        colorized_echo yellow "⚠️  Переменные окружения хранятся в docker-compose.yml"
+        colorized_echo blue "💡 Совет: перенесите их в файл .env — так безопаснее"
         echo
-        read -p "Do you want to migrate to .env file now? (y/n): " -r migrate_choice
+        read -p "Перенести в файл .env сейчас? (y/n): " -r migrate_choice
         
         if [[ $migrate_choice =~ ^[Yy]$ ]]; then
             migrate_to_env_file
-            colorized_echo green "✅ Migration completed! Opening .env file for editing..."
+            colorized_echo green "✅ Миграция завершена! Открываю .env для редактирования..."
             sleep 1
             $EDITOR "$ENV_FILE"
         else
-            colorized_echo blue "Opening docker-compose.yml for editing..."
+            colorized_echo blue "Открываю docker-compose.yml для редактирования..."
             sleep 1
             $EDITOR "$COMPOSE_FILE"
         fi
     else
-        colorized_echo red "❌ Could not determine environment configuration"
-        colorized_echo yellow "⚠️  Neither .env file nor inline environment variables found"
+        colorized_echo red "❌ Не удалось определить, где хранятся переменные окружения"
+        colorized_echo yellow "⚠️  Нет ни файла .env, ни переменных в docker-compose.yml"
         echo
-        read -p "Do you want to create a .env file? (y/n): " -r create_choice
+        read -p "Создать файл .env? (y/n): " -r create_choice
         
         if [[ $create_choice =~ ^[Yy]$ ]]; then
-            colorized_echo blue "Creating .env file template..."
+            colorized_echo blue "Создаю шаблон файла .env..."
             cat > "$ENV_FILE" <<EOL
 ### NODE ###
 NODE_PORT=3000
@@ -4214,8 +4228,8 @@ NODE_PORT=3000
 ### XRAY ###
 SECRET_KEY=
 EOL
-            colorized_echo green "✅ .env file created: $ENV_FILE"
-            colorized_echo blue "Opening for editing..."
+            colorized_echo green "✅ Файл .env создан: $ENV_FILE"
+            colorized_echo blue "Открываю для редактирования..."
             sleep 1
             $EDITOR "$ENV_FILE"
         else
@@ -4227,31 +4241,31 @@ EOL
 # Show ports configuration command
 ports_command() {
     echo
-    echo -e "\033[1;37m🔌 Ports Configuration\033[0m"
+    echo -e "\033[1;37m🔌 Настройки портов\033[0m"
     echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 50))\033[0m"
     
     if ! is_remnanode_installed; then
-        colorized_echo red "❌ RemnaNode not installed"
-        colorized_echo gray "   Run 'sudo $APP_NAME install' first"
+        colorized_echo red "❌ RemnaNode не установлена"
+        colorized_echo gray "   Сначала выполните 'sudo $APP_NAME install'"
         exit 1
     fi
     
     # External port
     echo
-    echo -e "\033[1;37m🌐 External Port:\033[0m"
+    echo -e "\033[1;37m🌐 Внешний порт:\033[0m"
     local node_port=$(get_env_variable "NODE_PORT")
     if [ -z "$node_port" ]; then
         node_port=$(get_env_variable "APP_PORT")
     fi
-    printf "   \033[38;5;15m%-22s\033[0m \033[38;5;250m%s\033[0m\n" "NODE_PORT:" "${node_port:-3000 (default)}"
+    printf "   \033[38;5;15m%-22s\033[0m \033[38;5;250m%s\033[0m\n" "NODE_PORT:" "${node_port:-3000 (по умолчанию)}"
     
     # Internal port (only XTLS_API_PORT is configurable since node v2.5.0)
     echo
-    echo -e "\033[1;37m🔧 Internal Port:\033[0m"
+    echo -e "\033[1;37m🔧 Внутренний порт:\033[0m"
     
     local xtls_port=$(get_env_variable "XTLS_API_PORT")
     
-    printf "   \033[38;5;15m%-22s\033[0m \033[38;5;250m%s\033[0m\n" "XTLS_API_PORT:" "${xtls_port:-$DEFAULT_XTLS_API_PORT (default)}"
+    printf "   \033[38;5;15m%-22s\033[0m \033[38;5;250m%s\033[0m\n" "XTLS_API_PORT:" "${xtls_port:-$DEFAULT_XTLS_API_PORT (по умолчанию)}"
     
     # Check for deprecated ports and show warning
     local rest_port=$(get_env_variable "INTERNAL_REST_PORT")
@@ -4259,31 +4273,31 @@ ports_command() {
     
     if [ -n "$rest_port" ] || [ -n "$supervisord_port" ]; then
         echo
-        colorized_echo yellow "   ⚠️  Deprecated ports detected in .env:"
+        colorized_echo yellow "   ⚠️  В .env остались устаревшие порты:"
         if [ -n "$rest_port" ]; then
-            colorized_echo yellow "      • INTERNAL_REST_PORT (now uses unix socket)"
+            colorized_echo yellow "      • INTERNAL_REST_PORT (теперь unix-сокет)"
         fi
         if [ -n "$supervisord_port" ]; then
-            colorized_echo yellow "      • SUPERVISORD_PORT (now uses unix socket)"
+            colorized_echo yellow "      • SUPERVISORD_PORT (теперь unix-сокет)"
         fi
-        colorized_echo gray "   Run '$APP_NAME migrate' to clean up"
+        colorized_echo gray "   Убрать их: '$APP_NAME migrate'"
     fi
     
     # Unix sockets info
     echo
-    echo -e "\033[1;37m🔗 Internal Communication (unix sockets):\033[0m"
-    colorized_echo gray "   Since node v2.5.0, internal services use unix sockets:"
+    echo -e "\033[1;37m🔗 Внутренняя связь (unix-сокеты):\033[0m"
+    colorized_echo gray "   С node v2.5.0 внутренние сервисы общаются через unix-сокеты:"
     printf "   \033[38;5;244m%-22s\033[0m \033[38;5;250m%s\033[0m\n" "Supervisord:" "/run/supervisord.sock"
-    printf "   \033[38;5;244m%-22s\033[0m \033[38;5;250m%s\033[0m\n" "Internal REST:" "/run/remnawave-internal.sock"
+    printf "   \033[38;5;244m%s\033[0m \033[38;5;250m%s\033[0m\n" "Внутренний REST:      " "/run/remnawave-internal.sock"
     
     # Show connection info
     echo
-    echo -e "\033[1;37m📋 Connection Info:\033[0m"
-    printf "   \033[38;5;15m%-22s\033[0m \033[38;5;117m%s:%s\033[0m\n" "Node Address:" "$NODE_IP" "${node_port:-3000}"
+    echo -e "\033[1;37m📋 Данные для подключения:\033[0m"
+    printf "   \033[38;5;15m%s\033[0m \033[38;5;117m%s:%s\033[0m\n" "Адрес ноды:           " "$NODE_IP" "${node_port:-3000}"
     
     echo
     echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 50))\033[0m"
-    colorized_echo gray "💡 To modify ports, use: $APP_NAME edit-env"
+    colorized_echo gray "💡 Изменить порты: $APP_NAME edit-env"
     echo
 }
 
@@ -4305,24 +4319,24 @@ autorestart_command() {
     local subcmd="${AUTORESTART_SUBCOMMAND:-}"
 
     if [ -z "$subcmd" ]; then
-        echo -e "\033[1;37m⏰ Auto-Restart Configuration\033[0m"
+        echo -e "\033[1;37m⏰ Настройка автоперезапуска\033[0m"
         echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 50))\033[0m"
         echo
-        echo -e "\033[1;37m📖 Usage:\033[0m"
-        echo -e "   \033[38;5;15m$APP_NAME auto-restart\033[0m \033[38;5;244m<subcommand> [options]\033[0m"
+        echo -e "\033[1;37m📖 Использование:\033[0m"
+        echo -e "   \033[38;5;15m$APP_NAME auto-restart\033[0m \033[38;5;244m<подкоманда> [опции]\033[0m"
         echo
-        echo -e "\033[1;37m🔧 Subcommands:\033[0m"
-        printf "   \033[38;5;15m%-12s\033[0m %s\n" "enable"  "Create/update the cron job for scheduled restarts"
-        printf "   \033[38;5;15m%-12s\033[0m %s\n" "disable" "Remove the scheduled restart cron job"
-        printf "   \033[38;5;15m%-12s\033[0m %s\n" "status"  "Show current schedule and node status"
-        printf "   \033[38;5;15m%-12s\033[0m %s\n" "test"    "Perform a test restart and verify node comes back up"
+        echo -e "\033[1;37m🔧 Подкоманды:\033[0m"
+        printf "   \033[38;5;15m%-12s\033[0m %s\n" "enable"  "Создать или обновить cron-задачу перезапуска по расписанию"
+        printf "   \033[38;5;15m%-12s\033[0m %s\n" "disable" "Удалить cron-задачу перезапуска"
+        printf "   \033[38;5;15m%-12s\033[0m %s\n" "status"  "Показать расписание и состояние ноды"
+        printf "   \033[38;5;15m%-12s\033[0m %s\n" "test"    "Тестовый перезапуск с проверкой, что нода поднялась"
         echo
-        echo -e "\033[1;37m⚙️  Enable Options:\033[0m"
-        printf "   \033[38;5;244m%-20s\033[0m %s\n" "--hour=N"         "Hour (0-23) for daily restart (minute defaults to 0)"
-        printf "   \033[38;5;244m%-20s\033[0m %s\n" "--minute=N"       "Minute (0-59), requires --hour"
-        printf "   \033[38;5;244m%-20s\033[0m %s\n" "--schedule=EXPR"  "Full 5-field cron expression (overrides --hour/--minute)"
+        echo -e "\033[1;37m⚙️  Опции для enable:\033[0m"
+        printf "   \033[38;5;244m%-20s\033[0m %s\n" "--hour=N"         "Час ежедневного перезапуска (0-23), минута по умолчанию 0"
+        printf "   \033[38;5;244m%-20s\033[0m %s\n" "--minute=N"       "Минута (0-59), только вместе с --hour"
+        printf "   \033[38;5;244m%-20s\033[0m %s\n" "--schedule=EXPR"  "Полное cron-выражение из 5 полей (вместо --hour/--minute)"
         echo
-        echo -e "\033[1;37m📋 Examples:\033[0m"
+        echo -e "\033[1;37m📋 Примеры:\033[0m"
         echo -e "\033[38;5;244m   sudo $APP_NAME auto-restart enable --hour=3\033[0m"
         echo -e "\033[38;5;244m   sudo $APP_NAME auto-restart enable --hour=3 --minute=30\033[0m"
         echo -e "\033[38;5;244m   sudo $APP_NAME auto-restart enable --schedule=\"30 2 * * 0\"\033[0m"
@@ -4338,12 +4352,12 @@ autorestart_command() {
             check_running_as_root
 
             if ! is_remnanode_installed; then
-                colorized_echo red "Error: RemnaNode is not installed. Install it first before enabling auto-restart."
+                colorized_echo red "Ошибка: RemnaNode не установлена. Сначала установите её, потом включайте автоперезапуск."
                 exit 1
             fi
 
             if ! docker compose version >/dev/null 2>&1; then
-                colorized_echo red "Error: Docker Compose v2 (plugin) is required. Install it first."
+                colorized_echo red "Ошибка: нужен Docker Compose v2 (плагин). Сначала установите его."
                 exit 1
             fi
             local compose_cmd="docker compose"
@@ -4357,59 +4371,59 @@ autorestart_command() {
                 local field_count
                 field_count=$(echo "$schedule" | awk '{print NF}')
                 if [ "$field_count" -ne 5 ]; then
-                    colorized_echo red "Error: --schedule must be a valid 5-field cron expression (e.g. \"0 3 * * *\")."
+                    colorized_echo red "Ошибка: --schedule должен быть cron-выражением из 5 полей (например, \"0 3 * * *\")."
                     exit 1
                 fi
                 # Reject newlines and control characters
                 if [[ "$schedule" == *$'\n'* || "$schedule" == *$'\r'* ]]; then
-                    colorized_echo red "Error: --schedule must not contain newline characters."
+                    colorized_echo red "Ошибка: в --schedule не должно быть переводов строки."
                     exit 1
                 fi
                 # Allow only safe cron characters: digits, space, * / , -
                 if [[ ! "$schedule" =~ ^[0-9\ \*/,\-]+$ ]]; then
-                    colorized_echo red "Error: --schedule contains invalid characters. Allowed: digits, space, * / , -"
+                    colorized_echo red "Ошибка: в --schedule недопустимые символы. Можно: цифры, пробел, * / , -"
                     exit 1
                 fi
             elif [ -n "$hour" ] || [ -n "$minute" ]; then
                 # Validate hour
                 if [ -z "$hour" ]; then
-                    colorized_echo red "Error: --minute requires --hour to be specified."
+                    colorized_echo red "Ошибка: --minute работает только вместе с --hour."
                     exit 1
                 fi
                 if ! [[ "$hour" =~ ^[0-9]+$ ]] || [ "$hour" -lt 0 ] || [ "$hour" -gt 23 ]; then
-                    colorized_echo red "Error: --hour must be an integer between 0 and 23."
+                    colorized_echo red "Ошибка: --hour должен быть целым числом от 0 до 23."
                     exit 1
                 fi
                 if [ -z "$minute" ]; then
                     minute=0
                 fi
                 if ! [[ "$minute" =~ ^[0-9]+$ ]] || [ "$minute" -lt 0 ] || [ "$minute" -gt 59 ]; then
-                    colorized_echo red "Error: --minute must be an integer between 0 and 59."
+                    colorized_echo red "Ошибка: --minute должен быть целым числом от 0 до 59."
                     exit 1
                 fi
                 schedule="${minute} ${hour} * * *"
             else
                 # Interactive mode
-                echo -e "\033[1;37m⏰ Configure Auto-Restart Schedule\033[0m"
+                echo -e "\033[1;37m⏰ Расписание автоперезапуска\033[0m"
                 echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 45))\033[0m"
                 local current_schedule
                 current_schedule=$(get_autorestart_schedule)
                 if [ -n "$current_schedule" ]; then
-                    echo -e "\033[38;5;244mCurrent schedule: \033[38;5;15m$current_schedule\033[0m"
+                    echo -e "\033[38;5;244mТекущее расписание: \033[38;5;15m$current_schedule\033[0m"
                 else
-                    echo -e "\033[38;5;244mNo schedule currently configured.\033[0m"
+                    echo -e "\033[38;5;244mРасписание пока не задано.\033[0m"
                 fi
                 echo
-                read -rp "$(echo -e "\033[38;5;15mEnter hour (0-23) [3]: \033[0m")" hour
+                read -rp "$(echo -e "\033[38;5;15mЧас (0-23) [3]: \033[0m")" hour
                 hour="${hour:-3}"
                 if ! [[ "$hour" =~ ^[0-9]+$ ]] || [ "$hour" -lt 0 ] || [ "$hour" -gt 23 ]; then
-                    colorized_echo red "Error: hour must be an integer between 0 and 23."
+                    colorized_echo red "Ошибка: час должен быть целым числом от 0 до 23."
                     exit 1
                 fi
-                read -rp "$(echo -e "\033[38;5;15mEnter minute (0-59) [0]: \033[0m")" minute
+                read -rp "$(echo -e "\033[38;5;15mМинута (0-59) [0]: \033[0m")" minute
                 minute="${minute:-0}"
                 if ! [[ "$minute" =~ ^[0-9]+$ ]] || [ "$minute" -lt 0 ] || [ "$minute" -gt 59 ]; then
-                    colorized_echo red "Error: minute must be an integer between 0 and 59."
+                    colorized_echo red "Ошибка: минута должна быть целым числом от 0 до 59."
                     exit 1
                 fi
                 schedule="${minute} ${hour} * * *"
@@ -4436,54 +4450,54 @@ ${cron_log} {
 EOF
             chmod 644 "$autorestart_logrotate"
 
-            echo -e "\033[1;32m✅ Auto-restart enabled!\033[0m"
+            echo -e "\033[1;32m✅ Автоперезапуск включён!\033[0m"
             echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 45))\033[0m"
-            printf "   \033[38;5;15m%-20s\033[0m \033[38;5;117m%s\033[0m\n" "Schedule:"          "$schedule"
-            printf "   \033[38;5;15m%-20s\033[0m \033[38;5;117m%s\033[0m\n" "Cron file:"         "$cron_file"
-            printf "   \033[38;5;15m%-20s\033[0m \033[38;5;117m%s\033[0m\n" "Log file:"          "$cron_log"
-            printf "   \033[38;5;15m%-20s\033[0m \033[38;5;117m%s\033[0m\n" "Logrotate config:"  "$autorestart_logrotate"
+            printf "   \033[38;5;15m%s\033[0m \033[38;5;117m%s\033[0m\n" "Расписание:         " "$schedule"
+            printf "   \033[38;5;15m%s\033[0m \033[38;5;117m%s\033[0m\n" "Файл cron:          " "$cron_file"
+            printf "   \033[38;5;15m%s\033[0m \033[38;5;117m%s\033[0m\n" "Файл лога:          " "$cron_log"
+            printf "   \033[38;5;15m%s\033[0m \033[38;5;117m%s\033[0m\n" "Конфиг logrotate:   " "$autorestart_logrotate"
             echo
             ;;
 
         disable)
             check_running_as_root
             if [ ! -f "$cron_file" ]; then
-                colorized_echo yellow "Auto-restart is not currently enabled (cron file not found)."
+                colorized_echo yellow "Автоперезапуск сейчас не включён (файл cron не найден)."
                 return 0
             fi
             rm -f "$cron_file"
             local autorestart_logrotate="/etc/logrotate.d/${APP_NAME}-autorestart"
             [ -f "$autorestart_logrotate" ] && rm -f "$autorestart_logrotate"
-            colorized_echo green "✅ Auto-restart disabled. Cron file removed."
+            colorized_echo green "✅ Автоперезапуск выключен. Файл cron удалён."
             ;;
 
         status)
-            echo -e "\033[1;37m⏰ Auto-Restart Status\033[0m"
+            echo -e "\033[1;37m⏰ Состояние автоперезапуска\033[0m"
             echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 45))\033[0m"
             echo
             local current_schedule
             current_schedule=$(get_autorestart_schedule)
             if [ -f "$cron_file" ] && [ -n "$current_schedule" ]; then
-                printf "   \033[38;5;15m%-18s\033[0m \033[1;32m%s\033[0m\n" "Auto-restart:" "Enabled"
-                printf "   \033[38;5;15m%-18s\033[0m \033[38;5;117m%s\033[0m\n" "Schedule:" "$current_schedule"
-                printf "   \033[38;5;15m%-18s\033[0m \033[38;5;244m%s\033[0m\n" "Cron file:" "$cron_file"
-                printf "   \033[38;5;15m%-18s\033[0m \033[38;5;244m%s\033[0m\n" "Log file:" "$cron_log"
+                printf "   \033[38;5;15m%s\033[0m \033[1;32m%s\033[0m\n" "Автоперезапуск:   " "Включён"
+                printf "   \033[38;5;15m%s\033[0m \033[38;5;117m%s\033[0m\n" "Расписание:       " "$current_schedule"
+                printf "   \033[38;5;15m%s\033[0m \033[38;5;244m%s\033[0m\n" "Файл cron:        " "$cron_file"
+                printf "   \033[38;5;15m%s\033[0m \033[38;5;244m%s\033[0m\n" "Файл лога:        " "$cron_log"
             else
-                printf "   \033[38;5;15m%-18s\033[0m \033[38;5;244m%s\033[0m\n" "Auto-restart:" "Disabled (no cron file)"
+                printf "   \033[38;5;15m%s\033[0m \033[38;5;244m%s\033[0m\n" "Автоперезапуск:   " "Выключен (нет файла cron)"
             fi
             echo
             if is_remnanode_installed; then
                 if is_node_really_running; then
-                    printf "   \033[38;5;15m%-18s\033[0m \033[1;32m%s\033[0m\n" "Node status:" "Running"
+                    printf "   \033[38;5;15m%s\033[0m \033[1;32m%s\033[0m\n" "Состояние ноды:   " "Работает"
                 else
-                    printf "   \033[38;5;15m%-18s\033[0m \033[1;31m%s\033[0m\n" "Node status:" "Stopped"
+                    printf "   \033[38;5;15m%s\033[0m \033[1;31m%s\033[0m\n" "Состояние ноды:   " "Остановлена"
                 fi
             else
-                printf "   \033[38;5;15m%-18s\033[0m \033[38;5;244m%s\033[0m\n" "Node status:" "Not installed"
+                printf "   \033[38;5;15m%s\033[0m \033[38;5;244m%s\033[0m\n" "Состояние ноды:   " "Не установлена"
             fi
             echo
             if [ -f "$cron_log" ]; then
-                echo -e "\033[1;37m📋 Recent log entries:\033[0m"
+                echo -e "\033[1;37m📋 Последние записи лога:\033[0m"
                 tail -5 "$cron_log" | while IFS= read -r line; do
                     echo -e "   \033[38;5;244m$line\033[0m"
                 done
@@ -4496,32 +4510,32 @@ EOF
             detect_compose
 
             if ! is_remnanode_installed; then
-                colorized_echo red "Error: RemnaNode is not installed."
+                colorized_echo red "Ошибка: RemnaNode не установлена."
                 exit 1
             fi
             if ! is_node_really_running; then
-                colorized_echo red "Error: RemnaNode is not currently running. Start it first."
+                colorized_echo red "Ошибка: RemnaNode сейчас не запущена. Сначала запустите её."
                 exit 1
             fi
 
-            echo -e "\033[1;37m🧪 Auto-Restart Test\033[0m"
+            echo -e "\033[1;37m🧪 Проверка автоперезапуска\033[0m"
             echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 45))\033[0m"
-            echo -e "\033[1;33m⚠️  This will briefly stop and restart RemnaNode.\033[0m"
+            echo -e "\033[1;33m⚠️  RemnaNode будет ненадолго остановлена и запущена снова.\033[0m"
             echo
-            read -rp "$(echo -e "\033[38;5;15mContinue? [y/N]: \033[0m")" confirm
+            read -rp "$(echo -e "\033[38;5;15mПродолжить? [y/N]: \033[0m")" confirm
             if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
-                colorized_echo yellow "Test cancelled."
+                colorized_echo yellow "Проверка отменена."
                 return 0
             fi
 
             echo
-            echo -e "\033[38;5;250m⏹️  Stopping RemnaNode...\033[0m"
+            echo -e "\033[38;5;250m⏹️  Останавливаю RemnaNode...\033[0m"
             down_remnanode >/dev/null 2>&1
 
-            echo -e "\033[38;5;250m▶️  Starting RemnaNode...\033[0m"
+            echo -e "\033[38;5;250m▶️  Запускаю RemnaNode...\033[0m"
             $COMPOSE -f "$COMPOSE_FILE" -p "$APP_NAME" up -d --remove-orphans >/dev/null 2>&1
 
-            echo -e "\033[38;5;250m⏳ Waiting for node to come up (up to 30s)...\033[0m"
+            echo -e "\033[38;5;250m⏳ Жду, пока нода поднимется (до 30 с)...\033[0m"
             local elapsed=0
             local came_up=false
             while [ "$elapsed" -lt 30 ]; do
@@ -4534,16 +4548,16 @@ EOF
             done
 
             if [ "$came_up" = true ]; then
-                colorized_echo green "✅ Test passed! RemnaNode restarted and came back up in ~${elapsed}s."
+                colorized_echo green "✅ Проверка пройдена! RemnaNode перезапустилась и поднялась примерно за ${elapsed} с."
             else
-                colorized_echo red "❌ Test failed: RemnaNode did not come back up within 30 seconds."
+                colorized_echo red "❌ Проверка не пройдена: RemnaNode не поднялась за 30 секунд."
                 exit 1
             fi
             ;;
 
         *)
-            colorized_echo red "Unknown auto-restart subcommand: $subcmd"
-            echo -e "Available subcommands: \033[38;5;15menable disable status test\033[0m"
+            colorized_echo red "Неизвестная подкоманда auto-restart: $subcmd"
+            echo -e "Доступные подкоманды: \033[38;5;15menable disable status test\033[0m"
             exit 1
             ;;
     esac
@@ -4553,85 +4567,85 @@ EOF
 usage() {
     clear
 
-    echo -e "\033[1;37m⚡ $APP_NAME\033[0m \033[38;5;8mCommand Line Interface\033[0m \033[38;5;244mv$SCRIPT_VERSION\033[0m"
+    echo -e "\033[1;37m⚡ $APP_NAME\033[0m \033[38;5;8mкомандная строка\033[0m \033[38;5;244mv$SCRIPT_VERSION\033[0m"
     echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 60))\033[0m"
     echo
-    echo -e "\033[1;37m📖 Usage:\033[0m"
-    echo -e "   \033[38;5;15m$APP_NAME\033[0m \033[38;5;8m<command>\033[0m \033[38;5;244m[options]\033[0m"
+    echo -e "\033[1;37m📖 Использование:\033[0m"
+    echo -e "   \033[38;5;15m$APP_NAME\033[0m \033[38;5;8m<команда>\033[0m \033[38;5;244m[опции]\033[0m"
     echo
 
-    echo -e "\033[1;37m🚀 Core Commands:\033[0m"
-    printf "   \033[38;5;15m%-18s\033[0m %s\n" "install" "🛠️  Install RemnaNode"
-    printf "   \033[38;5;15m%-18s\033[0m %s\n" "update" "⬆️  Update to latest version (accepts --tag)"
-    printf "   \033[38;5;15m%-18s\033[0m %s\n" "uninstall" "🗑️  Remove RemnaNode completely"
+    echo -e "\033[1;37m🚀 Основные команды:\033[0m"
+    printf "   \033[38;5;15m%-18s\033[0m %s\n" "install" "🛠️  Установить RemnaNode"
+    printf "   \033[38;5;15m%-18s\033[0m %s\n" "update" "⬆️  Обновить до последней версии (можно с --tag)"
+    printf "   \033[38;5;15m%-18s\033[0m %s\n" "uninstall" "🗑️  Полностью удалить RemnaNode"
     echo
 
-    echo -e "\033[1;33m⚠️  Panel version requirement:\033[0m"
-    echo -e "\033[38;5;244m      Only the node line 3.3.0 .. 3.3.2 requires a panel on 3.3.0+\033[0m"
-    echo -e "\033[38;5;244m      (those releases enforce a derived-SNI TLS handshake). Since node\033[0m"
-    echo -e "\033[38;5;244m      3.4.0 the check is opt-in (SNI_VERIFICATION, off by default), so\033[0m"
-    echo -e "\033[38;5;244m      the latest node works with an older panel again.\033[0m"
+    echo -e "\033[1;33m⚠️  Требование к версии панели:\033[0m"
+    echo -e "\033[38;5;244m      Панель 3.3.0+ нужна только нодам версий 3.3.0 .. 3.3.2\033[0m"
+    echo -e "\033[38;5;244m      (они требуют производный SNI при TLS-рукопожатии). С node\033[0m"
+    echo -e "\033[38;5;244m      3.4.0 проверка включается по желанию (SNI_VERIFICATION, по умолчанию\033[0m"
+    echo -e "\033[38;5;244m      выключена), так что последняя нода снова работает со старой панелью.\033[0m"
     echo
 
-    echo -e "\033[1;37m🎯 Install Options:\033[0m"
-    printf "   \033[38;5;244m%-18s\033[0m %s\n" "--force, -f" "Non-interactive mode (skip confirmations)"
-    printf "   \033[38;5;244m%-18s\033[0m %s\n" "--secret-key=KEY" "Set SECRET_KEY from panel"
-    printf "   \033[38;5;244m%-18s\033[0m %s\n" "--port=PORT" "Set NODE_PORT (default: 3000)"
-    printf "   \033[38;5;244m%-18s\033[0m %s\n" "--xtls-port=PORT" "Set legacy XTLS_API_PORT (ignored by node 2.8.0+)"
-    printf "   \033[38;5;244m%-18s\033[0m %s\n" "--xray" "Install latest Xray-core"
-    printf "   \033[38;5;244m%-18s\033[0m %s\n" "--no-xray" "Skip Xray-core (default in force mode)"
-    printf "   \033[38;5;244m%-18s\033[0m %s\n" "--name NAME" "Custom installation name"
-    printf "   \033[38;5;244m%-18s\033[0m %s\n" "--dev" "Use development image"
-    printf "   \033[38;5;244m%-18s\033[0m %s\n" "--tag TAG" "Pin node image version (e.g. 3.4.1)"
+    echo -e "\033[1;37m🎯 Опции установки:\033[0m"
+    printf "   \033[38;5;244m%-18s\033[0m %s\n" "--force, -f" "Без вопросов (пропустить подтверждения)"
+    printf "   \033[38;5;244m%-18s\033[0m %s\n" "--secret-key=KEY" "SECRET_KEY из панели"
+    printf "   \033[38;5;244m%-18s\033[0m %s\n" "--port=PORT" "NODE_PORT (по умолчанию 3000)"
+    printf "   \033[38;5;244m%-18s\033[0m %s\n" "--xtls-port=PORT" "Устаревший XTLS_API_PORT (node 2.8.0+ его игнорирует)"
+    printf "   \033[38;5;244m%-18s\033[0m %s\n" "--xray" "Установить последний Xray-core"
+    printf "   \033[38;5;244m%-18s\033[0m %s\n" "--no-xray" "Без Xray-core (по умолчанию в режиме --force)"
+    printf "   \033[38;5;244m%-18s\033[0m %s\n" "--name NAME" "Своё имя установки"
+    printf "   \033[38;5;244m%-18s\033[0m %s\n" "--dev" "Образ для разработки (dev)"
+    printf "   \033[38;5;244m%-18s\033[0m %s\n" "--tag TAG" "Закрепить версию образа ноды (например, 3.4.1)"
     echo
-    echo -e "\033[38;5;244m   💡 --tag keeps the node on an older release for panels that are not\033[0m"
-    echo -e "\033[38;5;244m      updated yet. Use an EXACT version — remnawave/node publishes only\033[0m"
-    echo -e "\033[38;5;244m      exact tags (2.8.0, 3.0.0, ...), there is no floating '2'/'3' tag.\033[0m"
-    echo -e "\033[38;5;244m      A pinned node stays on that version: 'update' will not move it,\033[0m"
-    echo -e "\033[38;5;244m      and 'update --tag X' re-pins an existing install to X.\033[0m"
-    echo
-
-    echo -e "\033[1;37m⚙️  Service Control:\033[0m"
-    printf "   \033[38;5;250m%-18s\033[0m %s\n" "up" "▶️  Start services"
-    printf "   \033[38;5;250m%-18s\033[0m %s\n" "down" "⏹️  Stop services"
-    printf "   \033[38;5;250m%-18s\033[0m %s\n" "restart" "🔄 Restart services"
-    printf "   \033[38;5;250m%-18s\033[0m %s\n" "status" "📊 Show service status"
+    echo -e "\033[38;5;244m   💡 --tag оставляет ноду на старой версии, если панель ещё\033[0m"
+    echo -e "\033[38;5;244m      не обновлена. Указывайте ТОЧНУЮ версию — у remnawave/node есть\033[0m"
+    echo -e "\033[38;5;244m      только точные теги (2.8.0, 3.0.0, ...), плавающих '2'/'3' нет.\033[0m"
+    echo -e "\033[38;5;244m      Закреплённая нода остаётся на своей версии: 'update' её не сдвинет,\033[0m"
+    echo -e "\033[38;5;244m      а 'update --tag X' перезакрепит установку на X.\033[0m"
     echo
 
-    echo -e "\033[1;37m📊 Monitoring & Logs:\033[0m"
-    printf "   \033[38;5;244m%-18s\033[0m %s\n" "logs" "📋 View container logs"
-    printf "   \033[38;5;244m%-18s\033[0m %s\n" "xray-log-out" "📤 View Xray output logs"
-    printf "   \033[38;5;244m%-18s\033[0m %s\n" "xray-log-err" "📥 View Xray error logs"
-    printf "   \033[38;5;244m%-18s\033[0m %s\n" "setup-logs" "🗂️  Setup log rotation"
+    echo -e "\033[1;37m⚙️  Управление сервисами:\033[0m"
+    printf "   \033[38;5;250m%-18s\033[0m %s\n" "up" "▶️  Запустить сервисы"
+    printf "   \033[38;5;250m%-18s\033[0m %s\n" "down" "⏹️  Остановить сервисы"
+    printf "   \033[38;5;250m%-18s\033[0m %s\n" "restart" "🔄 Перезапустить сервисы"
+    printf "   \033[38;5;250m%-18s\033[0m %s\n" "status" "📊 Статус сервисов"
     echo
 
-    echo -e "\033[1;37m⚙️  Updates & Configuration:\033[0m"
-    printf "   \033[38;5;178m%-18s\033[0m %s\n" "update" "🔄 Update RemnaNode"
-    printf "   \033[38;5;178m%-18s\033[0m %s\n" "core-update" "⬆️  Update Xray-core"
-    printf "   \033[38;5;178m%-18s\033[0m %s\n" "migrate" "🔄 Migrate environment variables"
-    printf "   \033[38;5;178m%-18s\033[0m %s\n" "edit" "📝 Edit docker-compose.yml"
-    printf "   \033[38;5;178m%-18s\033[0m %s\n" "edit-env" "🔐 Edit environment (.env)"
-    printf "   \033[38;5;178m%-18s\033[0m %s\n" "ports" "🔌 Show ports configuration"
-    printf "   \033[38;5;178m%-18s\033[0m %s\n" "enable-socket" "🔗 Enable selfsteal socket access"
-    printf "   \033[38;5;178m%-18s\033[0m %s\n" "auto-restart" "⏰ Configure scheduled auto-restart"
+    echo -e "\033[1;37m📊 Мониторинг и логи:\033[0m"
+    printf "   \033[38;5;244m%-18s\033[0m %s\n" "logs" "📋 Логи контейнера"
+    printf "   \033[38;5;244m%-18s\033[0m %s\n" "xray-log-out" "📤 Лог вывода Xray"
+    printf "   \033[38;5;244m%-18s\033[0m %s\n" "xray-log-err" "📥 Лог ошибок Xray"
+    printf "   \033[38;5;244m%-18s\033[0m %s\n" "setup-logs" "🗂️  Настроить ротацию логов"
     echo
 
-    echo -e "\033[1;37m📊 Script Management:\033[0m"
-    printf "   \033[38;5;244m%-18s\033[0m %s\n" "install-script" "📥 Install/refresh the CLI itself (no containers touched)"
-    printf "   \033[38;5;244m%-18s\033[0m %s\n" "uninstall-script" "📤 Remove the CLI from /usr/local/bin"
+    echo -e "\033[1;37m⚙️  Обновления и настройки:\033[0m"
+    printf "   \033[38;5;178m%-18s\033[0m %s\n" "update" "🔄 Обновить RemnaNode"
+    printf "   \033[38;5;178m%-18s\033[0m %s\n" "core-update" "⬆️  Обновить Xray-core"
+    printf "   \033[38;5;178m%-18s\033[0m %s\n" "migrate" "🔄 Миграция переменных окружения"
+    printf "   \033[38;5;178m%-18s\033[0m %s\n" "edit" "📝 Редактировать docker-compose.yml"
+    printf "   \033[38;5;178m%-18s\033[0m %s\n" "edit-env" "🔐 Редактировать окружение (.env)"
+    printf "   \033[38;5;178m%-18s\033[0m %s\n" "ports" "🔌 Показать настройки портов"
+    printf "   \033[38;5;178m%-18s\033[0m %s\n" "enable-socket" "🔗 Открыть доступ к сокету selfsteal"
+    printf "   \033[38;5;178m%-18s\033[0m %s\n" "auto-restart" "⏰ Автоперезапуск по расписанию"
     echo
-    echo -e "\033[38;5;244m   💡 'install-script' only installs this CLI — it never installs or\033[0m"
-    echo -e "\033[38;5;244m      upgrades the node container. Use it on a server that has no\033[0m"
-    echo -e "\033[38;5;244m      node yet, or to force the newest CLI right now:\033[0m"
+
+    echo -e "\033[1;37m📊 Управление скриптом:\033[0m"
+    printf "   \033[38;5;244m%-18s\033[0m %s\n" "install-script" "📥 Установить/обновить сам CLI (контейнеры не трогает)"
+    printf "   \033[38;5;244m%-18s\033[0m %s\n" "uninstall-script" "📤 Удалить CLI из /usr/local/bin"
+    echo
+    echo -e "\033[38;5;244m   💡 'install-script' ставит только этот CLI — контейнер ноды он не\033[0m"
+    echo -e "\033[38;5;244m      ставит и не обновляет. Пригодится на сервере, где ноды ещё нет,\033[0m"
+    echo -e "\033[38;5;244m      или чтобы прямо сейчас получить свежий CLI:\033[0m"
     echo -e "\033[38;5;244m         sudo $APP_NAME install-script\033[0m"
-    echo -e "\033[38;5;244m      Downloads go through GitHub, then jsDelivr mirrors. 'update' also\033[0m"
-    echo -e "\033[38;5;244m      refreshes the CLI on its own before touching anything else.\033[0m"
+    echo -e "\033[38;5;244m      Скачивание идёт с GitHub, затем с зеркал jsDelivr. 'update' тоже\033[0m"
+    echo -e "\033[38;5;244m      сначала сам обновляет CLI, а потом всё остальное.\033[0m"
     echo
 
-    echo -e "\033[1;37m📋 Information:\033[0m"
-    printf "   \033[38;5;117m%-18s\033[0m %s\n" "help" "📖 Show this help"
-    printf "   \033[38;5;117m%-18s\033[0m %s\n" "version" "📋 Show version info"
-    printf "   \033[38;5;117m%-18s\033[0m %s\n" "menu" "🎛️  Interactive menu"
+    echo -e "\033[1;37m📋 Информация:\033[0m"
+    printf "   \033[38;5;117m%-18s\033[0m %s\n" "help" "📖 Эта справка"
+    printf "   \033[38;5;117m%-18s\033[0m %s\n" "version" "📋 Версия"
+    printf "   \033[38;5;117m%-18s\033[0m %s\n" "menu" "🎛️  Интерактивное меню"
     echo
 
     if is_remnanode_installed; then
@@ -4642,40 +4656,40 @@ usage() {
         fi
         if [ -n "$node_port" ]; then
             echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 55))\033[0m"
-            echo -e "\033[1;37m🌐 Node Access:\033[0m \033[38;5;117m$NODE_IP:$node_port\033[0m"
+            echo -e "\033[1;37m🌐 Доступ к ноде:\033[0m \033[38;5;117m$NODE_IP:$node_port\033[0m"
         fi
     fi
 
     echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 55))\033[0m"
-    echo -e "\033[1;37m📖 Examples:\033[0m"
+    echo -e "\033[1;37m📖 Примеры:\033[0m"
     echo -e "\033[38;5;244m   sudo $APP_NAME install\033[0m"
     echo -e "\033[38;5;244m   sudo $APP_NAME install --force --secret-key=\"eyJ...\"\033[0m"
     echo -e "\033[38;5;244m   sudo $APP_NAME install -f --secret-key=\"KEY\" --port=3001 --xray\033[0m"
     echo -e "\033[38;5;244m   sudo $APP_NAME core-update\033[0m"
     echo -e "\033[38;5;244m   $APP_NAME logs\033[0m"
-    echo -e "\033[38;5;244m   $APP_NAME menu           # Interactive menu\033[0m"
-    echo -e "\033[38;5;244m   $APP_NAME                # Same as menu\033[0m"
+    echo -e "\033[38;5;244m   $APP_NAME menu           # интерактивное меню\033[0m"
+    echo -e "\033[38;5;244m   $APP_NAME                # то же, что menu\033[0m"
     echo
-    echo -e "\033[1;37m📡 One-liner Force Install:\033[0m"
+    echo -e "\033[1;37m📡 Установка одной командой без вопросов:\033[0m"
     echo -e "\033[38;5;117m   bash <(curl -Ls URL) @ install --force --secret-key=\"KEY\"\033[0m"
     echo
     echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 55))\033[0m"
-    echo -e "\033[38;5;8m📚 Project: \033[38;5;250mhttps://gig.ovh\033[0m"
-    echo -e "\033[38;5;8m🐛 Issues: \033[38;5;250mhttps://github.com/gorecvpn/Remnawave-Panel-Install\033[0m"
-    echo -e "\033[38;5;8m💬 Support: \033[38;5;250mhttps://t.me/remnawave\033[0m"
-    echo -e "\033[38;5;8m👨‍💻 Author: \033[38;5;250mDigneZzZ\033[0m"
+    echo -e "\033[38;5;8m📚 Проект:    \033[38;5;250mhttps://gig.ovh\033[0m"
+    echo -e "\033[38;5;8m🐛 Ошибки:    \033[38;5;250mhttps://github.com/gorecvpn/Remnawave-Panel-Install\033[0m"
+    echo -e "\033[38;5;8m💬 Поддержка: \033[38;5;250mhttps://t.me/remnawave\033[0m"
+    echo -e "\033[38;5;8m👨‍💻 Автор:     \033[38;5;250mDigneZzZ\033[0m"
     echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 55))\033[0m"
 }
 
 # Функция для версии
 show_version() {
-    echo -e "\033[1;37m🚀 RemnaNode Management CLI\033[0m"
+    echo -e "\033[1;37m🚀 RemnaNode — CLI управления\033[0m"
     echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 40))\033[0m"
-    echo -e "\033[38;5;250mVersion: \033[38;5;15m$SCRIPT_VERSION\033[0m"
-    echo -e "\033[38;5;250mAuthor:  \033[38;5;15mDigneZzZ\033[0m"
-    echo -e "\033[38;5;250mGitHub:  \033[38;5;15mhttps://github.com/gorecvpn/Remnawave-Panel-Install\033[0m"
-    echo -e "\033[38;5;250mProject: \033[38;5;15mhttps://gig.ovh\033[0m"
-    echo -e "\033[38;5;250mSupport: \033[38;5;15mhttps://t.me/remnawave\033[0m"
+    echo -e "\033[38;5;250mВерсия:    \033[38;5;15m$SCRIPT_VERSION\033[0m"
+    echo -e "\033[38;5;250mАвтор:     \033[38;5;15mDigneZzZ\033[0m"
+    echo -e "\033[38;5;250mGitHub:    \033[38;5;15mhttps://github.com/gorecvpn/Remnawave-Panel-Install\033[0m"
+    echo -e "\033[38;5;250mПроект:    \033[38;5;15mhttps://gig.ovh\033[0m"
+    echo -e "\033[38;5;250mПоддержка: \033[38;5;15mhttps://t.me/remnawave\033[0m"
     echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 40))\033[0m"
 }
 
@@ -4695,7 +4709,7 @@ autorestart_menu() {
 
     while true; do
         clear
-        echo -e "\033[1;37m⏰ Auto-Restart Schedule\033[0m"
+        echo -e "\033[1;37m⏰ Расписание автоперезапуска\033[0m"
         echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 55))\033[0m"
         echo
 
@@ -4703,37 +4717,37 @@ autorestart_menu() {
         local current_schedule
         current_schedule=$(_ar_get_schedule)
         if [ -f "$cron_file" ] && [ -n "$current_schedule" ]; then
-            printf "   \033[38;5;15m%-18s\033[0m \033[1;32m%s\033[0m\n" "Auto-restart:" "Enabled"
-            printf "   \033[38;5;15m%-18s\033[0m \033[38;5;117m%s\033[0m\n" "Schedule:" "$current_schedule"
+            printf "   \033[38;5;15m%s\033[0m \033[1;32m%s\033[0m\n" "Автоперезапуск:   " "Включён"
+            printf "   \033[38;5;15m%s\033[0m \033[38;5;117m%s\033[0m\n" "Расписание:       " "$current_schedule"
         else
-            printf "   \033[38;5;15m%-18s\033[0m \033[38;5;244m%s\033[0m\n" "Auto-restart:" "Disabled"
+            printf "   \033[38;5;15m%s\033[0m \033[38;5;244m%s\033[0m\n" "Автоперезапуск:   " "Выключен"
         fi
 
         if is_remnanode_installed; then
             if _ar_is_running; then
-                printf "   \033[38;5;15m%-18s\033[0m \033[1;32m%s\033[0m\n" "Node status:" "Running"
+                printf "   \033[38;5;15m%s\033[0m \033[1;32m%s\033[0m\n" "Состояние ноды:   " "Работает"
             else
-                printf "   \033[38;5;15m%-18s\033[0m \033[1;31m%s\033[0m\n" "Node status:" "Stopped"
+                printf "   \033[38;5;15m%s\033[0m \033[1;31m%s\033[0m\n" "Состояние ноды:   " "Остановлена"
             fi
         else
-            printf "   \033[38;5;15m%-18s\033[0m \033[38;5;244m%s\033[0m\n" "Node status:" "Not installed"
+            printf "   \033[38;5;15m%s\033[0m \033[38;5;244m%s\033[0m\n" "Состояние ноды:   " "Не установлена"
         fi
         echo
 
         echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 55))\033[0m"
         if [ -f "$cron_file" ] && [ -n "$current_schedule" ]; then
-            echo -e "   \033[38;5;15m1)\033[0m ✏️  Update schedule"
-            echo -e "   \033[38;5;15m2)\033[0m 🚫 Disable auto-restart"
+            echo -e "   \033[38;5;15m1)\033[0m ✏️  Изменить расписание"
+            echo -e "   \033[38;5;15m2)\033[0m 🚫 Выключить автоперезапуск"
         else
-            echo -e "   \033[38;5;15m1)\033[0m ✅ Enable auto-restart"
-            echo -e "   \033[38;5;244m   2) Disable (not active)\033[0m"
+            echo -e "   \033[38;5;15m1)\033[0m ✅ Включить автоперезапуск"
+            echo -e "   \033[38;5;244m   2) Выключить (не активен)\033[0m"
         fi
-        echo -e "   \033[38;5;15m3)\033[0m 📊 Show status & logs"
-        echo -e "   \033[38;5;15m4)\033[0m 🧪 Test restart"
+        echo -e "   \033[38;5;15m3)\033[0m 📊 Состояние и логи"
+        echo -e "   \033[38;5;15m4)\033[0m 🧪 Тестовый перезапуск"
         echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 55))\033[0m"
-        echo -e "\033[38;5;15m   0)\033[0m 🔙 Back to main menu"
+        echo -e "\033[38;5;15m   0)\033[0m 🔙 Назад в главное меню"
         echo
-        read -p "$(echo -e "\033[1;37mSelect option [0-4]:\033[0m ")" ar_choice
+        read -p "$(echo -e "\033[1;37mВыберите пункт [0-4]:\033[0m ")" ar_choice
 
         case "$ar_choice" in
             1)
@@ -4742,33 +4756,33 @@ autorestart_menu() {
                 AUTORESTART_MINUTE=""
                 AUTORESTART_SCHEDULE=""
                 autorestart_command
-                read -p "Press Enter to continue..."
+                read -p "Нажмите Enter, чтобы продолжить..."
                 ;;
             2)
                 if [ ! -f "$cron_file" ]; then
-                    echo -e "\033[1;33m⚠️  Auto-restart is not currently enabled.\033[0m"
-                    read -p "Press Enter to continue..."
+                    echo -e "\033[1;33m⚠️  Автоперезапуск сейчас не включён.\033[0m"
+                    read -p "Нажмите Enter, чтобы продолжить..."
                 else
                     AUTORESTART_SUBCOMMAND="disable"
                     autorestart_command
-                    read -p "Press Enter to continue..."
+                    read -p "Нажмите Enter, чтобы продолжить..."
                 fi
                 ;;
             3)
                 AUTORESTART_SUBCOMMAND="status"
                 autorestart_command
-                read -p "Press Enter to continue..."
+                read -p "Нажмите Enter, чтобы продолжить..."
                 ;;
             4)
                 AUTORESTART_SUBCOMMAND="test"
                 autorestart_command
-                read -p "Press Enter to continue..."
+                read -p "Нажмите Enter, чтобы продолжить..."
                 ;;
             0)
                 break
                 ;;
             *)
-                echo -e "\033[1;31m❌ Invalid option!\033[0m"
+                echo -e "\033[1;31m❌ Неверный пункт!\033[0m"
                 sleep 1
                 ;;
         esac
@@ -4783,7 +4797,7 @@ main_menu() {
 
     while true; do
         clear
-        echo -e "\033[1;37m🚀 $APP_NAME Node Management\033[0m \033[38;5;244mv$SCRIPT_VERSION\033[0m"
+        echo -e "\033[1;37m🚀 $APP_NAME — управление нодой\033[0m \033[38;5;244mv$SCRIPT_VERSION\033[0m"
         echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 55))\033[0m"
         echo
         
@@ -4804,15 +4818,15 @@ main_menu() {
             if is_remnanode_up; then
                 menu_status="Running"
                 status_color="\033[1;32m"
-                echo -e "${status_color}✅ Node Status: RUNNING\033[0m"
+                echo -e "${status_color}✅ Состояние ноды: РАБОТАЕТ\033[0m"
                 
                 # Показываем информацию о подключении
                 if [ -n "$node_port" ]; then
                     echo
-                    echo -e "\033[1;37m🌐 Connection Information:\033[0m"
-                    printf "   \033[38;5;15m%-12s\033[0m \033[38;5;117m%s\033[0m\n" "IP Address:" "$NODE_IP"
-                    printf "   \033[38;5;15m%-12s\033[0m \033[38;5;117m%s\033[0m\n" "Port:" "$node_port"
-                    printf "   \033[38;5;15m%-12s\033[0m \033[38;5;117m%s:%s\033[0m\n" "Full URL:" "$NODE_IP" "$node_port"
+                    echo -e "\033[1;37m🌐 Данные для подключения:\033[0m"
+                    printf "   \033[38;5;15m%s\033[0m \033[38;5;117m%s\033[0m\n" "IP-адрес:   " "$NODE_IP"
+                    printf "   \033[38;5;15m%s\033[0m \033[38;5;117m%s\033[0m\n" "Порт:       " "$node_port"
+                    printf "   \033[38;5;15m%s\033[0m \033[38;5;117m%s:%s\033[0m\n" "Адрес:      " "$NODE_IP" "$node_port"
                 fi
                 
                 # Проверяем Xray-core и версию RemnaNode
@@ -4820,14 +4834,14 @@ main_menu() {
                 local node_version=$(get_remnanode_version 2>/dev/null || echo "unknown")
                 
                 echo
-                echo -e "\033[1;37m⚙️  Components Status:\033[0m"
+                echo -e "\033[1;37m⚙️  Компоненты:\033[0m"
                 
                 # Версия RemnaNode
                 printf "   \033[38;5;15m%-12s\033[0m " "RemnaNode:"
                 if [ "$node_version" != "unknown" ]; then
                     echo -e "\033[1;32m✅ v$node_version\033[0m"
                 else
-                    echo -e "\033[38;5;244m❓ version unknown\033[0m"
+                    echo -e "\033[38;5;244m❓ версия неизвестна\033[0m"
                 fi
                 
                 # Версия Xray Core
@@ -4835,119 +4849,119 @@ main_menu() {
                 if [ "$xray_version" != "Not installed" ]; then
                     echo -e "\033[1;32m✅ $xray_version\033[0m"
                 else
-                    echo -e "\033[1;33m⚠️  Not installed\033[0m"
+                    echo -e "\033[1;33m⚠️  Не установлен\033[0m"
                 fi
                 
                 # Показываем использование ресурсов
                 echo
-                echo -e "\033[1;37m💾 Resource Usage:\033[0m"
+                echo -e "\033[1;37m💾 Ресурсы:\033[0m"
                 
                 local cpu_usage=$(top -bn1 | grep "Cpu(s)" | awk '{print $2}' | cut -d'%' -f1 2>/dev/null || echo "N/A")
                 local mem_info=$(free -h | grep "Mem:" 2>/dev/null)
                 local mem_used=$(echo "$mem_info" | awk '{print $3}' 2>/dev/null || echo "N/A")
                 local mem_total=$(echo "$mem_info" | awk '{print $2}' 2>/dev/null || echo "N/A")
                 
-                printf "   \033[38;5;15m%-12s\033[0m \033[38;5;250m%s%%\033[0m\n" "CPU Usage:" "$cpu_usage"
-                printf "   \033[38;5;15m%-12s\033[0m \033[38;5;250m%s / %s\033[0m\n" "Memory:" "$mem_used" "$mem_total"
+                printf "   \033[38;5;15m%s\033[0m \033[38;5;250m%s%%\033[0m\n" "Процессор:  " "$cpu_usage"
+                printf "   \033[38;5;15m%s\033[0m \033[38;5;250m%s / %s\033[0m\n" "Память:     " "$mem_used" "$mem_total"
                 
                 local disk_usage=$(df -h "$APP_DIR" 2>/dev/null | tail -1 | awk '{print $5}' | sed 's/%//' 2>/dev/null || echo "N/A")
                 local disk_available=$(df -h "$APP_DIR" 2>/dev/null | tail -1 | awk '{print $4}' 2>/dev/null || echo "N/A")
                 
-                printf "   \033[38;5;15m%-12s\033[0m \033[38;5;250m%s%% used, %s available\033[0m\n" "Disk Usage:" "$disk_usage" "$disk_available"
+                printf "   \033[38;5;15m%s\033[0m \033[38;5;250mзанято %s%%, свободно %s\033[0m\n" "Диск:       " "$disk_usage" "$disk_available"
                 
                 # Проверяем логи
                 if [ -d "$LOG_DIR" ]; then
                     local log_files=$(find "$LOG_DIR" -name "*.log" 2>/dev/null | wc -l)
                     if [ "$log_files" -gt 0 ]; then
                         local total_log_size=$(du -sh "$LOG_DIR"/*.log 2>/dev/null | awk '{total+=$1} END {print total"K"}' | sed 's/KK/K/')
-                        printf "   \033[38;5;15m%-12s\033[0m \033[38;5;250m%s files (%s)\033[0m\n" "Log Files:" "$log_files" "$total_log_size"
+                        printf "   \033[38;5;15m%s\033[0m \033[38;5;250m%s файлов (%s)\033[0m\n" "Логи:       " "$log_files" "$total_log_size"
                     fi
                 fi
                 
             else
                 menu_status="Stopped"
                 status_color="\033[1;31m"
-                echo -e "${status_color}❌ Node Status: STOPPED\033[0m"
-                echo -e "\033[38;5;244m   Services are installed but not running\033[0m"
-                echo -e "\033[38;5;244m   Use option 2 to start the node\033[0m"
+                echo -e "${status_color}❌ Состояние ноды: ОСТАНОВЛЕНА\033[0m"
+                echo -e "\033[38;5;244m   Сервисы установлены, но не запущены\033[0m"
+                echo -e "\033[38;5;244m   Запустить ноду — пункт 2\033[0m"
             fi
         else
-            echo -e "${status_color}📦 Node Status: NOT INSTALLED\033[0m"
-            echo -e "\033[38;5;244m   Use option 1 to install RemnaNode\033[0m"
+            echo -e "${status_color}📦 Состояние ноды: НЕ УСТАНОВЛЕНА\033[0m"
+            echo -e "\033[38;5;244m   Установить RemnaNode — пункт 1\033[0m"
         fi
         
         echo
         echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 55))\033[0m"
         echo
-        echo -e "\033[1;37m🚀 Installation & Management:\033[0m"
-        echo -e "   \033[38;5;15m1)\033[0m 🛠️  Install RemnaNode"
-        echo -e "   \033[38;5;15m2)\033[0m ▶️  Start node services"
-        echo -e "   \033[38;5;15m3)\033[0m ⏹️  Stop node services"
-        echo -e "   \033[38;5;15m4)\033[0m 🔄 Restart node services"
-        echo -e "   \033[38;5;15m5)\033[0m 🗑️  Uninstall RemnaNode"
+        echo -e "\033[1;37m🚀 Установка и управление:\033[0m"
+        echo -e "   \033[38;5;15m1)\033[0m 🛠️  Установить RemnaNode"
+        echo -e "   \033[38;5;15m2)\033[0m ▶️  Запустить ноду"
+        echo -e "   \033[38;5;15m3)\033[0m ⏹️  Остановить ноду"
+        echo -e "   \033[38;5;15m4)\033[0m 🔄 Перезапустить ноду"
+        echo -e "   \033[38;5;15m5)\033[0m 🗑️  Удалить RemnaNode"
         echo
-        echo -e "\033[1;37m📊 Monitoring & Logs:\033[0m"
-        echo -e "   \033[38;5;15m6)\033[0m 📊 Show node status"
-        echo -e "   \033[38;5;15m7)\033[0m 📋 View container logs"
-        echo -e "   \033[38;5;15m8)\033[0m 📤 View Xray output logs"
-        echo -e "   \033[38;5;15m9)\033[0m 📥 View Xray error logs"
+        echo -e "\033[1;37m📊 Мониторинг и логи:\033[0m"
+        echo -e "   \033[38;5;15m6)\033[0m 📊 Состояние ноды"
+        echo -e "   \033[38;5;15m7)\033[0m 📋 Логи контейнера"
+        echo -e "   \033[38;5;15m8)\033[0m 📤 Лог вывода Xray"
+        echo -e "   \033[38;5;15m9)\033[0m 📥 Лог ошибок Xray"
         echo
-        echo -e "\033[1;37m⚙️  Updates & Configuration:\033[0m"
-        echo -e "   \033[38;5;15m10)\033[0m 🔄 Update RemnaNode"
-        echo -e "   \033[38;5;15m11)\033[0m ⬆️  Update Xray-core"
-        echo -e "   \033[38;5;15m12)\033[0m 🔄 Migrate environment variables"
-        echo -e "   \033[38;5;15m13)\033[0m 📝 Edit docker-compose.yml"
-        echo -e "   \033[38;5;15m14)\033[0m 🔐 Edit environment (.env)"
-        echo -e "   \033[38;5;15m15)\033[0m 🔌 Show ports configuration"
-        echo -e "   \033[38;5;15m16)\033[0m 🗂️  Setup log rotation"
-        echo -e "   \033[38;5;15m17)\033[0m ⏰ Auto-restart schedule"
+        echo -e "\033[1;37m⚙️  Обновления и настройки:\033[0m"
+        echo -e "   \033[38;5;15m10)\033[0m 🔄 Обновить RemnaNode"
+        echo -e "   \033[38;5;15m11)\033[0m ⬆️  Обновить Xray-core"
+        echo -e "   \033[38;5;15m12)\033[0m 🔄 Миграция переменных окружения"
+        echo -e "   \033[38;5;15m13)\033[0m 📝 Редактировать docker-compose.yml"
+        echo -e "   \033[38;5;15m14)\033[0m 🔐 Редактировать окружение (.env)"
+        echo -e "   \033[38;5;15m15)\033[0m 🔌 Настройки портов"
+        echo -e "   \033[38;5;15m16)\033[0m 🗂️  Настроить ротацию логов"
+        echo -e "   \033[38;5;15m17)\033[0m ⏰ Автоперезапуск по расписанию"
         echo
         echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 55))\033[0m"
-        echo -e "\033[38;5;15m   0)\033[0m 🚪 Exit to terminal"
+        echo -e "\033[38;5;15m   0)\033[0m 🚪 Выйти в терминал"
         echo
         
         # Показываем подсказки в зависимости от состояния
         case "$menu_status" in
             "Not installed")
-                echo -e "\033[1;34m💡 Tip: Start with option 1 to install RemnaNode\033[0m"
+                echo -e "\033[1;34m💡 Совет: начните с пункта 1 — установка RemnaNode\033[0m"
                 ;;
             "Stopped")
-                echo -e "\033[1;34m💡 Tip: Use option 2 to start the node\033[0m"
+                echo -e "\033[1;34m💡 Совет: запустите ноду пунктом 2\033[0m"
                 ;;
             "Running")
                 if [ "$xray_version" = "Not installed" ]; then
-                    echo -e "\033[1;34m💡 Tip: Install Xray-core with option 11 for better performance\033[0m"
+                    echo -e "\033[1;34m💡 Совет: поставьте Xray-core пунктом 11 — так будет быстрее\033[0m"
                 else
-                    echo -e "\033[1;34m💡 Tip: Check logs (7-9) or configure log rotation (16)\033[0m"
+                    echo -e "\033[1;34m💡 Совет: логи — пункты 7-9, ротация логов — пункт 16\033[0m"
                 fi
                 ;;
         esac
         
-        echo -e "\033[38;5;8mRemnaNode CLI v$SCRIPT_VERSION by DigneZzZ • gig.ovh\033[0m"
+        echo -e "\033[38;5;8mRemnaNode CLI v$SCRIPT_VERSION • автор DigneZzZ • перевод Gorec\033[0m"
         echo
-        read -p "$(echo -e "\033[1;37mSelect option [0-17]:\033[0m ")" choice
+        read -p "$(echo -e "\033[1;37mВыберите пункт [0-17]:\033[0m ")" choice
 
         case "$choice" in
-            1) install_command; read -p "Press Enter to continue..." ;;
-            2) up_command; read -p "Press Enter to continue..." ;;
-            3) down_command; read -p "Press Enter to continue..." ;;
-            4) restart_command; read -p "Press Enter to continue..." ;;
-            5) uninstall_command; read -p "Press Enter to continue..." ;;
-            6) status_command; read -p "Press Enter to continue..." ;;
-            7) logs_command; read -p "Press Enter to continue..." ;;
-            8) xray_log_out; read -p "Press Enter to continue..." ;;
-            9) xray_log_err; read -p "Press Enter to continue..." ;;
-            10) update_command; read -p "Press Enter to continue..." ;;
-            11) update_core_command; read -p "Press Enter to continue..." ;;
-            12) migrate_env_variables; read -p "Press Enter to continue..." ;;
-            13) edit_command; read -p "Press Enter to continue..." ;;
-            14) edit_env_command; read -p "Press Enter to continue..." ;;
-            15) ports_command; read -p "Press Enter to continue..." ;;
-            16) setup_log_rotation; read -p "Press Enter to continue..." ;;
+            1) install_command; read -p "Нажмите Enter, чтобы продолжить..." ;;
+            2) up_command; read -p "Нажмите Enter, чтобы продолжить..." ;;
+            3) down_command; read -p "Нажмите Enter, чтобы продолжить..." ;;
+            4) restart_command; read -p "Нажмите Enter, чтобы продолжить..." ;;
+            5) uninstall_command; read -p "Нажмите Enter, чтобы продолжить..." ;;
+            6) status_command; read -p "Нажмите Enter, чтобы продолжить..." ;;
+            7) logs_command; read -p "Нажмите Enter, чтобы продолжить..." ;;
+            8) xray_log_out; read -p "Нажмите Enter, чтобы продолжить..." ;;
+            9) xray_log_err; read -p "Нажмите Enter, чтобы продолжить..." ;;
+            10) update_command; read -p "Нажмите Enter, чтобы продолжить..." ;;
+            11) update_core_command; read -p "Нажмите Enter, чтобы продолжить..." ;;
+            12) migrate_env_variables; read -p "Нажмите Enter, чтобы продолжить..." ;;
+            13) edit_command; read -p "Нажмите Enter, чтобы продолжить..." ;;
+            14) edit_env_command; read -p "Нажмите Enter, чтобы продолжить..." ;;
+            15) ports_command; read -p "Нажмите Enter, чтобы продолжить..." ;;
+            16) setup_log_rotation; read -p "Нажмите Enter, чтобы продолжить..." ;;
             17) autorestart_menu ;;
             0) clear; exit 0 ;;
             *) 
-                echo -e "\033[1;31m❌ Invalid option!\033[0m"
+                echo -e "\033[1;31m❌ Неверный пункт!\033[0m"
                 sleep 1
                 ;;
         esac
@@ -4981,8 +4995,8 @@ case "${COMMAND:-menu}" in
     menu) main_menu ;;
     "") main_menu ;;
     *) 
-        echo -e "\033[1;31m❌ Unknown command: $COMMAND\033[0m"
-        echo -e "\033[38;5;244mUse '\033[38;5;15m$APP_NAME help\033[38;5;244m' for available commands\033[0m"
+        echo -e "\033[1;31m❌ Неизвестная команда: $COMMAND\033[0m"
+        echo -e "\033[38;5;244mСписок команд: '\033[38;5;15m$APP_NAME help\033[38;5;244m'\033[0m"
         exit 1
         ;;
 esac

@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Shell](https://img.shields.io/badge/language-Bash-blue.svg)](#)
 [![remnawave.sh](https://img.shields.io/badge/remnawave.sh-6.7.1-blue.svg)](#-remnawave-panel)
-[![remnanode.sh](https://img.shields.io/badge/remnanode.sh-4.6.0-blue.svg)](#-remnanode)
+[![remnanode.sh](https://img.shields.io/badge/remnanode.sh-4.7.0--gorec-blue.svg)](#-remnanode)
 [![Panel](https://img.shields.io/badge/Remnawave_Panel-3.4.x_ready-brightgreen.svg)](#)
 [![Localization](https://img.shields.io/badge/🌐-EN_|_RU-green.svg)](./README_RU.md)
 
@@ -57,7 +57,7 @@ After installation each script is a global command: `remnawave`, `remnanode`, `s
 | Script | Version | Purpose | Docs |
 |---|---|---|---|
 | 🚀 **remnawave.sh** | `6.7.1` | Panel: install, Caddy, backups, subscription-page | this file |
-| 🛰 **remnanode.sh** | `4.6.0` | Node: Xray-core, logs, auto-restart | this file |
+| 🛰 **remnanode.sh** | `4.7.0-gorec` | Node: Xray-core, logs, auto-restart | this file |
 | 🎭 **selfsteal.sh** | `2.11.1` | Caddy masking for Reality, 11 website templates | [README-selfsteal](./README-selfsteal.md) |
 | 🌐 **wtm.sh** | `1.5.2` | WARP + Tor: WireGuard outbound for Xray, WARP+ | [README-warp](./README-warp.md) |
 | 🐦 **netbird.sh** | `1.4.2` | NetBird mesh VPN: CLI / cloud-init / Ansible | [README-netbird](./README-netbird.md) |
@@ -134,6 +134,11 @@ sudo bash <(curl -Ls https://cdn.jsdelivr.net/gh/gorecvpn/Remnawave-Panel-Instal
 ## 🛰 RemnaNode
 
 <div align="center"><img src="assets/preview-remnanode.svg" alt="remnanode menu" width="640"></div>
+
+> **4.7.0-gorec — меню на русском / Russian UI.** The interactive menu, `help`, auto-restart submenu,
+> Xray-core installer and the messages of every menu action are now in Russian. Commands and flags
+> (`install`, `up`, `down`, `update`, `--force`, ...) are unchanged. Self-update source:
+> `gorecvpn/Remnawave-Panel-Install` (raw/main/remnanode.sh).
 
 - **Xray-core** — install and update from the menu, pre-releases included; real-time Xray logs
 - **Non-interactive mode** — `--force --secret-key="KEY"` for mass provisioning
