@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # WARP & Tor Network Setup Script
 # This script installs and manages Cloudflare WARP and Tor connections
-# VERSION=1.7.0
+# VERSION=1.7.1
 
 # NB: this is an interactive, status-returning menu script. We deliberately do
 # NOT use `set -e` (errexit): many functions return non-zero as a normal status
@@ -9,7 +9,7 @@
 # break the menu loop. We keep `set -E` (errtrace) so the ERR trap below can
 # surface genuinely unexpected failures for diagnostics without exiting.
 set -E
-SCRIPT_VERSION="1.7.0"
+SCRIPT_VERSION="1.7.1"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Error handler for debugging (diagnostic only — never exits)
@@ -2111,6 +2111,25 @@ check_masque_status() {
     fi
 }
 
+# start|stop|restart the MASQUE unit if installed (quick actions "all services").
+masque_service_action() {
+    [ -f "$WARP_MASQUE_UNIT" ] || return 0
+    if systemctl "$1" "$WARP_MASQUE_SERVICE" >/dev/null 2>&1; then
+        ok "MASQUE: $1 ok ($WARP_MASQUE_SERVICE)"
+    else
+        warn "MASQUE: $1 failed — check: journalctl -u $WARP_MASQUE_SERVICE"
+    fi
+}
+
+# WireGuard WARP deliberately parked because MASQUE replaced it: config kept,
+# unit neither enabled nor active, MASQUE installed (see warp_offer_masque).
+warp_wg_replaced_by_masque() {
+    [ -f "$WARP_CONFIG_FILE" ] && [ -f "$WARP_MASQUE_UNIT" ] || return 1
+    systemctl is-enabled --quiet "$WARP_SERVICE" 2>/dev/null && return 1
+    systemctl is-active --quiet "$WARP_SERVICE" 2>/dev/null && return 1
+    return 0
+}
+
 # One-line MASQUE status for the status blocks; silent when not installed.
 render_masque_status_line() {
     local st label
@@ -3195,7 +3214,11 @@ show_status() {
             [ "$warp_acct" != "unknown" ] && echo -e "\033[38;5;250m   Account: $warp_acct\033[0m"
             ;;
         "installed")
-            warn "Installed but not running"
+            if warp_wg_replaced_by_masque; then
+                info "WireGuard disabled — replaced by MASQUE (retry: wtm warp-fix-endpoint)"
+            else
+                warn "Installed but not running"
+            fi
             ;;
         "not_installed")
             info "Not installed"
@@ -3729,9 +3752,11 @@ show_main_menu() {
     echo
     
     # Подсказки в зависимости от состояния
-    if [ "$warp_status" = "not_installed" ] && [ "$tor_status" = "not_installed" ]; then
+    local masque_active=false
+    systemctl is-active --quiet "$WARP_MASQUE_SERVICE" 2>/dev/null && masque_active=true
+    if [ "$warp_status" = "not_installed" ] && [ "$tor_status" = "not_installed" ] && [ ! -f "$WARP_MASQUE_UNIT" ]; then
         echo -e "\033[1;34m💡 Tip: Start with WARP Menu (1) or Tor Menu (2) to install services\033[0m"
-    elif [ "$warp_status" = "running" ] || [ "$tor_status" = "running" ]; then
+    elif [ "$warp_status" = "running" ] || [ "$tor_status" = "running" ] || [ "$masque_active" = true ]; then
         echo -e "\033[1;34m💡 Tip: Test connections (4) to verify everything works correctly\033[0m"
     else
         echo -e "\033[1;34m💡 Tip: Use service menus to start installed components\033[0m"
@@ -3877,6 +3902,14 @@ show_quick_actions_menu() {
         "installed") echo -e "\033[1;33m⚠️  Stopped\033[0m" ;;
         "not_installed") echo -e "\033[38;5;244m📦 Not installed\033[0m" ;;
     esac
+    if [ -f "$WARP_MASQUE_UNIT" ]; then
+        printf "   \033[38;5;15m%-8s\033[0m " "MASQUE:"
+        if systemctl is-active --quiet "$WARP_MASQUE_SERVICE" 2>/dev/null; then
+            echo -e "\033[1;32m✅ Running\033[0m"
+        else
+            echo -e "\033[1;33m⚠️  Stopped\033[0m"
+        fi
+    fi
     
     printf "   \033[38;5;15m%-8s\033[0m " "Tor:"
     case $tor_status in
@@ -4202,10 +4235,15 @@ test_connections() {
             *)
                 printf "   \033[38;5;15m%-12s\033[0m \033[1;33m⚠️  Not detected by CF\033[0m\n" "CF Trace:" ;;
         esac
+    elif [ "$warp_status" = "not_installed" ]; then
+        printf "   \033[38;5;15m%-12s\033[0m \033[38;5;244m📦 Not installed\033[0m\n" "Status:"
+    elif warp_wg_replaced_by_masque; then
+        printf "   \033[38;5;15m%-12s\033[0m \033[38;5;244m⚪ Disabled — replaced by MASQUE\033[0m\n" "Status:"
     else
         printf "   \033[38;5;15m%-12s\033[0m \033[38;5;244m📦 Service not running\033[0m\n" "Status:"
     fi
     
+    local mq_ok=false
     if [ -f "$WARP_MASQUE_UNIT" ]; then
         echo
         echo -e "\033[1;37m🛰️  Testing WARP MASQUE (usque)...\033[0m"
@@ -4213,6 +4251,7 @@ test_connections() {
         mq_host=$(masque_probe_host)
         mq_port=$(masque_port)
         if masque_trace_ok "$mq_port" 10 "$mq_host"; then
+            mq_ok=true
             mq_ip=$(curl -s --max-time 10 -x "socks5h://$mq_host:$mq_port" https://ifconfig.me 2>/dev/null || echo "?")
             printf "   \033[38;5;15m%-12s\033[0m \033[1;32m✅ %s\033[0m\n" "WARP IP:" "$mq_ip"
             printf "   \033[38;5;15m%-12s\033[0m \033[1;32m✅ Verified by Cloudflare (%s)\033[0m\n" "CF Trace:" "$(masque_transport)"
@@ -4299,23 +4338,47 @@ test_connections() {
     echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 45))\033[0m"
     echo
     
-    # Общая сводка
-    local working_services=0
-    if [ "$warp_status" = "running" ] && wg show warp >/dev/null 2>&1; then
-        working_services=$((working_services + 1))
+    # Общая сводка — counts only INSTALLED services (WARP WireGuard, WARP
+    # MASQUE, Tor). A WireGuard WARP parked because MASQUE replaced it is not
+    # counted: it is intentionally off, not broken.
+    local working_services=0 total_services=0 working_names="" broken_names=""
+    if [ "$warp_status" != "not_installed" ] && ! warp_wg_replaced_by_masque; then
+        total_services=$((total_services + 1))
+        if [ "$warp_status" = "running" ] && wg show warp >/dev/null 2>&1; then
+            working_services=$((working_services + 1)); working_names="$working_names WARP"
+        else
+            broken_names="$broken_names WARP"
+        fi
     fi
-    # Count Tor as working only when traffic actually traverses it — an open
-    # SOCKS port on a Tor with no circuits is not a working service.
-    if [ "$tor_circuit_ok" = true ]; then
-        working_services=$((working_services + 1))
+    if [ -f "$WARP_MASQUE_UNIT" ]; then
+        total_services=$((total_services + 1))
+        if [ "$mq_ok" = true ]; then
+            working_services=$((working_services + 1)); working_names="$working_names MASQUE"
+        else
+            broken_names="$broken_names MASQUE"
+        fi
     fi
-    
+    if [ "$tor_status" != "not_installed" ]; then
+        total_services=$((total_services + 1))
+        # Count Tor as working only when traffic actually traverses it — an open
+        # SOCKS port on a Tor with no circuits is not a working service.
+        if [ "$tor_circuit_ok" = true ]; then
+            working_services=$((working_services + 1)); working_names="$working_names Tor"
+        else
+            broken_names="$broken_names Tor"
+        fi
+    fi
+
     echo -e "\033[1;37m📊 Summary:\033[0m"
-    printf "   \033[38;5;15m%-15s\033[0m \033[38;5;250m%d/2 services working\033[0m\n" "Active Services:" "$working_services"
-    
-    if [ $working_services -eq 2 ]; then
+    printf "   \033[38;5;15m%-15s\033[0m \033[38;5;250m%d/%d services working\033[0m\n" "Active Services:" "$working_services" "$total_services"
+    [ -n "$working_names" ] && printf "   \033[38;5;15m%-15s\033[0m \033[1;32m%s\033[0m\n" "Working:" "${working_names# }"
+    [ -n "$broken_names" ] && printf "   \033[38;5;15m%-15s\033[0m \033[1;31m%s\033[0m\n" "Not working:" "${broken_names# }"
+
+    if [ "$total_services" -eq 0 ]; then
+        echo -e "\033[38;5;244m📦 No proxy services installed\033[0m"
+    elif [ "$working_services" -eq "$total_services" ]; then
         echo -e "\033[1;32m✅ All proxy services are working correctly!\033[0m"
-    elif [ $working_services -eq 1 ]; then
+    elif [ "$working_services" -gt 0 ]; then
         echo -e "\033[1;33m⚠️  Some services need attention\033[0m"
     else
         echo -e "\033[1;31m❌ No proxy services are working\033[0m"
@@ -4804,16 +4867,19 @@ main() {
                         3) install_warp_client && install_tor_complete; read -p "Press Enter to continue..." ;;
                         4) 
                             control_service start warp
+                            masque_service_action start
                             control_service start tor
                             read -p "Press Enter to continue..."
                             ;;
                         5)
                             control_service stop warp
+                            masque_service_action stop
                             control_service stop tor
                             read -p "Press Enter to continue..."
                             ;;
                         6)
                             control_service restart warp
+                            masque_service_action restart
                             control_service restart tor
                             read -p "Press Enter to continue..."
                             ;;

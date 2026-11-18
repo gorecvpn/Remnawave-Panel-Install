@@ -1,3 +1,31 @@
+# 🩹 WTM v1.7.1 — сводка `wtm test` видит MASQUE
+
+## Симптом
+
+`wtm test` показывал `WARP MASQUE (usque) … ✅ Verified by Cloudflare (quic)`, а ниже в сводке: `Active Services: 0/2 services working` и `❌ No proxy services are working`.
+
+## Причина
+
+Сводка считала только WireGuard-WARP и Tor, и в знаменателе всегда стояло `2`, даже если сервис не установлен.
+
+## Что исправлено
+
+* MASQUE входит в сводку: и в общее число, и в число работающих.
+* Считаются только **установленные** сервисы: WireGuard-WARP, MASQUE, Tor. Пример: `1/1 services working`. Если не установлено ничего, выводится `No proxy services installed`.
+* Добавлены строки `Working:` и `Not working:` со списком сервисов.
+* WireGuard, выключенный после перехода на MASQUE, показывается как `Disabled — replaced by MASQUE` и не считается сбоем. Это видно и в `wtm test`, и в `wtm status`.
+* Quick Actions: строка статуса MASQUE. «Start/Stop/Restart all» теперь управляют и `wtm-masque`.
+* Подсказка главного меню учитывает MASQUE.
+
+## Обновление
+
+```bash
+bash <(curl -sL https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/wtm.sh) @ install-script
+wtm test
+```
+
+---
+
 # 🛰️ WTM v1.7.0 — WARP там, где UDP до Cloudflare заблокирован
 
 ## Симптом

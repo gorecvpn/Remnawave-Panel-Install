@@ -2,7 +2,7 @@
 
 # 🌐 WTM — WARP & Tor Manager
 
-[![Версия](https://img.shields.io/badge/wtm.sh-1.7.0-blue.svg)](#-что-нового)
+[![Версия](https://img.shields.io/badge/wtm.sh-1.7.1-blue.svg)](#-что-нового)
 [![WARP+](https://img.shields.io/badge/WARP%2B-supported-f38020.svg)](#-warp-подписка--license-key)
 [![Xray](https://img.shields.io/badge/Xray-native_wireguard_outbound-brightgreen.svg)](#-интеграция-с-xray)
 [![Лицензия MIT](https://img.shields.io/badge/Лицензия-MIT-yellow.svg)](./LICENSE)
@@ -21,6 +21,7 @@
 
 | Версия | Главное |
 |---|---|
+| **1.7.1** | `wtm test`: сводка учитывает **MASQUE** и считает только установленные сервисы (`1/1` вместо ложного `0/2 … No proxy services are working`), показывает, что работает и что нет; WireGuard, выключенный после перехода на MASQUE, помечается «replaced by MASQUE» и не считается сбоем. MASQUE добавлен в Quick Actions (статус и «start/stop/restart all») и в подсказки главного меню |
 | **1.7.0** | WARP на серверах, где UDP до Cloudflare заблокирован: автоподбор endpoint (IPv4 вместо мёртвого IPv6, перебор портов 2408/500/1701/4500/854/894/908/878 и запасных anycast-адресов), проверка UDP **до** установки, ожидание handshake до 20 с; **MASQUE-фолбэк** через [usque](https://github.com/Diniboy1123/usque) (QUIC или HTTP/2+TLS на 443) с локальным SOCKS5 для Xray — `wtm install-warp-masque`; новые `warp-fix-endpoint`, `warp-udp-check` |
 | **1.5.2** | Проверка соединения принимает `warp=plus`: у WARP+-аккаунтов Cloudflare trace возвращает `warp=plus`, а не `warp=on` — установка и апгрейд больше не рапортуют ложный сбой; `wtm test` явно помечает WARP+ (#36) |
 | **1.5.1** | `wgcf` вызывается с `--config` (переменная окружения `WGCF_ACCOUNT` современным wgcf игнорируется) — `wtm status` теперь корректно показывает `Account: WARP+ / Free` |
