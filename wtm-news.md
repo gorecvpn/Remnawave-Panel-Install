@@ -1,3 +1,41 @@
+# 🛰️ WTM v1.7.0 — WARP там, где UDP до Cloudflare заблокирован
+
+## Симптом
+
+На российском VPS `sudo wtm install-warp` заканчивался предупреждением `WARP installed but connection verification failed`. Диагностика показывала:
+
+```
+endpoint: [2606:4700:d0::a29f:c001]:2408
+transfer: 0 B received, 5.20 KiB sent
+```
+
+После ручной замены endpoint на IPv4 `162.159.192.1` handshake не пришёл ни на одном из портов `2408 500 1701 4500 854 894 908 878`. Фаервол ни при чём (`INPUT` пропускает `RELATED,ESTABLISHED`): UDP WireGuard до Cloudflare режется выше по сети, у хостера или на ТСПУ.
+
+## Что сделано
+
+* **IPv4 вместо мёртвого IPv6.** Если у сервера нет рабочего IPv6-выхода, endpoint от `wgcf` переписывается на `162.159.192.1:<порт>`.
+* **UDP-проверка до установки.** На временном интерфейсе `wtmprobe` wtm проверяет handshake на всех известных портах WARP и на запасных anycast-адресах (`162.159.193.10`, `162.159.195.1`, `188.114.97.1`). Первый рабочий endpoint сохраняется в `warp.conf` и в Xray-сниппет. Если не ответил никто, нерабочий туннель не ставится, и wtm предлагает MASQUE.
+* **Ожидание handshake.** После старта trace повторяется до 20 секунд. Если не помогло, endpoint'ы перебираются вживую через `wg set`, без перезапуска.
+* **`wtm warp-fix-endpoint`** подбирает рабочий endpoint на уже установленном WARP. **`wtm warp-udp-check`** только диагностирует и ничего не меняет.
+* **MASQUE-фолбэк: `wtm install-warp-masque [auto|quic|http2]`.**
+  * Ставит [usque](https://github.com/Diniboy1123/usque) с проверкой SHA-256 и регистрирует MASQUE-устройство.
+  * Пробует QUIC (UDP 443), затем HTTP/2+TLS (TCP 443).
+  * Поднимает сервис `wtm-masque` с SOCKS5 на `127.0.0.1:40000` и watchdog.
+  * Пишет Xray-сниппет `/etc/wireguard/warp-masque-outbound.json` с тем же тегом `warp`.
+* **Меню WARP:** пункт 10 подбирает endpoint, пункт 11 ставит или удаляет MASQUE. `status` и `test` показывают MASQUE.
+
+## Обновление и запуск
+
+```bash
+bash <(curl -sL https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/wtm.sh) @ install-script
+sudo wtm warp-fix-endpoint        # если WARP уже стоит и не подключается
+sudo wtm install-warp-masque      # если UDP заблокирован полностью
+```
+
+Под root `sudo` перед `bash <(curl …)` не нужен: `sudo` закрывает `/dev/fd/63`, и скрипт падает с `No such file or directory`.
+
+---
+
 # 🩹 WTM v1.6.1 — hotfix: установка Tor на Debian/Ubuntu
 
 > Срочная заплатка к v1.6.0. Если вы обновились до 1.6.0 — обновитесь до 1.6.1 **до** того, как ставить Tor.

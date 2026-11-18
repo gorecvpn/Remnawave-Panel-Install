@@ -2,7 +2,7 @@
 
 # 🌐 WTM — WARP & Tor Manager
 
-[![Версия](https://img.shields.io/badge/wtm.sh-1.5.2-blue.svg)](#-что-нового)
+[![Версия](https://img.shields.io/badge/wtm.sh-1.7.0-blue.svg)](#-что-нового)
 [![WARP+](https://img.shields.io/badge/WARP%2B-supported-f38020.svg)](#-warp-подписка--license-key)
 [![Xray](https://img.shields.io/badge/Xray-native_wireguard_outbound-brightgreen.svg)](#-интеграция-с-xray)
 [![Лицензия MIT](https://img.shields.io/badge/Лицензия-MIT-yellow.svg)](./LICENSE)
@@ -21,12 +21,29 @@
 
 | Версия | Главное |
 |---|---|
+| **1.7.0** | WARP на серверах, где UDP до Cloudflare заблокирован: автоподбор endpoint (IPv4 вместо мёртвого IPv6, перебор портов 2408/500/1701/4500/854/894/908/878 и запасных anycast-адресов), проверка UDP **до** установки, ожидание handshake до 20 с; **MASQUE-фолбэк** через [usque](https://github.com/Diniboy1123/usque) (QUIC или HTTP/2+TLS на 443) с локальным SOCKS5 для Xray — `wtm install-warp-masque`; новые `warp-fix-endpoint`, `warp-udp-check` |
 | **1.5.2** | Проверка соединения принимает `warp=plus`: у WARP+-аккаунтов Cloudflare trace возвращает `warp=plus`, а не `warp=on` — установка и апгрейд больше не рапортуют ложный сбой; `wtm test` явно помечает WARP+ (#36) |
 | **1.5.1** | `wgcf` вызывается с `--config` (переменная окружения `WGCF_ACCOUNT` современным wgcf игнорируется) — `wtm status` теперь корректно показывает `Account: WARP+ / Free` |
 | **1.5.0** | Поддержка **WARP+**: `wtm warp-plus <KEY>` для апгрейда на месте, `install-warp --license <KEY>` для установки сразу с подпиской |
 | **1.4.2** | Host-вариант Xray (`freedom` + `sockopt.interface`) как полноценная альтернатива + cron-**watchdog** интерфейса `warp`; автовычисление `reserved` из вашей регистрации (#34), `wtm regen-warp-xray` |
 | **1.4.1** | `"noKernelTun": true` по умолчанию в генерируемом outbound — работает из коробки в Docker/remnanode (read-only `/proc/sys` больше не роняет outbound) |
 | **1.4.0** | Нативный `wireguard`-outbound вместо legacy-подхода; починена wgcf-регистрация (`--accept-tos`); убран опасный полный апгрейд ОС на RHEL-семействе; безопасное самообновление; рабочий `--force` |
+
+<details>
+<summary><b>📜 Подробности 1.7.0 — endpoint, UDP-проверка, MASQUE</b></summary>
+
+**Проблема.** На российских VPS после `install-warp` проверка падала: `wgcf` прописывал IPv6-endpoint `[2606:4700:d0::…]:2408` на сервере без рабочего IPv6, а после ручной замены на `162.159.192.1` handshake всё равно не приходил ни на одном порту (`0 B received`) — UDP WireGuard до Cloudflare режется выше по сети (хостер/ТСПУ). Локальный фаервол не виноват, если в `INPUT` есть `RELATED,ESTABLISHED -j ACCEPT`.
+
+**Что изменилось.**
+- **IPv4 вместо мёртвого IPv6.** Если у сервера нет работающего IPv6-выхода (проверяется маршрут и реальное соединение, а не просто наличие адреса), endpoint переписывается на `162.159.192.1:<порт>` (IPv4 anycast `engage.cloudflareclient.com`).
+- **UDP-проверка до установки.** Сразу после регистрации wtm поднимает временный интерфейс `wtmprobe` с ключом нового аккаунта и ищет endpoint, на котором проходит handshake: `162.159.192.1` на портах `2408 500 1701 4500 854 894 908 878`, затем `162.159.193.10`, `162.159.195.1`, `188.114.97.1` на `2408/500`. Первый рабочий сохраняется в `warp.conf` и в нативный Xray-сниппет. `wg-quick@warp` во время проверки не трогается. Если не ответил никто — понятное сообщение «UDP заблокирован», нерабочий туннель **не устанавливается**, а wtm предлагает MASQUE. Отключить проверку: `WARP_SKIP_UDP_CHECK=1`.
+- **Ожидание handshake.** После старта trace повторяется до 20 с (первый handshake бывает с задержкой); если не помогло — живой перебор endpoint'ов через `wg set` без перезапуска.
+- **`wtm warp-fix-endpoint`** — то же самое для уже установленного WARP: подбирает рабочий endpoint/порт и сохраняет его. **`wtm warp-udp-check`** — диагностика без изменений.
+- **MASQUE-фолбэк (`wtm install-warp-masque [auto|quic|http2]`).** Ставит [usque](https://github.com/Diniboy1123/usque) (последний релиз под вашу архитектуру, SHA-256 сверяется с `checksums.txt` релиза), регистрирует отдельное WARP-устройство с MASQUE-ключом, проверяет транспорты: сначала QUIC (UDP 443), затем HTTP/2+TLS (TCP 443) — второй проходит даже там, где UDP до Cloudflare режется целиком. Запускается сервис `wtm-masque` с SOCKS5 на `127.0.0.1:40000` (TCP+UDP), cron-watchdog и Xray-сниппет `/etc/wireguard/warp-masque-outbound.json` (`socks`-outbound с тем же тегом `warp` — правила маршрутизации не меняются). Порт/адрес: `WARP_MASQUE_PORT=40010`, `WARP_MASQUE_BIND=<IP docker0>` (для Xray в bridge-контейнере). Удаление: `wtm remove-warp-masque`.
+- **Автопредложение.** Если WireGuard не прошёл, интерактивный `install-warp` спрашивает, поставить ли MASQUE; в неинтерактивном режиме — подсказка, а `WARP_AUTO_MASQUE=1` ставит сразу. После успешного MASQUE неработающий `wg-quick@warp` останавливается и выключается (файлы остаются).
+- Меню WARP: пункты **10** (подбор endpoint) и **11** (установка/удаление MASQUE). Статус и `wtm test` показывают MASQUE.
+
+</details>
 
 <details>
 <summary><b>📜 Подробности предыдущих версий (1.4.x)</b></summary>
@@ -51,12 +68,17 @@
 ## ⚡ Установка
 
 ```bash
-# Установка как глобальная команда wtm
-sudo bash <(curl -sL https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/wtm.sh) @ install-script
+# Установка как глобальная команда wtm (под root)
+bash <(curl -sL https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/wtm.sh) @ install-script
+
+# Из-под обычного пользователя — через pipe (sudo закрывает /dev/fd/63 у `<(...)`)
+curl -sL https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/wtm.sh | sudo bash -s -- @ install-script
 
 # Или сразу к делу — wtm установится глобально сам при любой install-команде
-sudo bash <(curl -sL https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/wtm.sh) @ install-all
+bash <(curl -sL https://github.com/gorecvpn/Remnawave-Panel-Install/raw/main/wtm.sh) @ install-all
 ```
+
+> `sudo bash <(curl ...)` на части систем падает с `/dev/fd/63: No such file or directory` — уже под root запускайте без `sudo`.
 
 После этого — `sudo wtm` для интерактивного меню, либо команды напрямую:
 
@@ -82,6 +104,10 @@ sudo wtm install-all                     # оба сервиса
 | `warp-plus <KEY>` | Апгрейд установленного WARP до WARP+ (идемпотентно) |
 | `regen-warp-xray` | Пересобрать Xray-сниппеты + пересчитать `reserved` |
 | `xray-examples` / `usage-examples` | Ваш готовый Xray-конфиг / примеры использования |
+| `warp-fix-endpoint` | Подобрать рабочий endpoint/порт WARP (UDP) и сохранить |
+| `warp-udp-check` | Диагностика: проходит ли WireGuard до Cloudflare (ничего не меняет) |
+| `install-warp-masque [auto\|quic\|http2]` | WARP через MASQUE (usque), SOCKS5 `127.0.0.1:40000` — когда UDP заблокирован |
+| `restart-warp-masque` / `remove-warp-masque` | Перезапуск / удаление MASQUE |
 | `remove-warp` / `remove-tor` | Удаление (вычищает watchdog и сниппеты) |
 | `self-update` / `check-updates` / `version` | Обновление скрипта (двухстадийное, с валидацией) |
 
@@ -271,6 +297,8 @@ sudo systemctl restart wg-quick@warp
 | Watchdog | `/opt/wtm/warp-watchdog.sh`, cron `/etc/cron.d/wtm-warp-watchdog`, лог `/var/log/wtm-warp-watchdog.log` | — |
 | Логи скрипта | `/var/log/wtm.log` | `/var/log/tor/tor.log` |
 
+**WARP MASQUE (usque):** сервис `wtm-masque`, SOCKS5 `127.0.0.1:40000`, бинарник `/usr/local/bin/usque`, регистрация `/etc/wtm/usque.json` (600), настройки `/etc/wtm/masque.env`, Xray-сниппет `/etc/wireguard/warp-masque-outbound.json`, watchdog `/opt/wtm/masque-watchdog.sh` + `/etc/cron.d/wtm-masque-watchdog`, лог `/var/log/wtm-masque-watchdog.log`.
+
 **Требования:** Ubuntu 20.04+ / Debian 11+ / RHEL-Rocky-Alma 8+ (на EL8 модуль WireGuard ставится из ELRepo автоматически) / Fedora 35+ · root · 1 ГБ RAM. Зависимости (`wireguard-tools`, `tor`, `wgcf`) ставятся сами.
 
 ## 🛠 Устранение неполадок
@@ -288,6 +316,8 @@ sudo journalctl -u wg-quick@warp -n 30 --no-pager   # логи сервиса
 sudo systemctl restart wg-quick@warp                # перезапуск
 curl --interface warp https://www.cloudflare.com/cdn-cgi/trace   # warp=on|plus?
 ```
+
+`transfer: 0 B received` — handshake не проходит. Если endpoint IPv6, а IPv6 на сервере нет, или UDP режется на порту — `sudo wtm warp-fix-endpoint` переберёт адреса/порты и сохранит рабочий. Если не ответил ни один — UDP WireGuard до Cloudflare заблокирован (типично для RU-хостингов): `sudo wtm install-warp-masque` (MASQUE через QUIC или HTTP/2+TLS на 443).
 
 Регистрация падает с 5xx — Cloudflare иногда отдаёт временные ошибки; скрипт делает до 3 попыток, можно повторить позже: `sudo wtm install-warp-force`.
 

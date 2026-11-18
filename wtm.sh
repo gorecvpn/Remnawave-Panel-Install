@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # WARP & Tor Network Setup Script
 # This script installs and manages Cloudflare WARP and Tor connections
-# VERSION=1.6.1
+# VERSION=1.7.0
 
 # NB: this is an interactive, status-returning menu script. We deliberately do
 # NOT use `set -e` (errexit): many functions return non-zero as a normal status
@@ -9,7 +9,7 @@
 # break the menu loop. We keep `set -E` (errtrace) so the ERR trap below can
 # surface genuinely unexpected failures for diagnostics without exiting.
 set -E
-SCRIPT_VERSION="1.6.1"
+SCRIPT_VERSION="1.7.0"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Error handler for debugging (diagnostic only — never exits)
@@ -136,6 +136,34 @@ WARP_WATCHDOG_STAMP="/run/wtm-warp-watchdog.stamp"
 # Project X WARP guide (xtls.github.io/en/document/level-2/warp.html).
 WARP_PEER_PUBLIC_KEY="bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo="
 WARP_ENDPOINT="engage.cloudflareclient.com:2408"
+
+# Endpoint selection / UDP probe. 162.159.192.1 is the IPv4 anycast address of
+# engage.cloudflareclient.com (AS13335); WARP's WireGuard listens on all ports
+# below. Overridable from the environment.
+WARP_ENDPOINT_V4="${WARP_ENDPOINT_V4:-162.159.192.1}"
+WARP_ENDPOINT_PORTS="${WARP_ENDPOINT_PORTS:-2408 500 1701 4500 854 894 908 878}"
+WARP_ENDPOINT_EXTRA_HOSTS="${WARP_ENDPOINT_EXTRA_HOSTS:-162.159.193.10 162.159.195.1 188.114.97.1}"
+WARP_ENDPOINT_EXTRA_PORTS="${WARP_ENDPOINT_EXTRA_PORTS:-2408 500}"
+WARP_PROBE_IFACE="wtmprobe"
+WARP_PROBE_WAIT="${WARP_PROBE_WAIT:-5}"   # seconds to wait for a handshake per endpoint
+
+# WARP over MASQUE (usque) — fallback for hosts where UDP WireGuard to
+# Cloudflare is blocked. Local SOCKS5 for Xray; QUIC or HTTP/2+TLS on 443.
+USQUE_REPO="Diniboy1123/usque"
+USQUE_FALLBACK_VERSION="v4.2.1"
+WARP_MASQUE_BIN="/usr/local/bin/usque"
+WARP_MASQUE_DIR="/etc/wtm"
+WARP_MASQUE_CONFIG="$WARP_MASQUE_DIR/usque.json"
+WARP_MASQUE_ENV="$WARP_MASQUE_DIR/masque.env"
+WARP_MASQUE_SERVICE="wtm-masque"
+WARP_MASQUE_UNIT="/etc/systemd/system/wtm-masque.service"
+WARP_MASQUE_XRAY_FILE="/etc/wireguard/warp-masque-outbound.json"
+WARP_MASQUE_PORT="${WARP_MASQUE_PORT:-40000}"
+WARP_MASQUE_BIND="${WARP_MASQUE_BIND:-127.0.0.1}"
+WARP_MASQUE_WATCHDOG_SCRIPT="/opt/wtm/masque-watchdog.sh"
+WARP_MASQUE_WATCHDOG_CRON="/etc/cron.d/wtm-masque-watchdog"
+WARP_MASQUE_WATCHDOG_LOG="/var/log/wtm-masque-watchdog.log"
+WARP_MASQUE_WATCHDOG_STAMP="/run/wtm-masque-watchdog.stamp"
 
 # ===== DEPENDENCY CHECK =====
 
@@ -345,6 +373,9 @@ Installation:
     install-warp-force    Force reinstall WARP
     install-tor-force     Force reinstall Tor
     install-all-force     Force reinstall both
+    install-warp-masque [auto|quic|http2]
+                          WARP over MASQUE (usque) — for hosts where UDP
+                          WireGuard to Cloudflare is blocked (local SOCKS5)
 
 Service Control:
     start-warp            Start WARP service
@@ -352,6 +383,8 @@ Service Control:
     restart-warp          Restart WARP service
     watchdog-on           Enable WARP interface watchdog (cron)
     watchdog-off          Disable WARP interface watchdog
+    restart-warp-masque   Restart the MASQUE (usque) service
+    warp-fix-endpoint     Find a reachable WARP endpoint/port and save it
     start-tor             Start Tor service
     stop-tor              Stop Tor service
     restart-tor           Restart Tor service
@@ -365,6 +398,7 @@ Monitoring:
     test                  Test all connections
     logs <warp|tor>       View service logs
     warp-memory           WARP memory diagnostic
+    warp-udp-check        Diagnose UDP reachability of WARP (read-only)
     system-info           Show system information
 
 WARP+:
@@ -376,6 +410,7 @@ Xray:
 
 Uninstallation:
     remove-warp           Uninstall WARP
+    remove-warp-masque    Uninstall WARP MASQUE (usque)
     remove-tor            Uninstall Tor
 
 Script Management:
@@ -397,6 +432,9 @@ Examples:
     $(basename "$0") @ install-warp --force
     $(basename "$0") install-warp --license 1a2b3c4d-5e6f7g8h-9i0j1k2l
     $(basename "$0") warp-plus 1a2b3c4d-5e6f7g8h-9i0j1k2l
+    $(basename "$0") warp-fix-endpoint
+    $(basename "$0") install-warp-masque http2
+    WARP_MASQUE_PORT=40010 $(basename "$0") install-warp-masque
     $(basename "$0") install-tor --dns-port 5353
     $(basename "$0") repair-tor
     $(basename "$0") status
@@ -840,6 +878,34 @@ install_warp() {
         error_exit "WARP configuration file not found"
     fi
 
+    # Endpoint: wgcf may emit an IPv6 literal ([2606:4700:d0::...]:2408) that a
+    # v6-less host can never reach — prefer the IPv4 anycast address then.
+    warp_prefer_ipv4_endpoint "$WGCF_PROFILE"
+
+    # UDP pre-check on a throw-away interface: find an endpoint/port that
+    # actually completes a handshake BEFORE installing a tunnel that may never
+    # come up. WARP_SKIP_UDP_CHECK=1 skips it.
+    if [ "${WARP_SKIP_UDP_CHECK:-}" != "1" ]; then
+        step "Checking UDP reachability of Cloudflare WARP (WireGuard handshake)..."
+        local probe_ep="" probe_rc=0
+        probe_ep=$(warp_udp_probe "$WGCF_PROFILE") || probe_rc=$?
+        case $probe_rc in
+            0)
+                warp_set_conf_endpoint "$WGCF_PROFILE" "$probe_ep"
+                ok "Cloudflare WARP reachable over UDP: $probe_ep"
+                ;;
+            2)
+                warn "UDP pre-check skipped (cannot create a test WireGuard interface) — will verify after start"
+                ;;
+            *)
+                restore_dns
+                rm -rf "$WGCF_TEMP_DIR"
+                warp_offer_masque
+                return $?
+                ;;
+        esac
+    fi
+
     # Persist the account record first — generate_warp_xray_outbound reads it to
     # derive the PoP-specific `reserved` value from the registration's client_id.
     mkdir -p /etc/wireguard
@@ -891,12 +957,17 @@ install_warp() {
 
     restore_dns
 
-    # Verify connection
-    sleep 3
-    if verify_warp_connection; then
+    # Verify connection — the first handshake can lag behind the unit start,
+    # so retry for ~20s before concluding anything; then walk other endpoints.
+    if warp_wait_verify 20; then
         ok "WARP installation completed successfully"
     else
-        warn "WARP installed but connection verification failed"
+        warn "No traffic through warp after 20s — trying other WARP endpoints/ports..."
+        if warp_autofix_endpoint; then
+            ok "WARP installation completed successfully"
+        elif ! warp_offer_masque; then
+            warn "WARP installed but connection verification failed"
+        fi
     fi
 
     if [ -n "${WARP_LICENSE_KEY:-}" ]; then
@@ -960,7 +1031,13 @@ generate_warp_xray_outbound() {
     local account="${2:-$WARP_ACCOUNT_FILE}"
     [ -f "$profile" ] || return 1
 
-    local secret v4 v6 addrs addr_json
+    local secret v4 v6 addrs addr_json endpoint
+    # Use the profile's endpoint (already switched to a reachable IPv4/port by
+    # the install-time probe); fall back to the generic hostname.
+    endpoint=$(warp_conf_endpoint "$profile")
+    case "$endpoint" in
+        ''|\[*) endpoint="$WARP_ENDPOINT" ;;
+    esac
     secret=$(grep -E '^PrivateKey' "$profile" | head -1 | sed -E 's/^PrivateKey[[:space:]]*=[[:space:]]*//' | tr -d '[:space:]')
     # Collect every address token across one or more Address lines, classify v4/v6.
     # NB: strip only spaces (tr -d ' '), never newlines — the tokens are one-per-line.
@@ -996,7 +1073,7 @@ generate_warp_xray_outbound() {
     "peers": [
       {
         "publicKey": "$WARP_PEER_PUBLIC_KEY",
-        "endpoint": "$WARP_ENDPOINT",
+        "endpoint": "$endpoint",
         "allowedIPs": ["0.0.0.0/0", "::/0"]
       }
     ],
@@ -1304,8 +1381,8 @@ check_ipv6_support() {
 }
 
 verify_warp_connection() {
-    # WARP+ accounts report warp=plus, free accounts warp=on
-    curl -s --max-time 10 --interface warp https://www.cloudflare.com/cdn-cgi/trace 2>/dev/null | grep -qE 'warp=(on|plus)'
+    # WARP+ accounts report warp=plus, free accounts warp=on. $1 = timeout (s)
+    curl -s --max-time "${1:-10}" --interface warp https://www.cloudflare.com/cdn-cgi/trace 2>/dev/null | grep -qE 'warp=(on|plus)'
 }
 
 uninstall_warp() {
@@ -1333,6 +1410,718 @@ uninstall_warp() {
     fi
 
     ok "WARP uninstalled successfully"
+}
+
+# ===== WARP ENDPOINT SELECTION / UDP REACHABILITY =====
+#
+# Field case (RU VPS): wgcf wrote an IPv6 endpoint [2606:4700:d0::...]:2408 on
+# a host with no working IPv6 (0 B received), and after switching to IPv4 the
+# handshake still never came back on any port — UDP WireGuard to Cloudflare was
+# filtered upstream. The helpers below (1) prefer the IPv4 anycast endpoint when
+# IPv6 egress is dead, (2) probe the known WARP ports/hosts and keep the first
+# one that completes a handshake, and (3) report a hard UDP block clearly and
+# offer the MASQUE (usque) fallback instead of leaving a dead tunnel behind.
+
+# Real IPv6 egress, not merely "IPv6 enabled": a host can carry a global v6
+# address and still blackhole v6 traffic. Route lookup + a short TCP/TLS probe.
+warp_has_ipv6_egress() {
+    ip -6 route get 2606:4700:4700::1111 >/dev/null 2>&1 || return 1
+    curl -6 -sk -o /dev/null --max-time 4 "https://[2606:4700:4700::1111]/" 2>/dev/null
+}
+
+# Print the Endpoint value of a wg config ($1). Empty if none.
+warp_conf_endpoint() {
+    grep -E '^[[:space:]]*Endpoint[[:space:]]*=' "$1" 2>/dev/null | head -1 | \
+        sed -E 's/^[^=]*=[[:space:]]*//' | tr -d '[:space:]'
+}
+
+# Rewrite the Endpoint line of wg config $1 to $2.
+warp_set_conf_endpoint() {
+    sed -i -E "s|^[[:space:]]*Endpoint[[:space:]]*=.*|Endpoint = $2|" "$1"
+}
+
+# host:port / [v6]:port → port
+warp_endpoint_port() {
+    printf '%s' "${1##*:}"
+}
+
+# If the endpoint in $1 is IPv6 (or a hostname that may resolve to IPv6) and
+# this host has no working IPv6 egress, switch to the IPv4 anycast address of
+# engage.cloudflareclient.com, keeping the port.
+warp_prefer_ipv4_endpoint() {
+    local file="$1" ep port
+    ep=$(warp_conf_endpoint "$file")
+    [ -n "$ep" ] || return 0
+    case "$ep" in
+        [0-9]*.[0-9]*.[0-9]*.[0-9]*:*) return 0 ;;   # already IPv4
+    esac
+    if warp_has_ipv6_egress; then
+        return 0
+    fi
+    port=$(warp_endpoint_port "$ep")
+    case "$port" in ''|*[!0-9]*) port=2408 ;; esac
+    warp_set_conf_endpoint "$file" "$WARP_ENDPOINT_V4:$port"
+    info "No working IPv6 on this host — WARP endpoint $ep → $WARP_ENDPOINT_V4:$port"
+}
+
+# Candidate endpoints in probe order: the configured one first (if it is
+# usable on this host), then every known WARP port on the main IPv4 anycast
+# address, then a couple of ports on the other WARP anycast ranges.
+warp_endpoint_candidates() {
+    local cur="$1" list="" h p
+    case "$cur" in
+        \[*) warp_has_ipv6_egress && list="$cur" ;;
+        ?*)  list="$cur" ;;
+    esac
+    for p in $WARP_ENDPOINT_PORTS; do
+        list="$list $WARP_ENDPOINT_V4:$p"
+    done
+    for h in $WARP_ENDPOINT_EXTRA_HOSTS; do
+        for p in $WARP_ENDPOINT_EXTRA_PORTS; do
+            list="$list $h:$p"
+        done
+    done
+    # shellcheck disable=SC2086 # intentional word splitting of the list
+    printf '%s\n' $list | awk 'NF && !seen[$0]++'
+}
+
+# Epoch of the last handshake on interface $1 (0 = never).
+wg_last_handshake() {
+    local hs
+    hs=$(wg show "$1" latest-handshakes 2>/dev/null | awk '{print $2; exit}')
+    case "$hs" in ''|*[!0-9]*) hs=0 ;; esac
+    echo "$hs"
+}
+
+# Bytes received from the peer on interface $1.
+wg_rx_bytes() {
+    local rx
+    rx=$(wg show "$1" transfer 2>/dev/null | awk '{print $2; exit}')
+    case "$rx" in ''|*[!0-9]*) rx=0 ;; esac
+    echo "$rx"
+}
+
+# Point the WARP peer on interface $1 at endpoint $2 and wait up to $3 s for a
+# FRESH handshake (or any new bytes from Cloudflare). persistent-keepalive 1
+# makes WireGuard send the handshake initiation right away.
+warp_probe_endpoint() {
+    local iface="$1" ep="$2" wait="${3:-$WARP_PROBE_WAIT}" t0 rx0 i
+    t0=$(date +%s)
+    rx0=$(wg_rx_bytes "$iface")
+    wg set "$iface" peer "$WARP_PEER_PUBLIC_KEY" endpoint "$ep" persistent-keepalive 1 >/dev/null 2>&1 || return 1
+    for ((i = 0; i < wait; i++)); do
+        sleep 1
+        [ "$(wg_last_handshake "$iface")" -ge "$t0" ] && return 0
+        [ "$(wg_rx_bytes "$iface")" -gt "$rx0" ] && return 0
+    done
+    return 1
+}
+
+# Pre-install UDP reachability check on a throw-away interface, using the
+# private key of the freshly registered profile $1 (Cloudflare only answers
+# registered keys, so a random key cannot be used). Never touches wg-quick@warp.
+# stdout: the first endpoint that handshakes.  Return: 0 found, 1 UDP blocked,
+# 2 probe impossible here (no WireGuard kernel support, e.g. LXC/OpenVZ).
+warp_udp_probe() {
+    local profile="$1" key keyfile ep found=""
+    command -v wg >/dev/null 2>&1 || return 2
+    key=$(grep -E '^PrivateKey' "$profile" 2>/dev/null | head -1 | \
+        sed -E 's/^PrivateKey[[:space:]]*=[[:space:]]*//' | tr -d '[:space:]')
+    [ -n "$key" ] || return 2
+
+    ip link del "$WARP_PROBE_IFACE" >/dev/null 2>&1 || true
+    ip link add dev "$WARP_PROBE_IFACE" type wireguard >/dev/null 2>&1 || return 2
+    keyfile=$(mktemp) || { ip link del "$WARP_PROBE_IFACE" >/dev/null 2>&1; return 2; }
+    chmod 600 "$keyfile"
+    printf '%s\n' "$key" > "$keyfile"
+    wg set "$WARP_PROBE_IFACE" private-key "$keyfile" >/dev/null 2>&1
+    rm -f "$keyfile"
+    ip link set "$WARP_PROBE_IFACE" up >/dev/null 2>&1 || true
+
+    for ep in $(warp_endpoint_candidates "$(warp_conf_endpoint "$profile")"); do
+        printf "   %-26s " "$ep" >&2
+        if warp_probe_endpoint "$WARP_PROBE_IFACE" "$ep" "$WARP_PROBE_WAIT"; then
+            echo -e "\033[1;32m✅ handshake\033[0m" >&2
+            found="$ep"
+            break
+        fi
+        echo -e "\033[38;5;244m✗ no answer\033[0m" >&2
+    done
+
+    ip link del "$WARP_PROBE_IFACE" >/dev/null 2>&1 || true
+    [ -n "$found" ] || return 1
+    echo "$found"
+}
+
+# Persist a working endpoint into wg-quick config and the native Xray snippet.
+warp_persist_endpoint() {
+    local ep="$1"
+    [ -f "$WARP_CONFIG_FILE" ] && warp_set_conf_endpoint "$WARP_CONFIG_FILE" "$ep"
+    if [ -f "$WARP_XRAY_FILE" ]; then
+        sed -i -E "s|(\"endpoint\"[[:space:]]*:[[:space:]]*\")[^\"]*(\")|\1$ep\2|" "$WARP_XRAY_FILE"
+    fi
+}
+
+# Retry the Cloudflare trace through `warp` for up to $1 s — the first
+# handshake can lag a few seconds behind `systemctl start`.
+warp_wait_verify() {
+    local limit="${1:-20}" end
+    end=$(( $(date +%s) + limit ))
+    while [ "$(date +%s)" -lt "$end" ]; do
+        verify_warp_connection 5 && return 0
+        sleep 2
+    done
+    return 1
+}
+
+# Walk the candidate endpoints on the RUNNING `warp` interface (live `wg set`,
+# no restart), keep the first one that passes the trace, persist it.
+# Return: 0 fixed, 1 nothing answered (UDP blocked), 2 interface not up.
+warp_autofix_endpoint() {
+    local cur ep found=""
+    if [ ! -f "$WARP_CONFIG_FILE" ]; then
+        error "WARP is not installed ($WARP_CONFIG_FILE not found) — run: $(basename "$0") install-warp"
+        return 2
+    fi
+    command -v wg >/dev/null 2>&1 || { error "wg (wireguard-tools) not found"; return 2; }
+    # An IPv6 endpoint on a v6-less host never works — fix the file first
+    warp_prefer_ipv4_endpoint "$WARP_CONFIG_FILE"
+    if ! ip link show warp >/dev/null 2>&1; then
+        systemctl restart "$WARP_SERVICE" >/dev/null 2>&1 || true
+        sleep 2
+    fi
+    if ! ip link show warp >/dev/null 2>&1; then
+        error "warp interface is not up — check: journalctl -u $WARP_SERVICE"
+        return 2
+    fi
+
+    cur=$(warp_conf_endpoint "$WARP_CONFIG_FILE")
+    step "Searching for a reachable WARP endpoint (UDP)..."
+    for ep in $(warp_endpoint_candidates "$cur"); do
+        printf "   %-26s " "$ep"
+        if warp_probe_endpoint warp "$ep" "$WARP_PROBE_WAIT" && verify_warp_connection 8; then
+            echo -e "\033[1;32m✅ warp=on\033[0m"
+            found="$ep"
+            break
+        fi
+        echo -e "\033[38;5;244m✗ no answer\033[0m"
+    done
+    wg set warp peer "$WARP_PEER_PUBLIC_KEY" persistent-keepalive 25 >/dev/null 2>&1 || true
+
+    if [ -z "$found" ]; then
+        [ -n "$cur" ] && { wg set warp peer "$WARP_PEER_PUBLIC_KEY" endpoint "$cur" >/dev/null 2>&1 || true; }
+        return 1
+    fi
+    warp_persist_endpoint "$found"
+    ok "Working WARP endpoint saved: $found ($WARP_CONFIG_FILE)"
+    return 0
+}
+
+# `wtm warp-udp-check` — read-only diagnosis for an installed WARP: is the
+# tunnel alive, and if not, which endpoints answer a WireGuard handshake.
+warp_udp_check() {
+    if [ ! -f "$WARP_CONFIG_FILE" ]; then
+        info "WARP is not installed — the UDP check runs automatically during: $(basename "$0") install-warp"
+        return 1
+    fi
+    step "Checking WARP reachability..."
+    local cur rc=0 ep
+    cur=$(warp_conf_endpoint "$WARP_CONFIG_FILE")
+    info "Configured endpoint: ${cur:-none}"
+    if warp_has_ipv6_egress; then
+        info "IPv6 egress: working"
+    else
+        info "IPv6 egress: not available (IPv4 endpoint required)"
+    fi
+    if ip link show warp >/dev/null 2>&1 && verify_warp_connection 8; then
+        ok "Tunnel is up: Cloudflare trace reports warp=on via $cur"
+        return 0
+    fi
+    warn "Tunnel is not passing traffic — probing endpoints on a test interface..."
+    ep=$(warp_udp_probe "$WARP_CONFIG_FILE") || rc=$?
+    case $rc in
+        0) ok "Cloudflare answers on $ep — apply it with: $(basename "$0") warp-fix-endpoint" ;;
+        2) warn "Cannot create a test WireGuard interface here — run: $(basename "$0") warp-fix-endpoint" ;;
+        *) warp_print_udp_blocked ;;
+    esac
+    return $rc
+}
+
+warp_print_udp_blocked() {
+    echo
+    error "WireGuard (UDP) to Cloudflare WARP is blocked from this server"
+    echo -e "\033[38;5;250m   No handshake on $WARP_ENDPOINT_V4 ports: $WARP_ENDPOINT_PORTS\033[0m"
+    echo -e "\033[38;5;250m   nor on $WARP_ENDPOINT_EXTRA_HOSTS (ports $WARP_ENDPOINT_EXTRA_PORTS).\033[0m"
+    echo -e "\033[38;5;250m   Replies are dropped upstream (hoster / DPI) — typical for RU servers;\033[0m"
+    echo -e "\033[38;5;250m   a local firewall with RELATED,ESTABLISHED accept is not the cause.\033[0m"
+    echo -e "\033[1;34m   Fallback: WARP over MASQUE (QUIC or HTTP/2+TLS on 443) via usque:\033[0m"
+    echo -e "\033[38;5;244m   sudo wtm install-warp-masque\033[0m"
+    echo
+}
+
+# Offer the MASQUE fallback after WireGuard proved unreachable.
+# WARP_AUTO_MASQUE=1 → install without asking (non-interactive runs).
+warp_offer_masque() {
+    local answer=""
+    warp_print_udp_blocked
+    if [ "${WARP_AUTO_MASQUE:-}" != "1" ]; then
+        if [ ! -t 0 ]; then
+            info "Non-interactive run — install the fallback with: $(basename "$0") install-warp-masque"
+            return 1
+        fi
+        read -r -p "$(echo -e "\033[1;37mInstall WARP via MASQUE (usque) now? [Y/n]:\033[0m ")" answer
+        case "$answer" in
+            [Nn]*) info "Skipped. Later: $(basename "$0") install-warp-masque"; return 1 ;;
+        esac
+    fi
+    if ! install_warp_masque; then
+        return 1
+    fi
+    # A WireGuard tunnel that can never handshake only burns watchdog restarts
+    if [ -f "$WARP_CONFIG_FILE" ]; then
+        remove_warp_watchdog >/dev/null 2>&1 || true
+        systemctl disable --now "$WARP_SERVICE" >/dev/null 2>&1 || true
+        info "WireGuard WARP stopped and disabled (files kept; retry: wtm warp-fix-endpoint)"
+    fi
+    return 0
+}
+
+# ===== WARP over MASQUE (usque) =====
+#
+# usque (github.com/Diniboy1123/usque) re-implements the MASQUE mode of the
+# official WARP client: Connect-IP over HTTP/3 (QUIC, UDP 443) or, with
+# --http2, over HTTP/2 + TLS on TCP 443 — the latter survives networks that
+# drop all UDP to Cloudflare. wtm runs it as a systemd service exposing a
+# local SOCKS5 proxy (TCP+UDP) that Xray reaches through a `socks` outbound.
+
+usque_asset_arch() {
+    case "$ARCH" in
+        amd64) echo "linux_amd64" ;;
+        arm64) echo "linux_arm64" ;;
+        armv7) echo "linux_armv7" ;;
+        *) return 1 ;;
+    esac
+}
+
+# Download the latest usque release for this arch, verify SHA-256 against the
+# release's checksums.txt, install to $WARP_MASQUE_BIN.
+install_usque_binary() {
+    local tag ver asset base tmp sum arch_name bin
+    arch_name=$(usque_asset_arch) || { error "usque has no build for architecture: $ARCH"; return 1; }
+
+    if ! command -v unzip >/dev/null 2>&1 && ! command -v python3 >/dev/null 2>&1; then
+        install_package unzip || true
+    fi
+
+    info "Resolving latest usque release..."
+    tag=$(curl -fsSL --max-time 15 "https://api.github.com/repos/$USQUE_REPO/releases/latest" 2>/dev/null | \
+        grep -o '"tag_name"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed -E 's/.*"([^"]*)"$/\1/')
+    if [ -z "$tag" ]; then
+        warn "GitHub API unreachable — using pinned usque $USQUE_FALLBACK_VERSION"
+        tag="$USQUE_FALLBACK_VERSION"
+    fi
+    ver="${tag#v}"
+    asset="usque_${ver}_${arch_name}.zip"
+    base="https://github.com/$USQUE_REPO/releases/download/$tag"
+    tmp=$(mktemp -d) || { error "Failed to create temporary directory"; return 1; }
+
+    if ! curl -fsSL --max-time 180 "$base/$asset" -o "$tmp/$asset" || [ ! -s "$tmp/$asset" ]; then
+        rm -rf "$tmp"
+        error "Failed to download $base/$asset"
+        return 1
+    fi
+
+    if curl -fsSL --max-time 30 "$base/checksums.txt" -o "$tmp/checksums.txt" 2>/dev/null; then
+        sum=$(awk -v a="$asset" '$2 == a {print $1; exit}' "$tmp/checksums.txt")
+        if [ -z "$sum" ]; then
+            warn "No checksum listed for $asset — integrity not verified"
+        elif ! printf '%s  %s\n' "$sum" "$tmp/$asset" | sha256sum -c - >/dev/null 2>&1; then
+            rm -rf "$tmp"
+            error "SHA-256 mismatch for $asset — refusing to install"
+            return 1
+        else
+            ok "SHA-256 verified ($asset)"
+        fi
+    else
+        warn "checksums.txt unavailable — integrity not verified"
+    fi
+
+    mkdir -p "$tmp/x"
+    if command -v unzip >/dev/null 2>&1; then
+        unzip -o -q "$tmp/$asset" usque -d "$tmp/x" >/dev/null 2>&1 || true
+    fi
+    if [ ! -s "$tmp/x/usque" ] && command -v python3 >/dev/null 2>&1; then
+        python3 -c 'import sys, zipfile; zipfile.ZipFile(sys.argv[1]).extract("usque", sys.argv[2])' \
+            "$tmp/$asset" "$tmp/x" >/dev/null 2>&1 || true
+    fi
+    bin="$tmp/x/usque"
+    if [ ! -s "$bin" ]; then
+        rm -rf "$tmp"
+        error "Could not extract usque from $asset (install unzip or python3)"
+        return 1
+    fi
+    chmod +x "$bin"
+    if ! "$bin" --help >/dev/null 2>&1; then
+        rm -rf "$tmp"
+        error "Downloaded usque binary does not run on this platform"
+        return 1
+    fi
+    install -m 755 "$bin" "$WARP_MASQUE_BIN"
+    rm -rf "$tmp"
+    ok "usque $tag installed ($WARP_MASQUE_BIN)"
+}
+
+# Register a fresh WARP device with MASQUE enrolment (usque register).
+masque_register() {
+    local attempt log
+    mkdir -p "$WARP_MASQUE_DIR"
+    chmod 700 "$WARP_MASQUE_DIR"
+    if [ -s "$WARP_MASQUE_CONFIG" ] && [ "${FORCE_INSTALL:-false}" != "true" ]; then
+        info "Reusing existing MASQUE registration ($WARP_MASQUE_CONFIG)"
+        return 0
+    fi
+    rm -f "$WARP_MASQUE_CONFIG"
+    log=$(mktemp)
+    info "Registering a WARP device for MASQUE..."
+    for attempt in 1 2 3; do
+        if ( cd "$WARP_MASQUE_DIR" && timeout 60 "$WARP_MASQUE_BIN" -c "$WARP_MASQUE_CONFIG" \
+                register --accept-tos -n "wtm-$(hostname -s 2>/dev/null || echo server)" ) >"$log" 2>&1 \
+           && [ -s "$WARP_MASQUE_CONFIG" ]; then
+            chmod 600 "$WARP_MASQUE_CONFIG"
+            rm -f "$log"
+            ok "MASQUE device registered"
+            return 0
+        fi
+        warn "Registration attempt $attempt failed, retrying in 5s..."
+        sleep 5
+    done
+    error "usque registration failed (Cloudflare API rate limit or api.cloudflareclient.com unreachable)"
+    tail -n 5 "$log" 2>/dev/null | sed 's/^/   /'
+    rm -f "$log"
+    return 1
+}
+
+masque_port() {
+    local p=""
+    [ -f "$WARP_MASQUE_ENV" ] && p=$(sed -n 's/^PORT=//p' "$WARP_MASQUE_ENV" | head -1)
+    case "$p" in ''|*[!0-9]*) p="$WARP_MASQUE_PORT" ;; esac
+    echo "$p"
+}
+
+masque_bind() {
+    local b=""
+    [ -f "$WARP_MASQUE_ENV" ] && b=$(sed -n 's/^BIND=//p' "$WARP_MASQUE_ENV" | head -1)
+    [ -n "$b" ] || b="$WARP_MASQUE_BIND"
+    echo "$b"
+}
+
+masque_transport() {
+    local t=""
+    [ -f "$WARP_MASQUE_ENV" ] && t=$(sed -n 's/^TRANSPORT=//p' "$WARP_MASQUE_ENV" | head -1)
+    echo "${t:-unknown}"
+}
+
+# Cloudflare trace through a SOCKS5 port: $1 port, $2 timeout, $3 host.
+masque_trace_ok() {
+    curl -s --max-time "${2:-8}" -x "socks5h://${3:-127.0.0.1}:$1" \
+        https://www.cloudflare.com/cdn-cgi/trace 2>/dev/null | grep -qE 'warp=(on|plus)'
+}
+
+# Try one transport ("quic" | "http2") with a throw-away usque on a spare
+# local port; success = trace answers warp=on within WARP_MASQUE_PROBE_TIME s.
+masque_probe_transport() {
+    local mode="$1" port pid rc=1 end
+    local -a extra=()
+    port=$(( $(masque_port) + 1 ))
+    [ "$mode" = "http2" ] && extra=(--http2)
+    "$WARP_MASQUE_BIN" -c "$WARP_MASQUE_CONFIG" socks -b 127.0.0.1 -p "$port" \
+        -d 1.1.1.1 -d 1.0.0.1 "${extra[@]}" >/dev/null 2>&1 &
+    pid=$!
+    end=$(( $(date +%s) + ${WARP_MASQUE_PROBE_TIME:-20} ))
+    sleep 1
+    while [ "$(date +%s)" -lt "$end" ]; do
+        if masque_trace_ok "$port" 6; then
+            rc=0
+            break
+        fi
+        kill -0 "$pid" 2>/dev/null || break
+        sleep 1
+    done
+    kill "$pid" >/dev/null 2>&1 || true
+    wait "$pid" 2>/dev/null || true
+    return $rc
+}
+
+write_masque_service() {
+    local transport="$1" port bind h2=""
+    port=$(masque_port)
+    bind=$(masque_bind)
+    [ "$transport" = "http2" ] && h2=" --http2"
+    cat > "$WARP_MASQUE_ENV" <<EOF
+# wtm MASQUE settings (rewritten by: wtm install-warp-masque)
+TRANSPORT=$transport
+PORT=$port
+BIND=$bind
+EOF
+    cat > "$WARP_MASQUE_UNIT" <<EOF
+[Unit]
+Description=wtm: Cloudflare WARP over MASQUE (usque SOCKS5 $bind:$port, $transport)
+Documentation=https://github.com/$USQUE_REPO
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=$WARP_MASQUE_DIR
+ExecStart=$WARP_MASQUE_BIN -c $WARP_MASQUE_CONFIG socks -b $bind -p $port -d 1.1.1.1 -d 1.0.0.1$h2
+Restart=always
+RestartSec=5
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+EOF
+    chmod 644 "$WARP_MASQUE_UNIT"
+    systemctl daemon-reload >/dev/null 2>&1 || true
+}
+
+generate_masque_xray_outbound() {
+    local port bind addr
+    port=$(masque_port)
+    bind=$(masque_bind)
+    addr="$bind"
+    [ "$addr" = "0.0.0.0" ] && addr="127.0.0.1"
+    mkdir -p "$(dirname "$WARP_MASQUE_XRAY_FILE")"
+    # Same tag "warp" as the WireGuard variants, so routing rules stay the same.
+    cat > "$WARP_MASQUE_XRAY_FILE" <<EOF
+{
+  "tag": "warp",
+  "protocol": "socks",
+  "settings": {
+    "address": "$addr",
+    "port": $port
+  }
+}
+EOF
+    chmod 644 "$WARP_MASQUE_XRAY_FILE"
+}
+
+install_masque_watchdog() {
+    mkdir -p "$(dirname "$WARP_MASQUE_WATCHDOG_SCRIPT")"
+    cat > "$WARP_MASQUE_WATCHDOG_SCRIPT" <<EOF
+#!/usr/bin/env bash
+# wtm MASQUE watchdog — restarts $WARP_MASQUE_SERVICE when the SOCKS tunnel stops answering.
+SERVICE="$WARP_MASQUE_SERVICE"
+ENV_FILE="$WARP_MASQUE_ENV"
+DEFAULT_PORT="$WARP_MASQUE_PORT"
+RESTART_COOLDOWN=120
+STAMP="$WARP_MASQUE_WATCHDOG_STAMP"
+LOG="$WARP_MASQUE_WATCHDOG_LOG"
+MAX_LOG_LINES=1000
+EOF
+    cat >> "$WARP_MASQUE_WATCHDOG_SCRIPT" <<'EOF'
+
+if [ -f "$LOG" ] && [ "$(wc -l < "$LOG")" -gt "$MAX_LOG_LINES" ]; then
+    tail -n "$MAX_LOG_LINES" "$LOG" > "$LOG.tmp" && mv "$LOG.tmp" "$LOG"
+fi
+log() { echo "$(date '+%F %T') $*" >> "$LOG"; }
+
+PORT=$(sed -n 's/^PORT=//p' "$ENV_FILE" 2>/dev/null | head -1)
+BIND=$(sed -n 's/^BIND=//p' "$ENV_FILE" 2>/dev/null | head -1)
+case "$PORT" in ''|*[!0-9]*) PORT="$DEFAULT_PORT" ;; esac
+case "$BIND" in ''|0.0.0.0) BIND=127.0.0.1 ;; esac
+
+now=$(date +%s)
+reason=""
+if ! systemctl is-active --quiet "$SERVICE"; then
+    reason="service inactive"
+else
+    # Two tries: usque reconnects lazily on the first outbound packet
+    ok=1
+    for _ in 1 2; do
+        if curl -s --max-time 10 -x "socks5h://$BIND:$PORT" \
+                https://www.cloudflare.com/cdn-cgi/trace 2>/dev/null | grep -qE 'warp=(on|plus)'; then
+            ok=0; break
+        fi
+        sleep 3
+    done
+    [ "$ok" -eq 0 ] || reason="trace via socks5 $BIND:$PORT failed"
+fi
+[ -z "$reason" ] && exit 0
+
+last=$(cat "$STAMP" 2>/dev/null)
+case "$last" in ''|*[!0-9]*) last=0 ;; esac
+if [ $((now - last)) -lt "$RESTART_COOLDOWN" ]; then
+    log "SKIP ($reason) — cooldown"
+    exit 0
+fi
+echo "$now" > "$STAMP"
+if systemctl restart "$SERVICE" >/dev/null 2>&1; then
+    log "RESTART ($reason) — ok"
+else
+    log "RESTART ($reason) — FAILED, check: journalctl -u $SERVICE"
+fi
+EOF
+    chmod 755 "$WARP_MASQUE_WATCHDOG_SCRIPT"
+    cat > "$WARP_MASQUE_WATCHDOG_CRON" <<EOF
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+*/5 * * * * root $WARP_MASQUE_WATCHDOG_SCRIPT
+EOF
+    chmod 644 "$WARP_MASQUE_WATCHDOG_CRON"
+    ok "MASQUE watchdog enabled (cron: every 5 min, log: $WARP_MASQUE_WATCHDOG_LOG)"
+}
+
+remove_masque_watchdog() {
+    pkill -f "$WARP_MASQUE_WATCHDOG_SCRIPT" 2>/dev/null || true
+    rm -f "$WARP_MASQUE_WATCHDOG_CRON" "$WARP_MASQUE_WATCHDOG_SCRIPT" "$WARP_MASQUE_WATCHDOG_STAMP"
+    rmdir "$(dirname "$WARP_MASQUE_WATCHDOG_SCRIPT")" 2>/dev/null || true
+}
+
+# install_warp_masque [auto|quic|http2]   (default: $WARP_MASQUE_TRANSPORT or auto)
+install_warp_masque() {
+    local want="${1:-${WARP_MASQUE_TRANSPORT:-auto}}" transport="" port bind
+    step "Installing Cloudflare WARP over MASQUE (usque)..."
+    case "$want" in
+        auto|quic|http2) ;;
+        h2|tcp) want="http2" ;;
+        h3|udp) want="quic" ;;
+        *) error "Unknown transport '$want' (use: auto | quic | http2)"; return 1 ;;
+    esac
+
+    if [ -f "$WARP_MASQUE_UNIT" ] && [ "${FORCE_INSTALL:-false}" != "true" ] && [ "$want" = "auto" ]; then
+        warn "WARP MASQUE is already installed ($WARP_MASQUE_UNIT)"
+        echo "Reinstall: $(basename "$0") install-warp-masque --force   (or pick transport: ... quic|http2)"
+        return 1
+    fi
+    [ -n "${ARCH:-}" ] || detect_arch
+
+    port="$WARP_MASQUE_PORT"
+    case "$port" in ''|*[!0-9]*) error "Invalid WARP_MASQUE_PORT: $port"; return 1 ;; esac
+    bind="$WARP_MASQUE_BIND"
+    # Reinstall: stop our own listener first so the port check does not trip on it
+    systemctl stop "$WARP_MASQUE_SERVICE" >/dev/null 2>&1 || true
+    if ! check_port_available "$port"; then
+        error "Port $port is already in use — set another: WARP_MASQUE_PORT=40010 wtm install-warp-masque"
+        port_listeners "$port" | sed 's/^/   /'
+        return 1
+    fi
+    mkdir -p "$WARP_MASQUE_DIR"
+    chmod 700 "$WARP_MASQUE_DIR"
+    # Persist port/bind before probing — the probe derives its spare port from it
+    printf 'PORT=%s\nBIND=%s\n' "$port" "$bind" > "$WARP_MASQUE_ENV"
+
+    install_usque_binary || return 1
+    masque_register || return 1
+
+    if [ "$want" = "auto" ] || [ "$want" = "quic" ]; then
+        info "Testing MASQUE over QUIC (UDP 443)..."
+        if masque_probe_transport quic; then
+            ok "QUIC works"
+            transport="quic"
+        elif [ "$want" = "quic" ]; then
+            warn "QUIC test failed — installing with QUIC anyway, as requested"
+            transport="quic"
+        else
+            warn "QUIC (UDP 443) does not get through"
+        fi
+    fi
+    if [ -z "$transport" ]; then
+        info "Testing MASQUE over HTTP/2 + TLS (TCP 443)..."
+        if masque_probe_transport http2; then
+            ok "HTTP/2 works"
+        else
+            warn "HTTP/2 test did not confirm a working tunnel — installing it anyway (TCP is the most likely to pass); check: wtm test"
+        fi
+        transport="http2"
+    fi
+
+    write_masque_service "$transport"
+    generate_masque_xray_outbound
+    if systemctl enable --now "$WARP_MASQUE_SERVICE" >/dev/null 2>&1; then
+        ok "Service started ($WARP_MASQUE_SERVICE, transport: $transport)"
+    else
+        warn "Service failed to start — check: journalctl -u $WARP_MASQUE_SERVICE"
+    fi
+    install_masque_watchdog
+
+    local i up=false probe_host="$bind"
+    [ "$probe_host" = "0.0.0.0" ] && probe_host="127.0.0.1"
+    for i in 1 2 3 4 5 6; do
+        if masque_trace_ok "$port" 8 "$probe_host"; then up=true; break; fi
+        sleep 2
+    done
+    echo
+    if [ "$up" = true ]; then
+        ok "WARP MASQUE is working: socks5://$probe_host:$port → Cloudflare (warp=on)"
+    else
+        warn "WARP MASQUE installed, but the trace check failed — see: journalctl -u $WARP_MASQUE_SERVICE -n 50"
+    fi
+    info "Xray outbound written: $WARP_MASQUE_XRAY_FILE"
+    echo -e "\033[38;5;244m   socks outbound to $probe_host:$port, tag \"warp\" — same routing rules as the WireGuard variants.\033[0m"
+    echo -e "\033[38;5;244m   Xray must reach $probe_host:$port (host Xray or network_mode: host). For a bridge\033[0m"
+    echo -e "\033[38;5;244m   container reinstall with WARP_MASQUE_BIND=<docker0 IP>.\033[0m"
+    echo -e "\033[38;5;244m   Test: curl -x socks5h://$probe_host:$port https://www.cloudflare.com/cdn-cgi/trace\033[0m"
+    log_action "WARP MASQUE installed (transport=$transport port=$port)"
+    [ "$up" = true ]
+}
+
+install_warp_masque_client() {
+    print_banner
+    auto_install_script_if_needed
+    detect_os
+    detect_arch
+    install_warp_masque "$@"
+}
+
+uninstall_warp_masque() {
+    step "Uninstalling WARP MASQUE (usque)..."
+    remove_masque_watchdog
+    systemctl disable --now "$WARP_MASQUE_SERVICE" >/dev/null 2>&1 || true
+    rm -f "$WARP_MASQUE_UNIT"
+    systemctl daemon-reload >/dev/null 2>&1 || true
+    rm -f "$WARP_MASQUE_CONFIG" "$WARP_MASQUE_ENV" "$WARP_MASQUE_XRAY_FILE" \
+          "$WARP_MASQUE_WATCHDOG_LOG" "$WARP_MASQUE_BIN"
+    rmdir "$WARP_MASQUE_DIR" 2>/dev/null || true
+    ok "WARP MASQUE uninstalled"
+}
+
+remove_warp_masque_client() {
+    print_banner
+    uninstall_warp_masque
+}
+
+masque_probe_host() {
+    local b
+    b=$(masque_bind)
+    [ "$b" = "0.0.0.0" ] && b="127.0.0.1"
+    echo "$b"
+}
+
+# running | degraded (active, trace fails) | installed (stopped) | not_installed
+check_masque_status() {
+    if [ ! -f "$WARP_MASQUE_UNIT" ]; then
+        echo "not_installed"
+    elif ! systemctl is-active --quiet "$WARP_MASQUE_SERVICE" 2>/dev/null; then
+        echo "installed"
+    elif masque_trace_ok "$(masque_port)" 8 "$(masque_probe_host)"; then
+        echo "running"
+    else
+        echo "degraded"
+    fi
+}
+
+# One-line MASQUE status for the status blocks; silent when not installed.
+render_masque_status_line() {
+    local st label
+    st=$(check_masque_status)
+    [ "$st" = "not_installed" ] && return 0
+    label="$(masque_transport), socks5 $(masque_probe_host):$(masque_port)"
+    case "$st" in
+        running)  printf "   \033[38;5;15m%-12s\033[0m \033[1;32m✅ Running\033[0m \033[38;5;250m(%s)\033[0m\n" "MASQUE:" "$label" ;;
+        degraded) printf "   \033[38;5;15m%-12s\033[0m \033[1;33m⚠️  Active, no traffic\033[0m \033[38;5;250m(%s)\033[0m\n" "MASQUE:" "$label" ;;
+        *)        printf "   \033[38;5;15m%-12s\033[0m \033[1;33m⚠️  Stopped\033[0m \033[38;5;250m(systemctl start %s)\033[0m\n" "MASQUE:" "$WARP_MASQUE_SERVICE" ;;
+    esac
 }
 
 # ===== TOR FUNCTIONS =====
@@ -2412,6 +3201,14 @@ show_status() {
             info "Not installed"
             ;;
     esac
+    if [ -f "$WARP_MASQUE_UNIT" ]; then
+        echo -e "\033[1;36m🛰️  WARP MASQUE (usque):\033[0m"
+        case "$(check_masque_status)" in
+            running)  ok "Active and working ($(masque_transport), socks5 $(masque_probe_host):$(masque_port))" ;;
+            degraded) warn "Service active, but no traffic through socks5 $(masque_probe_host):$(masque_port)" ;;
+            *)        warn "Installed but not running (systemctl start $WARP_MASQUE_SERVICE)" ;;
+        esac
+    fi
     echo
     
     # Tor Status
@@ -2802,6 +3599,7 @@ render_warp_status_block() {
             echo -e "\033[38;5;244m   Cloudflare WARP is not installed\033[0m"
             ;;
     esac
+    render_masque_status_line
 }
 
 # Render the Tor status block. Shared by every menu. $1 = check_tor_status.
@@ -2974,6 +3772,14 @@ show_warp_menu() {
     echo -e "\033[1;37m⚙️  Configuration:\033[0m"
     echo -e "   \033[38;5;15m9)\033[0m 🚀 Upgrade to WARP+ (license key)"
     echo
+    echo -e "\033[1;37m🧩 If UDP to Cloudflare is blocked:\033[0m"
+    echo -e "   \033[38;5;15m10)\033[0m 🔎 Find a working WARP endpoint/port"
+    if [ -f "$WARP_MASQUE_UNIT" ]; then
+        echo -e "   \033[38;5;15m11)\033[0m 🗑️  Uninstall WARP MASQUE \033[38;5;250m(usque)\033[0m"
+    else
+        echo -e "   \033[38;5;15m11)\033[0m 🛰️  Install WARP via MASQUE \033[38;5;250m(usque, QUIC/HTTP2 on 443)\033[0m"
+    fi
+    echo
     echo -e "\033[38;5;8m$(printf '─%.0s' $(seq 1 45))\033[0m"
     echo -e "\033[38;5;15m   0)\033[0m ← Back to main menu"
     echo
@@ -2991,7 +3797,7 @@ show_warp_menu() {
     esac
 
     echo
-    read -p "$(echo -e "\033[1;37mSelect option [0-9]:\033[0m ")" choice
+    read -p "$(echo -e "\033[1;37mSelect option [0-11]:\033[0m ")" choice
 }
 
 # Подменю Tor
@@ -3331,9 +4137,21 @@ EOF
     printf "${YELLOW}• Depends on wg-quick@warp staying up — the watchdog installed by${NC}\n"
     printf "${YELLOW}  this script auto-restarts it (toggle: wtm watchdog-on/off).${NC}\n\n"
 
+    echo -e "${BOLD}${CYAN}Variant C — MASQUE (usque SOCKS5), when UDP to Cloudflare is blocked${NC}"
+    echo -e "${DIM}Installed by: wtm install-warp-masque. QUIC or HTTP/2+TLS on 443.${NC}\n"
+    if [ -f "$WARP_MASQUE_XRAY_FILE" ]; then
+        echo -e "${YELLOW}Ready-to-use outbound at:${NC} ${GREEN}$WARP_MASQUE_XRAY_FILE${NC}\n"
+        echo -en "${GREEN}"
+        cat "$WARP_MASQUE_XRAY_FILE"
+        echo -e "${NC}\n"
+    else
+        echo -e "${YELLOW}• Not installed. Snippet will be written to $WARP_MASQUE_XRAY_FILE${NC}\n"
+    fi
+
     printf "${BOLD}${CYAN}Which one to pick:${NC}\n"
     printf "${YELLOW}• Xray in Docker/container  → Variant A (native wireguard)${NC}\n"
-    printf "${YELLOW}• Xray on the bare host     → Variant B (faster, kernel WireGuard)${NC}\n\n"
+    printf "${YELLOW}• Xray on the bare host     → Variant B (faster, kernel WireGuard)${NC}\n"
+    echo -e "${YELLOW}• UDP WireGuard blocked     → Variant C (MASQUE, wtm install-warp-masque)${NC}\n"
 
     printf "${DIM}Press Enter to continue...${NC}"
     read -r
@@ -3388,6 +4206,21 @@ test_connections() {
         printf "   \033[38;5;15m%-12s\033[0m \033[38;5;244m📦 Service not running\033[0m\n" "Status:"
     fi
     
+    if [ -f "$WARP_MASQUE_UNIT" ]; then
+        echo
+        echo -e "\033[1;37m🛰️  Testing WARP MASQUE (usque)...\033[0m"
+        local mq_host mq_port mq_ip
+        mq_host=$(masque_probe_host)
+        mq_port=$(masque_port)
+        if masque_trace_ok "$mq_port" 10 "$mq_host"; then
+            mq_ip=$(curl -s --max-time 10 -x "socks5h://$mq_host:$mq_port" https://ifconfig.me 2>/dev/null || echo "?")
+            printf "   \033[38;5;15m%-12s\033[0m \033[1;32m✅ %s\033[0m\n" "WARP IP:" "$mq_ip"
+            printf "   \033[38;5;15m%-12s\033[0m \033[1;32m✅ Verified by Cloudflare (%s)\033[0m\n" "CF Trace:" "$(masque_transport)"
+        else
+            printf "   \033[38;5;15m%-12s\033[0m \033[1;31m❌ No traffic via socks5 %s:%s\033[0m\n" "Status:" "$mq_host" "$mq_port"
+        fi
+    fi
+
     echo
     
     # Тест Tor
@@ -3724,6 +4557,34 @@ main() {
             remove-warp)
                 remove_warp_client
                 ;;
+            install-warp-masque|warp-masque)
+                install_warp_masque_client "$1"
+                ;;
+            install-warp-masque-force)
+                FORCE_INSTALL=true install_warp_masque_client "$1"
+                ;;
+            remove-warp-masque)
+                remove_warp_masque_client
+                ;;
+            restart-warp-masque)
+                if [ ! -f "$WARP_MASQUE_UNIT" ]; then
+                    error "WARP MASQUE is not installed — run: $(basename "$0") install-warp-masque"
+                    exit 1
+                fi
+                systemctl restart "$WARP_MASQUE_SERVICE" && ok "$WARP_MASQUE_SERVICE restarted"
+                ;;
+            warp-fix-endpoint|warp-endpoint)
+                print_banner
+                fix_rc=0
+                warp_autofix_endpoint || fix_rc=$?
+                if [ "$fix_rc" = "1" ]; then
+                    warp_offer_masque
+                fi
+                ;;
+            warp-udp-check|udp-check)
+                print_banner
+                warp_udp_check || true
+                ;;
             remove-tor)
                 remove_tor
                 ;;
@@ -3874,6 +4735,15 @@ main() {
                             fi
                             read -p "Press Enter to continue..."
                             ;;
+                        10) warp_autofix_endpoint || { [ "$?" = "1" ] && warp_offer_masque; }; read -r -p "Press Enter to continue..." ;;
+                        11)
+                            if [ -f "$WARP_MASQUE_UNIT" ]; then
+                                remove_warp_masque_client
+                            else
+                                install_warp_masque_client
+                            fi
+                            read -r -p "Press Enter to continue..."
+                            ;;
                         0) break ;;
                         *) echo -e "\033[1;31mInvalid option. Press Enter to try again...\033[0m"; read ;;
                     esac
@@ -3951,6 +4821,7 @@ main() {
                         8) remove_tor; read -p "Press Enter to continue..." ;;
                         9) 
                             remove_warp_client
+                            [ -f "$WARP_MASQUE_UNIT" ] && uninstall_warp_masque
                             remove_tor
                             read -p "Press Enter to continue..."
                             ;;
